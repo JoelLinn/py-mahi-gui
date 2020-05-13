@@ -2,6 +2,11 @@ build/
 dist/
 _build/
 _generate/
+cmake*/
 *.so
 *.py[cod]
 *.egg-info
+
+.idea/
+.vscode/
+.gdb_history
