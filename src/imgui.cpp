@@ -33,6 +33,16 @@ SOFTWARE.
 
 namespace py = pybind11;
 
+// "Smart pointer" that ensures pybind11 will not delete an object reference.
+template <typename T> struct leaked_ptr {
+  leaked_ptr(T* p) : p(p) {}
+  T* get() const { return p; }
+
+private:
+  T* p;
+};
+PYBIND11_DECLARE_HOLDER_TYPE(T, leaked_ptr<T>, true);
+
 void py_init_module_imgui(py::module& m) {
 
   py::enum_<ImGuiCond_>(m, "Condition", py::arithmetic())
@@ -121,7 +131,7 @@ void py_init_module_imgui(py::module& m) {
       .value("Up", ImGuiDir_::ImGuiDir_Up)
       .value("Down", ImGuiDir_::ImGuiDir_Down);
 
-  py::enum_<ImGuiCol_>(m, "Colors")
+  py::enum_<ImGuiCol_>(m, "Color")
       .value("Text", ImGuiCol_::ImGuiCol_Text)
       .value("TextDisabled", ImGuiCol_::ImGuiCol_TextDisabled)
       .value("WindowBg", ImGuiCol_::ImGuiCol_WindowBg)
@@ -175,7 +185,7 @@ void py_init_module_imgui(py::module& m) {
       .value("ModalWindowDarkening", ImGuiCol_::ImGuiCol_ModalWindowDimBg)
       .export_values();
 
-  py::enum_<ImGuiStyleVar_>(m, "Style")
+  py::enum_<ImGuiStyleVar_>(m, "StyleVar")
       .value("Alpha", ImGuiStyleVar_::ImGuiStyleVar_Alpha)
       .value("WindowPadding", ImGuiStyleVar_::ImGuiStyleVar_WindowPadding)
       .value("WindowRounding", ImGuiStyleVar_::ImGuiStyleVar_WindowRounding)
@@ -225,11 +235,15 @@ void py_init_module_imgui(py::module& m) {
       .value("RectOnly", ImGuiHoveredFlags_RectOnly)
       .export_values();
 
-  py::enum_<ImDrawCornerFlags_>(m, "Corner")
+  py::enum_<ImDrawCornerFlags_>(m, "CornerFlags", py::arithmetic())
       .value("TopLeft", ImDrawCornerFlags_TopLeft)
       .value("TopRight", ImDrawCornerFlags_TopRight)
       .value("BotRight", ImDrawCornerFlags_BotRight)
       .value("BotLeft", ImDrawCornerFlags_BotLeft)
+      .value("Top", ImDrawCornerFlags_Top)
+      .value("Bot", ImDrawCornerFlags_Bot)
+      .value("Left", ImDrawCornerFlags_Left)
+      .value("Right", ImDrawCornerFlags_Right)
       .value("All", ImDrawCornerFlags_All)
       .export_values();
 
@@ -294,7 +308,7 @@ void py_init_module_imgui(py::module& m) {
           },
           py::is_operator());
 
-  py::class_<ImGuiStyle>(m, "GuiStyle")
+  py::class_<ImGuiStyle>(m, "Style")
       .def(py::init())
       .def_readwrite("alpha", &ImGuiStyle::Alpha)
       .def_readwrite("window_padding", &ImGuiStyle::WindowPadding)
@@ -339,6 +353,127 @@ void py_init_module_imgui(py::module& m) {
       .def("set_color", [](ImGuiStyle& self, ImGuiCol_ a, ImVec4 c) {
         self.Colors[(int)a] = c;
       });
+
+#define DEF_IO_PROPERTY_PCHAR_BUT_NULL(__py_name__, __c_name__)                \
+  .def_property(                                                               \
+      #__py_name__,                                                            \
+      [](const ImGuiIO& self) -> const char* { return self.__c_name__; },      \
+      [](ImGuiIO& self, const char* s) {                                       \
+        if (s) {                                                               \
+          throw std::invalid_argument("Setting this value to anything but "    \
+                                      "None is currently unsupported.");       \
+        }                                                                      \
+        /* disable if desired */                                               \
+        self.__c_name__ = nullptr;                                             \
+      })
+  py::class_<ImGuiIO, leaked_ptr<ImGuiIO>>(m, "IO")
+      .def_readwrite("config_flags", &ImGuiIO::ConfigFlags)
+      .def_readwrite("backend_flags", &ImGuiIO::BackendFlags)
+      .def_readwrite("display_size", &ImGuiIO::DisplaySize)
+      .def_readwrite("delta_time", &ImGuiIO::DeltaTime)
+      .def_readwrite("ini_saving_rate", &ImGuiIO::IniSavingRate)
+          DEF_IO_PROPERTY_PCHAR_BUT_NULL(ini_filename, IniFilename)
+              DEF_IO_PROPERTY_PCHAR_BUT_NULL(log_filename, LogFilename)
+      .def_readwrite("mouse_double_click_time", &ImGuiIO::MouseDoubleClickTime)
+      .def_readwrite("mouse_double_click_max_dist",
+                     &ImGuiIO::MouseDoubleClickMaxDist)
+      .def_readwrite("mouse_drag_threshold", &ImGuiIO::MouseDragThreshold)
+      //.def_readwrite("key_map", &ImGuiIO::KeyMap[ImGuiKey_COUNT])
+      .def_readwrite("key_repeat_delay", &ImGuiIO::KeyRepeatDelay)
+      .def_readwrite("key_repeat_rate", &ImGuiIO::KeyRepeatRate)
+      .def_readwrite("user_data", &ImGuiIO::UserData)
+      // ======================================================================
+      //.def_readwrite("fonts" &ImGuiIO::Fonts)
+      .def_readwrite("font_global_scale", &ImGuiIO::FontGlobalScale)
+      .def_readwrite("font_allow_user_scaling", &ImGuiIO::FontAllowUserScaling)
+      //.def_readwrite("font_default", &ImGuiIO::FontDefault)
+      .def_readwrite("display_framebuffer_scale",
+                     &ImGuiIO::DisplayFramebufferScale)
+      // ======================================================================
+      .def_readwrite("config_docking_no_split", &ImGuiIO::ConfigDockingNoSplit)
+      .def_readwrite("config_docking_with_shift",
+                     &ImGuiIO::ConfigDockingWithShift)
+      .def_readwrite("config_docking_always_tab_bar",
+                     &ImGuiIO::ConfigDockingAlwaysTabBar)
+      .def_readwrite("config_docking_transparent_payload",
+                     &ImGuiIO::ConfigDockingTransparentPayload)
+      // ======================================================================
+      .def_readwrite("config_viewports_no_auto_merge",
+                     &ImGuiIO::ConfigViewportsNoAutoMerge)
+      .def_readwrite("config_viewports_no_task_bar_icon",
+                     &ImGuiIO::ConfigViewportsNoTaskBarIcon)
+      .def_readwrite("config_viewports_no_decoration",
+                     &ImGuiIO::ConfigViewportsNoDecoration)
+      .def_readwrite("config_viewports_no_default_parent",
+                     &ImGuiIO::ConfigViewportsNoDefaultParent)
+      // ======================================================================
+      .def_readwrite("mouse_draw_cursor", &ImGuiIO::MouseDrawCursor)
+      .def_readwrite("config_macosx_behaviours",
+                     &ImGuiIO::ConfigMacOSXBehaviors)
+      .def_readwrite("config_input_text_cursor_blink",
+                     &ImGuiIO::ConfigInputTextCursorBlink)
+      .def_readwrite("config_windows_resize_from_edges",
+                     &ImGuiIO::ConfigWindowsResizeFromEdges)
+      .def_readwrite("config_windows_move_from_title_bar_only",
+                     &ImGuiIO::ConfigWindowsMoveFromTitleBarOnly)
+      .def_readwrite("config_windows_memory_compact_timer",
+                     &ImGuiIO::ConfigWindowsMemoryCompactTimer)
+      // ======================================================================
+      .def_readonly("backend_platform_name", &ImGuiIO::BackendPlatformName)
+      .def_readonly("backend_renderer_name", &ImGuiIO::BackendRendererName)
+      //.def_readwrite("backend_platform_user_data",
+      //&ImGuiIO::BackendPlatformUserData)
+      //.def_readwrite("backend_renderer_user_data",
+      //&ImGuiIO::BackendRendererUserData)
+      //.def_readwrite("backend_language_user_data",
+      //&ImGuiIO::BackendLanguageUserData)
+      // ======================================================================
+      // GetClipboardTextFn
+      // SetClipboardTextFn
+      // ClipboardUserData
+      // ======================================================================
+      .def_readwrite("mouse_pos", &ImGuiIO::MousePos)
+      //.def_readwrite("", &ImGuiIO::MouseDown[5])
+      .def_readwrite("mouse_wheel", &ImGuiIO::MouseWheel)
+      .def_readwrite("mouse_wheel_h", &ImGuiIO::MouseWheelH)
+      .def_readwrite("mouse_hovered_viewport", &ImGuiIO::MouseHoveredViewport)
+      .def_readwrite("key_ctrl", &ImGuiIO::KeyCtrl)
+      .def_readwrite("key_shift", &ImGuiIO::KeyShift)
+      .def_readwrite("key_alt", &ImGuiIO::KeyAlt)
+      .def_readwrite("key_super", &ImGuiIO::KeySuper)
+      //.def_readwrite("keys_down", &ImGuiIO::KeysDown[512])
+      //.def_readwrite("nav_inputs", &ImGuiIO::NavInputs[ImGuiNavInput_COUNT])
+      // ======================================================================
+      .def("add_input_character", &ImGuiIO::AddInputCharacter, py::arg("c"))
+      .def("add_input_character_utf8", &ImGuiIO::AddInputCharactersUTF8,
+           py::arg("str"))
+      .def("clear_input_characters", &ImGuiIO::ClearInputCharacters)
+      // ======================================================================
+      .def_readwrite("want_capture_mouse", &ImGuiIO::WantCaptureMouse)
+      .def_readwrite("want_capture_keyboard", &ImGuiIO::WantCaptureKeyboard)
+      .def_readwrite("want_text_input", &ImGuiIO::WantTextInput)
+      .def_readwrite("want_set_mouse_pos", &ImGuiIO::WantSetMousePos)
+      .def_readwrite("want_save_ini_settings", &ImGuiIO::WantSaveIniSettings)
+      .def_readwrite("nav_active", &ImGuiIO::NavActive)
+      .def_readwrite("nav_visible", &ImGuiIO::NavVisible)
+      .def_readwrite("framerate", &ImGuiIO::Framerate)
+      .def_readwrite("metrics_render_vertices", &ImGuiIO::MetricsRenderVertices)
+      .def_readwrite("metrics_render_indices", &ImGuiIO::MetricsRenderIndices)
+      .def_readwrite("metrics_render_windows", &ImGuiIO::MetricsRenderWindows)
+      .def_readwrite("metrics_active_windows", &ImGuiIO::MetricsActiveWindows)
+      .def_readwrite("metrics_active_allocations",
+                     &ImGuiIO::MetricsActiveAllocations)
+      .def_readwrite("mouse_delta", &ImGuiIO::MouseDelta)
+      // ======================================================================
+      // INTERNAL
+      ;
+
+  m.def("get_io", []() -> leaked_ptr<ImGuiIO> {
+    // Does NOT copy the object to python scope and
+    // does NOT free when out of scope.
+    // The ImGuiIO pointer is valid as long as the ImGui context is valid.
+    return leaked_ptr<ImGuiIO>(&ImGui::GetIO());
+  });
 
   m.def("get_style", &ImGui::GetStyle);
   m.def("set_style", [](const ImGuiStyle& a) { ImGui::GetStyle() = a; });
@@ -533,23 +668,24 @@ void py_init_module_imgui(py::module& m) {
   m.def("set_window_pos",
         py::overload_cast<const ImVec2&, ImGuiCond>(&ImGui::SetWindowPos),
         py::arg("pos"), py::arg("cond") = 0);
-  m.def(
-      "set_window_size",
-      py::overload_cast<const ImVec2&, ImGuiCond>(&ImGui::SetWindowSize),
-      py::arg("size"), py::arg("cond") = 0);
+  m.def("set_window_size",
+        py::overload_cast<const ImVec2&, ImGuiCond>(&ImGui::SetWindowSize),
+        py::arg("size"), py::arg("cond") = 0);
   m.def("set_window_collapsed",
         py::overload_cast<bool, ImGuiCond>(&ImGui::SetWindowCollapsed),
         py::arg("collapsed"), py::arg("cond") = 0);
   m.def("set_window_pos",
-        py::overload_cast<const char*, const ImVec2&, ImGuiCond>(&ImGui::SetWindowPos),
+        py::overload_cast<const char*, const ImVec2&, ImGuiCond>(
+            &ImGui::SetWindowPos),
         py::arg("name"), py::arg("pos"), py::arg("cond") = 0);
-  m.def(
-      "set_window_size",
-      py::overload_cast<const char*, const ImVec2&, ImGuiCond>(&ImGui::SetWindowSize),
-      py::arg("name"), py::arg("size"), py::arg("cond") = 0);
+  m.def("set_window_size",
+        py::overload_cast<const char*, const ImVec2&, ImGuiCond>(
+            &ImGui::SetWindowSize),
+        py::arg("name"), py::arg("size"), py::arg("cond") = 0);
   m.def("set_window_collapsed",
-      py::overload_cast<const char*, bool, ImGuiCond>(&ImGui::SetWindowCollapsed),
-      py::arg("name"), py::arg("collapsed"), py::arg("cond") = 0);
+        py::overload_cast<const char*, bool, ImGuiCond>(
+            &ImGui::SetWindowCollapsed),
+        py::arg("name"), py::arg("collapsed"), py::arg("cond") = 0);
   m.def(
       "set_window_focus", [](const char* name) { ImGui::SetWindowFocus(name); },
       py::arg("name"));

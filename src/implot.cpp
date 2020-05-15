@@ -169,7 +169,7 @@ void py_init_module_implot(py::module& m) {
       .value("Default", ImPlotAxisFlags_Default)
       .value("Auxiliary", ImPlotAxisFlags_Auxiliary);
 
-  py::enum_<ImPlotCol_>(m, "Col")
+  py::enum_<ImPlotCol_>(m, "Color")
       .value("Line", ImPlotCol_Line)
       .value("Fill", ImPlotCol_Fill)
       .value("MarkerOutline", ImPlotCol_MarkerOutline)
