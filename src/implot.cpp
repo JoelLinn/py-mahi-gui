@@ -139,8 +139,7 @@ private:
   const py::buffer_info infoY;
 };
 
-void py_init_module_implot(py::module& base) {
-  py::module m = base.def_submodule("implot");
+void py_init_module_implot(py::module& m) {
 
   py::enum_<ImPlotFlags_>(m, "Flags", py::arithmetic())
       .value("MousePos", ImPlotFlags_MousePos)

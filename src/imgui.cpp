@@ -33,10 +33,7 @@ SOFTWARE.
 
 namespace py = pybind11;
 
-void py_init_module_imgui(py::module& base) {
-  py::module m = base.def_submodule("imgui");
-
-  m.doc() = "bimpy - bundled imgui for python";
+void py_init_module_imgui(py::module& m) {
 
   py::enum_<ImGuiCond_>(m, "Condition", py::arithmetic())
       .value("Always", ImGuiCond_::ImGuiCond_Always)
@@ -533,23 +530,25 @@ void py_init_module_imgui(py::module& base) {
   m.def("set_next_window_focus", &ImGui::SetNextWindowFocus);
   m.def("set_next_window_bg_alpha", &ImGui::SetNextWindowBgAlpha,
         py::arg("alpha"));
-  m.def(
-      "set_window_pos",
-      [](const char* name, const ImVec2& pos, ImGuiCond cond) {
-        ImGui::SetWindowPos(name, pos, cond);
-      },
-      py::arg("name"), py::arg("pos"), py::arg("cond") = 0);
+  m.def("set_window_pos",
+        py::overload_cast<const ImVec2&, ImGuiCond>(&ImGui::SetWindowPos),
+        py::arg("pos"), py::arg("cond") = 0);
   m.def(
       "set_window_size",
-      [](const char* name, const ImVec2& size, ImGuiCond cond) {
-        ImGui::SetWindowSize(name, size, cond);
-      },
-      py::arg("name"), py::arg("size"), py::arg("cond") = 0);
+      py::overload_cast<const ImVec2&, ImGuiCond>(&ImGui::SetWindowSize),
+      py::arg("size"), py::arg("cond") = 0);
+  m.def("set_window_collapsed",
+        py::overload_cast<bool, ImGuiCond>(&ImGui::SetWindowCollapsed),
+        py::arg("collapsed"), py::arg("cond") = 0);
+  m.def("set_window_pos",
+        py::overload_cast<const char*, const ImVec2&, ImGuiCond>(&ImGui::SetWindowPos),
+        py::arg("name"), py::arg("pos"), py::arg("cond") = 0);
   m.def(
-      "set_window_collapsed",
-      [](const char* name, bool collapsed, ImGuiCond cond) {
-        ImGui::SetWindowCollapsed(name, collapsed, cond);
-      },
+      "set_window_size",
+      py::overload_cast<const char*, const ImVec2&, ImGuiCond>(&ImGui::SetWindowSize),
+      py::arg("name"), py::arg("size"), py::arg("cond") = 0);
+  m.def("set_window_collapsed",
+      py::overload_cast<const char*, bool, ImGuiCond>(&ImGui::SetWindowCollapsed),
       py::arg("name"), py::arg("collapsed"), py::arg("cond") = 0);
   m.def(
       "set_window_focus", [](const char* name) { ImGui::SetWindowFocus(name); },
