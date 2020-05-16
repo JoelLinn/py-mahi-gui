@@ -264,6 +264,7 @@ void py_init_module_implot(py::module& m) {
       "plot",
       [](const char* label_id, py::buffer values) {
         auto value_getter = ValueGetter(values);
+        py::gil_scoped_release release;
         ImPlot::Plot(label_id, value_getter.get_getter_func(), &value_getter,
                      value_getter.count());
       },
@@ -272,6 +273,7 @@ void py_init_module_implot(py::module& m) {
       "plot",
       [](const char* label_id, py::buffer xs, py::buffer ys) {
         auto value_getter = ValueGetter(xs, ys);
+        py::gil_scoped_release release;
         ImPlot::Plot(label_id, value_getter.get_getter_func(), &value_getter,
                      value_getter.count());
       },
@@ -281,6 +283,7 @@ void py_init_module_implot(py::module& m) {
       "bar",
       [](const char* label_id, py::buffer values, float width, float shift) {
         auto value_getter = ValueGetter(values);
+        py::gil_scoped_release release;
         ImPlot::Bar(label_id, value_getter.get_getter_func(), &value_getter,
                     value_getter.count(), width, shift);
       },
@@ -290,6 +293,7 @@ void py_init_module_implot(py::module& m) {
       "bar",
       [](const char* label_id, py::buffer xs, py::buffer ys, float height) {
         auto value_getter = ValueGetter(xs, ys);
+        py::gil_scoped_release release;
         ImPlot::Bar(label_id, value_getter.get_getter_func(), &value_getter,
                     value_getter.count(), height);
       },
@@ -299,6 +303,7 @@ void py_init_module_implot(py::module& m) {
       "bar_h",
       [](const char* label_id, py::buffer values, float height, float shift) {
         auto value_getter = ValueGetter(values);
+        py::gil_scoped_release release;
         ImPlot::BarH(label_id, value_getter.get_getter_func(), &value_getter,
                      value_getter.count(), height, shift);
       },
@@ -308,6 +313,7 @@ void py_init_module_implot(py::module& m) {
       "bar_h",
       [](const char* label_id, py::buffer xs, py::buffer ys, float height) {
         auto value_getter = ValueGetter(xs, ys);
+        py::gil_scoped_release release;
         ImPlot::BarH(label_id, value_getter.get_getter_func(), &value_getter,
                      value_getter.count(), height);
       },
@@ -338,6 +344,7 @@ void py_init_module_implot(py::module& m) {
       "digital",
       [](const char* label_id, py::buffer xs, py::buffer ys) {
         auto value_getter = ValueGetter(xs, ys);
+        py::gil_scoped_release release;
         ImPlot::Digital(label_id, value_getter.get_getter_func(), &value_getter,
                         value_getter.count());
       },

@@ -66,9 +66,11 @@ public:
 
 protected:
   void update() override {
+    py::gil_scoped_acquire acquire;
     PYBIND11_OVERLOAD(void, mahi::gui::Application, update);
   }
   void draw_opengl() override {
+    py::gil_scoped_acquire acquire;
     PYBIND11_OVERLOAD(void, mahi::gui::Application, draw_opengl);
   }
 
@@ -99,7 +101,11 @@ PYBIND11_MODULE(mahi_gui, m) {
       .def(py::init<int, int, const std::string&, bool, int>())
       .def(py::init<mahi::gui::Application::Config>())
       // ======================================================================
-      .def("run", &mahi::gui::Application::run)
+      .def("run",
+           [](APP_SELF) {
+             py::gil_scoped_release release;
+             self.run();
+           })
       .def("quit", &mahi::gui::Application::quit)
       // ======================================================================
       .def("time", &mahi::gui::Application::time)
