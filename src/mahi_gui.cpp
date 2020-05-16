@@ -50,8 +50,7 @@ namespace py = pybind11;
 class PubApplication : public mahi::gui::Application {
 public:
   // inherited with different access modifier
-  using mahi::gui::Application::draw_nanovg;
-  using mahi::gui::Application::draw_opengl;
+  using mahi::gui::Application::draw;
   using mahi::gui::Application::m_window;
   using mahi::gui::Application::update;
 };
@@ -65,14 +64,14 @@ protected:
     py::gil_scoped_acquire acquire;
     PYBIND11_OVERLOAD(void, mahi::gui::Application, update);
   }
-  void draw_opengl() override {
+  void draw() override {
     py::gil_scoped_acquire acquire;
-    PYBIND11_OVERLOAD(void, mahi::gui::Application, draw_opengl);
+    PYBIND11_OVERLOAD(void, mahi::gui::Application, draw);
   }
 
-  // void draw_nanovg(NVGcontext* nvg) override {
-  //  PYBIND11_OVERLOAD(void, mahi::gui::Application, draw_nanovg, nvg);
-  //}
+  // void draw(NVGcontext* nvg) override {
+  //  PYBIND11_OVERLOAD(void, mahi::gui::Application, draw, nvg);
+  // }
 };
 
 void py_init_module_mahi_gui(py::module& m) {
@@ -162,8 +161,9 @@ void py_init_module_mahi_gui(py::module& m) {
       // ======================================================================
       // protected:
       .def("update", &PubApplication::update)
-      .def("draw_opengl", &PubApplication::draw_opengl)
-      // .def("draw_nanovg", &mahi::gui::Application::draw);
+      .def("draw_opengl", py::overload_cast<>(&PubApplication::draw))
+      //.def("draw_nanovg",
+      //     py::overload_cast<NVGcontext*>(&PubApplication::draw))
       // ======================================================================
       // public:
       // TODO events
