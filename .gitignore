@@ -3,6 +3,7 @@ dist/
 _build/
 _generate/
 cmake*/
+wheelhouse/
 *.so
 *.py[cod]
 *.egg-info

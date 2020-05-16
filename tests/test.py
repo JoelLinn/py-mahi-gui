@@ -1,3 +1,5 @@
+import nose
 import mahi_gui as m
 
-assert m.__version__ == '0.0.1'
+def test_version():
+    assert m.__version__ == '0.0.1'
