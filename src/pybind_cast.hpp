@@ -39,6 +39,9 @@ derivative works thereof, in binary and source code form.
 
 ******************************************************************************/
 
+#ifndef _PYBIND_CAST_HPP
+#define _PYBIND_CAST_HPP
+
 #include <Mahi/Util/Timing/Time.hpp>
 #include <pybind11/pybind11.h>
 
@@ -96,3 +99,5 @@ public:
 
 } // namespace detail
 } // namespace pybind11
+
+#endif

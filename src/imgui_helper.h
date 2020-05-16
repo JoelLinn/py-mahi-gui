@@ -21,6 +21,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#ifndef _IMGUI_HELPER_H
+#define _IMGUI_HELPER_H
+
 struct Bool {
   Bool() : value(false) {}
   Bool(bool v) : value(v) {}
@@ -55,3 +58,5 @@ struct String {
 
   std::string value;
 };
+
+#endif

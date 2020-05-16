@@ -18,8 +18,7 @@ yum install -y              \
     libXrandr-devel         \
     libXinerama-devel       \
     libXcursor-devel        \
-    libXi-devel             \
-    gtk3-devel
+    libXi-devel
 
 
 # Compile wheels
