@@ -1,7 +1,6 @@
-[submodule "pybind11"]
-	path = pybind11
+[submodule "thirdparty/pybind11"]
+	path = thirdparty/pybind11
 	url = https://github.com/pybind/pybind11.git
-	branch = master
-[submodule "mahi-gui"]
-	path = mahi-gui
-	url = https://github.com/mahilab/mahi-gui.git
+[submodule "thirdparty/mahi-gui"]
+	path = thirdparty/mahi-gui
+	url = https://github.com/JoelLinn/mahi-gui.git
