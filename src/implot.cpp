@@ -248,8 +248,7 @@ void py_init_module_implot(py::module& m) {
 
   m.def("begin_plot", &ImPlot::BeginPlot, py::arg("title_id"),
         py::arg("x_label") = nullptr, py::arg("y_label") = nullptr,
-        py::arg("size") = ImVec2(-1, -1),
-        py::arg("flags") = ImPlotFlags_Default,
+        py::arg("size") = ImVec2(-1, 0), py::arg("flags") = ImPlotFlags_Default,
         py::arg("x_flags") = ImPlotAxisFlags_Default,
         py::arg("y_flags") = ImPlotAxisFlags_Default,
         py::arg("y2_flags") = ImPlotAxisFlags_Auxiliary,
@@ -261,66 +260,85 @@ void py_init_module_implot(py::module& m) {
   //---------------------------------------------------------------------------
 
   m.def(
-      "plot",
+      "plot_line",
       [](const char* label_id, py::buffer values) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
-        ImPlot::Plot(label_id, value_getter.get_getter_func(), &value_getter,
-                     value_getter.count());
+        ImPlot::PlotLine(label_id, value_getter.get_getter_func(),
+                         &value_getter, value_getter.count());
       },
       py::arg("label_id"), py::arg("values"));
   m.def(
-      "plot",
+      "plot_line",
       [](const char* label_id, py::buffer xs, py::buffer ys) {
         auto value_getter = ValueGetter(xs, ys);
         py::gil_scoped_release release;
-        ImPlot::Plot(label_id, value_getter.get_getter_func(), &value_getter,
-                     value_getter.count());
+        ImPlot::PlotLine(label_id, value_getter.get_getter_func(),
+                         &value_getter, value_getter.count());
       },
       py::arg("label_id"), py::arg("xs"), py::arg("ys"));
 
   m.def(
-      "bar",
+      "plot_scatter",
+      [](const char* label_id, py::buffer values) {
+        auto value_getter = ValueGetter(values);
+        py::gil_scoped_release release;
+        ImPlot::PlotScatter(label_id, value_getter.get_getter_func(),
+                            &value_getter, value_getter.count());
+      },
+      py::arg("label_id"), py::arg("values"));
+  m.def(
+      "plot_scatter",
+      [](const char* label_id, py::buffer xs, py::buffer ys) {
+        auto value_getter = ValueGetter(xs, ys);
+        py::gil_scoped_release release;
+        ImPlot::PlotScatter(label_id, value_getter.get_getter_func(),
+                            &value_getter, value_getter.count());
+      },
+      py::arg("label_id"), py::arg("xs"), py::arg("ys"));
+
+  m.def(
+      "plot_bars",
       [](const char* label_id, py::buffer values, float width, float shift) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
-        ImPlot::Bar(label_id, value_getter.get_getter_func(), &value_getter,
-                    value_getter.count(), width, shift);
+        ImPlot::PlotBars(label_id, value_getter.get_getter_func(),
+                         &value_getter, value_getter.count(), width, shift);
       },
       py::arg("label_id"), py::arg("values"), py::arg("width") = 0.67f,
       py::arg("shift") = 0.0f);
   m.def(
-      "bar",
+      "plot_bars",
       [](const char* label_id, py::buffer xs, py::buffer ys, float height) {
         auto value_getter = ValueGetter(xs, ys);
         py::gil_scoped_release release;
-        ImPlot::Bar(label_id, value_getter.get_getter_func(), &value_getter,
-                    value_getter.count(), height);
+        ImPlot::PlotBars(label_id, value_getter.get_getter_func(),
+                         &value_getter, value_getter.count(), height);
       },
       py::arg("label_id"), py::arg("xs"), py::arg("ys"), py::arg("width"));
 
   m.def(
-      "bar_h",
+      "plot_bars_h",
       [](const char* label_id, py::buffer values, float height, float shift) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
-        ImPlot::BarH(label_id, value_getter.get_getter_func(), &value_getter,
-                     value_getter.count(), height, shift);
+        ImPlot::PlotBarsH(label_id, value_getter.get_getter_func(),
+                          &value_getter, value_getter.count(), height, shift);
       },
       py::arg("label_id"), py::arg("values"), py::arg("height") = 0.67f,
       py::arg("shift") = 0.0f);
   m.def(
-      "bar_h",
+      "plot_bars_h",
       [](const char* label_id, py::buffer xs, py::buffer ys, float height) {
         auto value_getter = ValueGetter(xs, ys);
         py::gil_scoped_release release;
-        ImPlot::BarH(label_id, value_getter.get_getter_func(), &value_getter,
-                     value_getter.count(), height);
+        ImPlot::PlotBarsH(label_id, value_getter.get_getter_func(),
+                          &value_getter, value_getter.count(), height);
       },
       py::arg("label_id"), py::arg("xs"), py::arg("ys"), py::arg("height"));
 
   m.def(
-      "error_bars",
+      "plot_error_bars",
       [](const char* label_id, py::buffer xs, py::buffer ys, py::buffer neg,
          py::buffer pos) {
         // TODO implement ValueGetter for 4 components
@@ -330,10 +348,10 @@ void py_init_module_implot(py::module& m) {
       py::arg("pos"));
 
   m.def(
-      "pie_chart",
+      "plot_pie_chart",
       [](const char* label_id, py::buffer values, const ImVec2& center,
          float radius, bool show_percents, float angle0) {
-        // TODO ImPlot::PieChart has no getter overload
+        // TODO ImPlot::PlotPieChart has no getter overload
         throw std::runtime_error("not implemented");
       },
       py::arg("label_id"), py::arg("values"), py::arg("center"),
@@ -341,17 +359,18 @@ void py_init_module_implot(py::module& m) {
       py::arg("angle0") = 90);
 
   m.def(
-      "digital",
+      "plot_digital",
       [](const char* label_id, py::buffer xs, py::buffer ys) {
         auto value_getter = ValueGetter(xs, ys);
         py::gil_scoped_release release;
-        ImPlot::Digital(label_id, value_getter.get_getter_func(), &value_getter,
-                        value_getter.count());
+        ImPlot::PlotDigital(label_id, value_getter.get_getter_func(),
+                            &value_getter, value_getter.count());
       },
       py::arg("label_id"), py::arg("xs"), py::arg("ys"));
 
-  m.def("text", &ImPlot::Text, py::arg("text"), py::arg("x"), py::arg("y"),
-        py::arg("vertical") = false, py::arg("pixel_offset") = ImVec2(0, 0));
+  m.def("plot_text", &ImPlot::PlotText, py::arg("text"), py::arg("x"),
+        py::arg("y"), py::arg("vertical") = false,
+        py::arg("pixel_offset") = ImVec2(0, 0));
 
   //---------------------------------------------------------------------------
   // Plot Queries
