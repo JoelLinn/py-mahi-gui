@@ -42,7 +42,7 @@ derivative works thereof, in binary and source code form.
 #include <implot.h>
 #include <pybind11/pybind11.h>
 
-#include "imgui-helper.h"
+#include "imgui_helper.h"
 
 namespace py = pybind11;
 
@@ -383,7 +383,7 @@ void py_init_module_implot(py::module& m) {
   m.def("push_style_color",
         py::overload_cast<ImPlotCol, ImU32>(&ImPlot::PushStyleColor),
         py::arg("idx"), py::arg("col"));
-  m.def("pop_style_color", &ImPlot::PopStyleColor);
+  m.def("pop_style_color", &ImPlot::PopStyleColor, py::arg("count") = 1);
 
   m.def("push_style_var",
         py::overload_cast<ImPlotStyleVar, float>(&ImPlot::PushStyleVar),
@@ -391,7 +391,7 @@ void py_init_module_implot(py::module& m) {
   m.def("push_style_var",
         py::overload_cast<ImPlotStyleVar, int>(&ImPlot::PushStyleVar),
         py::arg("idx"), py::arg("val"));
-  m.def("pop_style_var", &ImPlot::PopStyleVar);
+  m.def("pop_style_var", &ImPlot::PopStyleVar, py::arg("count") = 1);
 
   //-----------------------------------------------------------------------------
   // Plot Utils

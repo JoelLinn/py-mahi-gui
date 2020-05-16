@@ -29,7 +29,7 @@ SOFTWARE.
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "imgui-helper.h"
+#include "imgui_helper.h"
 
 namespace py = pybind11;
 
@@ -43,8 +43,17 @@ private:
 };
 PYBIND11_DECLARE_HOLDER_TYPE(T, leaked_ptr<T>, true);
 
-void py_init_module_imgui(py::module& m) {
+void py_init_module_imgui_enums(py::module&);
+void py_init_module_imgui_classes(py::module&);
+void py_init_module_imgui_funcs(py::module&);
 
+void py_init_module_imgui(py::module& m) {
+  py_init_module_imgui_enums(m);
+  py_init_module_imgui_classes(m);
+  py_init_module_imgui_funcs(m);
+}
+
+void py_init_module_imgui_enums(py::module& m) {
   py::enum_<ImGuiCond_>(m, "Condition", py::arithmetic())
       .value("Always", ImGuiCond_::ImGuiCond_Always)
       .value("Once", ImGuiCond_::ImGuiCond_Once)
@@ -246,7 +255,9 @@ void py_init_module_imgui(py::module& m) {
       .value("Right", ImDrawCornerFlags_Right)
       .value("All", ImDrawCornerFlags_All)
       .export_values();
+}
 
+void py_init_module_imgui_classes(py::module& m) {
   py::class_<Bool>(m, "Bool")
       .def(py::init())
       .def(py::init<bool>())
@@ -467,7 +478,9 @@ void py_init_module_imgui(py::module& m) {
       // ======================================================================
       // INTERNAL
       ;
+}
 
+void py_init_module_imgui_funcs(py::module& m) {
   m.def("get_io", []() -> leaked_ptr<ImGuiIO> {
     // Does NOT copy the object to python scope and
     // does NOT free when out of scope.

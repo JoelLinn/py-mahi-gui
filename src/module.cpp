@@ -39,39 +39,25 @@ derivative works thereof, in binary and source code form.
 
 ******************************************************************************/
 
-#include <Mahi/Gui/imgui_custom.hpp>
 #include <pybind11/pybind11.h>
-
-#include "imgui_helper.h"
 
 namespace py = pybind11;
 
-void py_init_module_imgui_custom(py::module& m) {
-  m.def("enable_viewports", &ImGui::EnableViewports);
-  m.def("disable_viewports", &ImGui::DisableViewports);
+void py_init_module_mahi_gui(py::module&);
+void py_init_module_imgui(py::module&);
+void py_init_module_imgui_custom(py::module&);
+void py_init_module_implot(py::module&);
 
-  m.def("enable_docking", &ImGui::EnableDocking);
-  m.def("disable_docking", &ImGui::DisableDocking);
-
-  m.def("begin_fixed", &ImGui::BeginFixed);
-
-  m.def("hover_tooltip", &ImGui::HoverTooltip);
-
-  m.def("begin_disabled", &ImGui::BeginDisabled);
-  m.def("end_disabled", &ImGui::EndDisabled);
-
-  m.def("toggle_button", &ImGui::ToggleButton);
-  m.def("button_colored", &ImGui::ButtonColored);
-  m.def("mode_selector",
-        [](Int& currentMode, const std::vector<std::string>& modes,
-           bool horizontal) -> bool {
-          return ImGui::ModeSelector(&currentMode.value, modes, horizontal);
-        });
-
-  // double is standard in python
-
-  m.def("style_colors_mahi_dark_1", &ImGui::StyleColorsMahiDark1);
-  m.def("style_colors_mahi_dark_2", &ImGui::StyleColorsMahiDark2);
-  m.def("style_colors_mahi_dark_3", &ImGui::StyleColorsMahiDark3);
-  m.def("style_colors_mahi_dark_4", &ImGui::StyleColorsMahiDark4);
+PYBIND11_MODULE(mahi_gui, m) {
+#ifdef VERSION_INFO
+  m.attr("__version__") = VERSION_INFO;
+#else
+  m.attr("__version__") = "dev";
+#endif
+  py::module imgui = m.def_submodule("imgui");
+  py::module implot = m.def_submodule("implot");
+  py_init_module_mahi_gui(m);
+  py_init_module_imgui(imgui);
+  py_init_module_imgui_custom(imgui);
+  py_init_module_implot(implot);
 }

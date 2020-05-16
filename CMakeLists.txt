@@ -10,5 +10,5 @@ set(MAHI_UTIL_DEFAULT_LOG OFF CACHE BOOL "")
 add_subdirectory(thirdparty/pybind11)
 add_subdirectory(thirdparty/mahi-gui)
 
-pybind11_add_module(mahi_gui src/imgui.cpp src/imgui_custom.cpp src/implot.cpp src/mahi-gui.cpp src/imgui-helper.h src/pybind-cast.hpp)
+pybind11_add_module(mahi_gui src/imgui.cpp src/imgui_custom.cpp src/implot.cpp src/mahi_gui.cpp src/module.cpp src/imgui_helper.h src/pybind_cast.hpp)
 target_link_libraries(mahi_gui PRIVATE mahi::gui)

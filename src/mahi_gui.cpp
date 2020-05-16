@@ -42,13 +42,9 @@ derivative works thereof, in binary and source code form.
 #include <Mahi/Gui.hpp>
 #include <pybind11/pybind11.h>
 
-#include "pybind-cast.hpp"
+#include "pybind_cast.hpp"
 
 namespace py = pybind11;
-
-void py_init_module_imgui(py::module&);
-void py_init_module_imgui_custom(py::module&);
-void py_init_module_implot(py::module&);
 
 // helper type for exposing protected functions
 class PubApplication : public mahi::gui::Application {
@@ -79,15 +75,7 @@ protected:
   //}
 };
 
-PYBIND11_MODULE(mahi_gui, m) {
-  {
-    py::module imgui = m.def_submodule("imgui");
-    py::module implot = m.def_submodule("implot");
-    py_init_module_imgui(imgui);
-    py_init_module_imgui_custom(imgui);
-    py_init_module_implot(implot);
-  }
-
+void py_init_module_mahi_gui(py::module& m) {
 #define APP_SELF mahi::gui::Application& self
   py::class_<mahi::gui::Application, PyApplication> application(m,
                                                                 "Application");
