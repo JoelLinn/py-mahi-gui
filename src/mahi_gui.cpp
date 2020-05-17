@@ -61,12 +61,10 @@ public:
 
 protected:
   void update() override {
-    py::gil_scoped_acquire acquire;
     PYBIND11_OVERLOAD(void, mahi::gui::Application, update);
   }
   void draw() override {
-    py::gil_scoped_acquire acquire;
-    PYBIND11_OVERLOAD(void, mahi::gui::Application, draw);
+    PYBIND11_OVERLOAD_NAME(void, mahi::gui::Application, "draw_opengl", draw);
   }
 
   // void draw(NVGcontext* nvg) override {
