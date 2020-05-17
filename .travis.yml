@@ -26,3 +26,13 @@ install:
 script:
   - docker run --rm -e PLAT=$PLAT -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/build-wheels.sh
   - ls -lah wheelhouse/
+  # ARTIFACT_URL_BASE=https://some.cloud.com/public.php/webdav/
+  # ARTIFACT_USER=share_token
+  - |
+    if [[ -v ARTIFACT_URL_BASE ]]; then
+      cd wheelhouse
+      for whl in *.whl; do
+        curl -T ${whl} -u "${ARTIFACT_USER}:${ARTIFACT_PASS}" -H 'X-Requested-With: XMLHttpRequest' "${ARTIFACT_URL_BASE}${whl}"
+      done
+    fi
+
