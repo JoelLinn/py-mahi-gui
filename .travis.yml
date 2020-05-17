@@ -31,8 +31,16 @@ script:
   - |
     if [[ -v ARTIFACT_URL_BASE ]]; then
       cd wheelhouse
+
+      export ARTIFACT_URL="${ARTIFACT_URL_BASE}/${TRAVIS_BUILD_NUMBER}_${TRAVIS_COMMIT:0:7}"
+      export ARTIFACT_CURL_OPTS="-u '${ARTIFACT_USER}:${ARTIFACT_PASS}' -H 'X-Requested-With: XMLHttpRequest'"
+
+      if [ "404" = "$(eval curl -o /dev/null -s -w '%{http_code}' ${ARTIFACT_CURL_OPTS} -X PROPFIND ${ARTIFACT_URL})" ]; then
+        eval curl "${ARTIFACT_CURL_OPTS}" -X MKCOL "${ARTIFACT_URL}"
+      fi
       for whl in *.whl; do
-        curl -T ${whl} -u "${ARTIFACT_USER}:${ARTIFACT_PASS}" -H 'X-Requested-With: XMLHttpRequest' "${ARTIFACT_URL_BASE}${whl}"
+        echo "Pushing artifact ${whl} ..."
+        eval curl -T ${whl} ${ARTIFACT_CURL_OPTS} ${ARTIFACT_URL}/${whl}
       done
     fi
 
