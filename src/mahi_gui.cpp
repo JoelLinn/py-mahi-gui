@@ -61,10 +61,10 @@ public:
 
 protected:
   void update() override {
-    PYBIND11_OVERLOAD(void, mahi::gui::Application, update);
+    PYBIND11_OVERLOAD_NAME(void, mahi::gui::Application, "_update", update);
   }
   void draw() override {
-    PYBIND11_OVERLOAD_NAME(void, mahi::gui::Application, "draw_opengl", draw);
+    PYBIND11_OVERLOAD_NAME(void, mahi::gui::Application, "_draw_opengl", draw);
   }
 
   // void draw(NVGcontext* nvg) override {
@@ -158,9 +158,9 @@ void py_init_module_mahi_gui(py::module& m) {
       .def("profile", &mahi::gui::Application::profile)
       // ======================================================================
       // protected:
-      .def("update", &PubApplication::update)
-      .def("draw_opengl", py::overload_cast<>(&PubApplication::draw))
-      //.def("draw_nanovg",
+      .def("_update", &PubApplication::update)
+      .def("_draw_opengl", py::overload_cast<>(&PubApplication::draw))
+      //.def("_draw_nanovg",
       //     py::overload_cast<NVGcontext*>(&PubApplication::draw))
       // ======================================================================
       // public:

@@ -60,7 +60,7 @@ class PlotBench(mahi_gui.Application):
                 item.data_x[j] = j
                 item.data_y[j] = y + (random() / 50 - 0.01)
 
-    def update(self):
+    def _update(self):
         if (self.animate.value):
             self.generate_items_data()
 
