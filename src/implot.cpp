@@ -196,7 +196,7 @@ void py_init_module_implot(py::module& m) {
       .value("DigitalBitGap", ImPlotStyleVar_DigitalBitGap);
 
   py::enum_<ImPlotMarker_>(m, "Marker")
-      .value("None", ImPlotMarker_None)
+      .value("None_", ImPlotMarker_None)
       .value("Circle", ImPlotMarker_Circle)
       .value("Square", ImPlotMarker_Square)
       .value("Diamond", ImPlotMarker_Diamond)

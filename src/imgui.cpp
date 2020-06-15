@@ -1163,7 +1163,7 @@ void py_init_module_imgui_funcs(py::module& m) {
         return ImGui::SliderInt(label, &v.value, v_min, v_max, display_format);
       },
       py::arg("label"), py::arg("v"), py::arg("v_min"), py::arg("v_max"),
-      py::arg("display_format") = "%.0f");
+      py::arg("display_format") = "%d");
   m.def(
       "slider_int2",
       [](const char* label, Int& v1, Int& v2, int v_min, int v_max,
@@ -1175,7 +1175,7 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_min"),
-      py::arg("v_max"), py::arg("display_format") = "%.0f");
+      py::arg("v_max"), py::arg("display_format") = "%d");
   m.def(
       "slider_int3",
       [](const char* label, Int& v1, Int& v2, Int& v3, int v_min, int v_max,
@@ -1188,7 +1188,7 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%.0f");
+      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%d");
   m.def(
       "slider_int4",
       [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4, int v_min,
@@ -1203,7 +1203,7 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v4"), py::arg("v_min"), py::arg("v_max"),
-      py::arg("display_format") = "%.0f");
+      py::arg("display_format") = "%d");
 
   m.def(
       "v_slider_int",
@@ -1213,7 +1213,7 @@ void py_init_module_imgui_funcs(py::module& m) {
                                  display_format);
       },
       py::arg("label"), py::arg("size"), py::arg("v"), py::arg("v_min"),
-      py::arg("v_max"), py::arg("display_format") = "%.0f");
+      py::arg("v_max"), py::arg("display_format") = "%d");
 
   //
   m.def(
@@ -1282,7 +1282,7 @@ void py_init_module_imgui_funcs(py::module& m) {
                               display_format);
       },
       py::arg("label"), py::arg("v"), py::arg("v_speed") = 1.0f,
-      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%.0f");
+      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%d");
   m.def(
       "drag_int2",
       [](const char* label, Int& v1, Int& v2, float v_speed, int v_min,
@@ -1295,7 +1295,7 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_speed") = 1.0f,
-      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%.0f");
+      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%d");
   m.def(
       "drag_int3",
       [](const char* label, Int& v1, Int& v2, Int& v3, float v_speed, int v_min,
@@ -1310,7 +1310,7 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v_speed") = 1.0f, py::arg("v_min"), py::arg("v_max"),
-      py::arg("display_format") = "%.0f");
+      py::arg("display_format") = "%d");
   m.def(
       "drag_int4",
       [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4, float v_speed,
@@ -1326,7 +1326,7 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v4"), py::arg("v_speed") = 1.0f, py::arg("v_min"),
-      py::arg("v_max"), py::arg("display_format") = "%.0f");
+      py::arg("v_max"), py::arg("display_format") = "%d");
 
   m.def(
       "plot_lines",
