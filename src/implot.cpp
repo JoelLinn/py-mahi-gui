@@ -65,7 +65,7 @@ public:
     }
   }
 
-  typedef ImVec2 getter_func(void* data, int idx);
+  typedef ImPlotPoint getter_func(void* data, int idx);
   getter_func* get_getter_func() const {
 #define VG_EMIT_GET_GETTER_Y(__type__)                                         \
   if (PY_BUF_IS_TYPE(__type__, this->infoX)) {                                 \
@@ -100,7 +100,7 @@ protected:
       "unsigned/signed int 8, 16, 32 or 64!";
 
   template <typename X, typename Y>
-  static ImVec2 getValue(void* data, int idx) {
+  static ImPlotPoint getValue(void* data, int idx) {
     const auto* this_ = static_cast<ValueGetter*>(data);
     float x, y;
     if constexpr (std::is_void<X>::value) {
@@ -109,7 +109,7 @@ protected:
       x = static_cast<float>((static_cast<X*>(this_->infoX.ptr))[idx]);
     }
     y = static_cast<float>((static_cast<Y*>(this_->infoY.ptr))[idx]);
-    return ImVec2(x, y);
+    return ImPlotPoint(x, y);
   }
 
   template <typename X> inline getter_func* get_getter_func_y() const {
@@ -149,7 +149,6 @@ void py_init_module_implot(py::module& m) {
       .value("Query", ImPlotFlags_Query)
       .value("ContextMenu", ImPlotFlags_ContextMenu)
       .value("Crosshairs", ImPlotFlags_Crosshairs)
-      .value("CullData", ImPlotFlags_CullData)
       .value("AntiAliased", ImPlotFlags_AntiAliased)
       .value("NoChild", ImPlotFlags_NoChild)
       .value("YAxis2", ImPlotFlags_YAxis2)
@@ -163,7 +162,6 @@ void py_init_module_implot(py::module& m) {
       .value("Invert", ImPlotAxisFlags_Invert)
       .value("LockMin", ImPlotAxisFlags_LockMin)
       .value("LockMax", ImPlotAxisFlags_LockMax)
-      .value("Adaptive", ImPlotAxisFlags_Adaptive)
       .value("LogScale", ImPlotAxisFlags_LogScale)
       .value("Scientific", ImPlotAxisFlags_Scientific)
       .value("Default", ImPlotAxisFlags_Default)
@@ -190,6 +188,7 @@ void py_init_module_implot(py::module& m) {
       .value("Marker", ImPlotStyleVar_Marker)
       .value("MarkerSize", ImPlotStyleVar_MarkerSize)
       .value("MarkerWeight", ImPlotStyleVar_MarkerWeight)
+      .value("FillAlpha", ImPlotStyleVar_FillAlpha)
       .value("ErrorBarSize", ImPlotStyleVar_ErrorBarSize)
       .value("ErrorBarWeight", ImPlotStyleVar_ErrorBarWeight)
       .value("DigitalBitHeight", ImPlotStyleVar_DigitalBitHeight)
@@ -208,10 +207,28 @@ void py_init_module_implot(py::module& m) {
       .value("Plus", ImPlotMarker_Plus)
       .value("Asterisk", ImPlotMarker_Asterisk);
 
+  py::enum_<ImPlotColormap_>(m, "Colormap")
+      .value("Default", ImPlotColormap_Default)
+      .value("Dark", ImPlotColormap_Dark)
+      .value("Pastel", ImPlotColormap_Pastel)
+      .value("Paired", ImPlotColormap_Paired)
+      .value("Viridis", ImPlotColormap_Viridis)
+      .value("Plasma", ImPlotColormap_Plasma)
+      .value("Hot", ImPlotColormap_Hot)
+      .value("Cool", ImPlotColormap_Cool)
+      .value("Pink", ImPlotColormap_Pink)
+      .value("Jet", ImPlotColormap_Jet);
+
+  py::class_<ImPlotPoint>(m, "Point")
+      .def(py::init<>())
+      .def(py::init<double, double>())
+      .def_readwrite("x", &ImPlotPoint::x)
+      .def_readwrite("y", &ImPlotPoint::y);
+
   py::class_<ImPlotRange>(m, "Range")
       .def(py::init<>())
-      .def_readwrite("Min", &ImPlotRange::Min)
-      .def_readwrite("Max", &ImPlotRange::Max)
+      .def_readwrite("min", &ImPlotRange::Min)
+      .def_readwrite("max", &ImPlotRange::Max)
       .def("contains", &ImPlotRange::Contains, py::arg("value"))
       .def("size", &ImPlotRange::Size);
 
@@ -219,8 +236,16 @@ void py_init_module_implot(py::module& m) {
       .def(py::init<>())
       .def_readwrite("x", &ImPlotLimits::X)
       .def_readwrite("y", &ImPlotLimits::Y)
-      .def("contains", &ImPlotLimits::Contains, py::arg("p"))
-      .def("size", &ImPlotLimits::Size);
+      .def(
+          "contains",
+          [](ImPlotLimits& self, ImPlotPoint& p) { return self.Contains(p); },
+          py::arg("p"))
+      .def(
+          "contains",
+          [](ImPlotLimits& self, double x, double y) {
+            return self.Contains(x, y);
+          },
+          py::arg("x"), py::arg("y"));
 
   py::class_<ImPlotStyle>(m, "Style")
       .def(py::init())
@@ -228,6 +253,7 @@ void py_init_module_implot(py::module& m) {
       .def_readwrite("marker", &ImPlotStyle::Marker)
       .def_readwrite("marker_size", &ImPlotStyle::MarkerSize)
       .def_readwrite("marker_weight", &ImPlotStyle::MarkerWeight)
+      .def_readwrite("fill_alpha", &ImPlotStyle::FillAlpha)
       .def_readwrite("error_bar_size", &ImPlotStyle::ErrorBarSize)
       .def_readwrite("error_bar_weight", &ImPlotStyle::ErrorBarWeight)
       .def_readwrite("digital_bit_height", &ImPlotStyle::DigitalBitHeight)
@@ -245,6 +271,8 @@ void py_init_module_implot(py::module& m) {
         }
         self.Colors[idx] = c;
       });
+
+  // ImPlotInputMap is not available for now.
 
   m.def("begin_plot", &ImPlot::BeginPlot, py::arg("title_id"),
         py::arg("x_label") = nullptr, py::arg("y_label") = nullptr,
@@ -298,15 +326,31 @@ void py_init_module_implot(py::module& m) {
       py::arg("label_id"), py::arg("xs"), py::arg("ys"));
 
   m.def(
+      "plot_shaded",
+      [](const char* label_id, py::buffer xs, py::buffer ys1, py::buffer ys2) {
+        // TODO
+        throw std::runtime_error("not implemented");
+      },
+      py::arg("label_id"), py::arg("xs"), py::arg("ys1"), py::arg("ys2"));
+  m.def(
+      "plot_shaded",
+      [](const char* label_id, py::buffer xs, py::buffer ys, double y_ref) {
+        // TODO
+        throw std::runtime_error("not implemented");
+      },
+      py::arg("label_id"), py::arg("xs"), py::arg("ys"),
+      py::arg("y_ref") = 0.0);
+
+  m.def(
       "plot_bars",
-      [](const char* label_id, py::buffer values, float width, float shift) {
+      [](const char* label_id, py::buffer values, double width, double shift) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
         ImPlot::PlotBars(label_id, value_getter.get_getter_func(),
                          &value_getter, value_getter.count(), width, shift);
       },
-      py::arg("label_id"), py::arg("values"), py::arg("width") = 0.67f,
-      py::arg("shift") = 0.0f);
+      py::arg("label_id"), py::arg("values"), py::arg("width") = 0.67,
+      py::arg("shift") = 0.0);
   m.def(
       "plot_bars",
       [](const char* label_id, py::buffer xs, py::buffer ys, float height) {
@@ -319,17 +363,17 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_bars_h",
-      [](const char* label_id, py::buffer values, float height, float shift) {
+      [](const char* label_id, py::buffer values, double height, double shift) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
         ImPlot::PlotBarsH(label_id, value_getter.get_getter_func(),
                           &value_getter, value_getter.count(), height, shift);
       },
-      py::arg("label_id"), py::arg("values"), py::arg("height") = 0.67f,
-      py::arg("shift") = 0.0f);
+      py::arg("label_id"), py::arg("values"), py::arg("height") = 0.67,
+      py::arg("shift") = 0.0);
   m.def(
       "plot_bars_h",
-      [](const char* label_id, py::buffer xs, py::buffer ys, float height) {
+      [](const char* label_id, py::buffer xs, py::buffer ys, double height) {
         auto value_getter = ValueGetter(xs, ys);
         py::gil_scoped_release release;
         ImPlot::PlotBarsH(label_id, value_getter.get_getter_func(),
@@ -349,14 +393,20 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_pie_chart",
-      [](const char* label_id, py::buffer values, const ImVec2& center,
-         float radius, bool show_percents, float angle0) {
+      [](std::vector<const char*> label_ids, py::buffer values, double x,
+         double y, double radius, bool normalize, const char* label_fmt,
+         double angle0) {
         // TODO ImPlot::PlotPieChart has no getter overload
         throw std::runtime_error("not implemented");
       },
-      py::arg("label_id"), py::arg("values"), py::arg("center"),
-      py::arg("radius"), py::arg("show_percents") = true,
-      py::arg("angle0") = 90);
+      py::arg("label_ids"), py::arg("values"), py::arg("x"), py::arg("y"),
+      py::arg("radius"), py::arg("normalize") = false,
+      py::arg("label_fmt") = "%.1f", py::arg("angle0") = 90);
+
+  m.def("plot_heatmap", []() {
+    // TODO
+    throw std::runtime_error("not implemented");
+  });
 
   m.def(
       "plot_digital",
@@ -368,9 +418,11 @@ void py_init_module_implot(py::module& m) {
       },
       py::arg("label_id"), py::arg("xs"), py::arg("ys"));
 
-  m.def("plot_text", &ImPlot::PlotText, py::arg("text"), py::arg("x"),
-        py::arg("y"), py::arg("vertical") = false,
-        py::arg("pixel_offset") = ImVec2(0, 0));
+  m.def("plot_text",
+        py::overload_cast<const char*, double, double, bool, const ImVec2&>(
+            &ImPlot::PlotText),
+        py::arg("text"), py::arg("x"), py::arg("y"),
+        py::arg("vertical") = false, py::arg("pixel_offset") = ImVec2(0, 0));
 
   //---------------------------------------------------------------------------
   // Plot Queries
@@ -383,18 +435,16 @@ void py_init_module_implot(py::module& m) {
   m.def("get_plot_query", &ImPlot::GetPlotQuery, py::arg("y_axis") = -1);
 
   //----------------------------------------------------------------------------
+  // Plot Input Mapping
+  //----------------------------------------------------------------------------
+
+  // TODO
+
+  //----------------------------------------------------------------------------
   // Plot Styling
   //----------------------------------------------------------------------------
 
   m.def("get_style", &ImPlot::GetStyle);
-
-  m.def(
-      "set_palette",
-      [](const std::vector<ImVec4> colors) {
-        ImPlot::SetPalette(colors.data(), colors.size());
-      },
-      py::arg("colors"));
-  m.def("restore_palette", &ImPlot::RestorePalette);
 
   m.def("push_style_color",
         py::overload_cast<ImPlotCol, const ImVec4&>(&ImPlot::PushStyleColor),
@@ -412,6 +462,22 @@ void py_init_module_implot(py::module& m) {
         py::arg("idx"), py::arg("val"));
   m.def("pop_style_var", &ImPlot::PopStyleVar, py::arg("count") = 1);
 
+  m.def(
+      "set_colormap",
+      [](ImPlotColormap colormap, int samples) {
+        ImPlot::SetColormap(colormap, samples);
+      },
+      py::arg("colormap"), py::arg("samples") = 0);
+  m.def(
+      "set_colormap",
+      [](const std::vector<ImVec4> colors) {
+        ImPlot::SetColormap(colors.data(), colors.size());
+      },
+      py::arg("colors"));
+  m.def("get_colormap_size", &ImPlot::GetColormapSize);
+  m.def("get_colormap_color", &ImPlot::GetColormapColor);
+  m.def("lerp_colormap", &ImPlot::LerpColormap, py::arg("t"));
+
   //-----------------------------------------------------------------------------
   // Plot Utils
   //-----------------------------------------------------------------------------
@@ -423,6 +489,8 @@ void py_init_module_implot(py::module& m) {
         py::arg("x_max"), py::arg("cond") = ImGuiCond_Once);
   m.def("set_next_plot_limits_y", &ImPlot::SetNextPlotLimitsX, py::arg("y_min"),
         py::arg("y_max"), py::arg("cond") = ImGuiCond_Once);
+
+  // TODO SetNextPlotTicks (string ownership)
 
   m.def("set_plot_y_axis", &ImPlot::SetPlotYAxis, py::arg("y_axis"));
 
