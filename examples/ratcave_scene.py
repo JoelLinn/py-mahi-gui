@@ -49,11 +49,10 @@ def redirect_pyglet():
     ctx.canvas = pyglet.canvas.base.Canvas(None)
     ctx.set_current()
 
-redirect_pyglet()
-
 class MahiRat(mahi_gui.Application):
     def __init__(self):
         super(MahiRat, self).__init__(800, 800, "Mahi-Gui with ratcave scene renderer")
+        redirect_pyglet()
         imgui.get_io().ini_filename = None
         imgui.disable_viewports()
         self._load_scene()
