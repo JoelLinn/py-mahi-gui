@@ -102,13 +102,13 @@ protected:
   template <typename X, typename Y>
   static ImPlotPoint getValue(void* data, int idx) {
     const auto* this_ = static_cast<ValueGetter*>(data);
-    float x, y;
+    double x, y;
     if constexpr (std::is_void<X>::value) {
-      x = static_cast<float>(idx);
+      x = static_cast<double>(idx);
     } else {
-      x = static_cast<float>((static_cast<X*>(this_->infoX.ptr))[idx]);
+      x = static_cast<double>((static_cast<X*>(this_->infoX.ptr))[idx]);
     }
-    y = static_cast<float>((static_cast<Y*>(this_->infoY.ptr))[idx]);
+    y = static_cast<double>((static_cast<Y*>(this_->infoY.ptr))[idx]);
     return ImPlotPoint(x, y);
   }
 
