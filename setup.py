@@ -62,7 +62,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='mahi_gui',
-    version='0.1.0',
+    version='0.1.1',
     author='Joel Linn',
     author_email='jl@conductive.de',
     description='Python bindings for mahi-gui imgui and implot.',
