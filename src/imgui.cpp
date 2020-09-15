@@ -598,12 +598,13 @@ void py_init_module_imgui_funcs(py::module& m) {
       "current ID-stack (so OpenPopup and BeginPopup needs to be at the same "
       "level).");
   m.def(
-      "open_popup_on_item_click",
+      "open_popup_context_item",
       [](std::string str_id = "", int mouse_button = 1) {
-        ImGui::OpenPopupOnItemClick(str_id.c_str(), mouse_button);
+        ImGui::OpenPopupContextItem(str_id.c_str(), mouse_button);
       },
-      "helper to open popup when clicked on last item. return true when just "
-      "opened.");
+      "helper to open popup when clicked on last item. return true when just  "
+      "opened. (note: actually triggers on the mouse _released_ event to be "
+      "consistent with popup behaviors)");
   m.def(
       "begin_popup",
       [](std::string str_id, ImGuiWindowFlags flags) -> bool {

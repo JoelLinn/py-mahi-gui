@@ -497,10 +497,19 @@ void py_init_module_implot(py::module& m) {
   m.def("get_plot_pos", &ImPlot::GetPlotPos);
   m.def("get_plot_size", &ImPlot::GetPlotSize);
 
-  m.def("pixels_to_plot", &ImPlot::PixelsToPlot, py::arg("pix"),
-        py::arg("y_axis") = -1);
-  m.def("plot_to_pixels", &ImPlot::PlotToPixels, py::arg("pix"),
-        py::arg("y_axis") = -1);
+  m.def("pixels_to_plot",
+        py::overload_cast<const ImVec2&, int>(&ImPlot::PixelsToPlot),
+        py::arg("pix"), py::arg("y_axis") = -1);
+  m.def("pixels_to_plot",
+        py::overload_cast<float, float, int>(&ImPlot::PixelsToPlot),
+        py::arg("x"), py::arg("y"), py::arg("y_axis") = -1);
+
+  m.def("plot_to_pixels",
+        py::overload_cast<const ImPlotPoint&, int>(&ImPlot::PlotToPixels),
+        py::arg("plt"), py::arg("y_axis") = -1);
+  m.def("plot_to_pixels",
+        py::overload_cast<double, double, int>(&ImPlot::PlotToPixels),
+        py::arg("x"), py::arg("y"), py::arg("y_axis") = -1);
 
   m.def("push_plot_clip_rect", &ImPlot::PushPlotClipRect);
   m.def("pop_plot_clip_rect", &ImPlot::PopPlotClipRect);

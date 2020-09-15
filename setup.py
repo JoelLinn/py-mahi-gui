@@ -62,7 +62,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='mahi_gui',
-    version='0.0.1',
+    version='0.1.0',
     author='Dean Moldovan',
     author_email='dean0x7d@gmail.com',
     description='A test project using pybind11 and CMake',

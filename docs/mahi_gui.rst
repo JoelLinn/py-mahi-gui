@@ -1,1 +1,0 @@
-.. automodule:: mahi_gui
