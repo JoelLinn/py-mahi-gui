@@ -3,18 +3,15 @@ set -e -x
 
 # To be executed inside manylinux docker container
 
-# PyPi cmake is only available for x86
-CMAKE_VERSION=3.17.2
+# PyPi cmake is outdated
 if [ "$(arch)" = "x86_64" ] || [ "$(arch)" = "aarch64" ] || [ "$(arch)" = "x86_64" ]  || [ "$(arch)" = "ppc64le" ]; then
-    # echo "Downloading cmake binary..."
-    # yum install -y wget
-    # wget -qO /root/cmake.tar.gz https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
-    # tar -xzf /root/cmake.tar.gz --strip-components 1 -C /usr/
+    echo "Installing cmake from epel..."
     yum install -y epel-release
     yum install -y cmake3
     ln -s cmake3 /usr/bin/cmake
 else
-    # Build current cmake, pypi cmake is x86 only
+    CMAKE_VERSION=3.18.2
+    # Build current cmake, epel is either outdated or to old
     echo "Building cmake..."
     yum install -y wget
     wget -qO /root/cmake.tar.gz https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz
