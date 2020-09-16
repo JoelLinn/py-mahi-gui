@@ -1,6 +1,7 @@
 version: '{build}'
 image: Visual Studio 2019
 platform:
+  - x86
   - x64
 environment:
   matrix:
@@ -13,7 +14,7 @@ install:
       if ($env:PYTHON) {
         if ($env:PLATFORM -eq "x64") { $env:PYTHON = "$env:PYTHON-x64" }
         $env:PATH = "C:\Python$env:PYTHON\;C:\Python$env:PYTHON\Scripts\;$env:PATH"
-        python -m pip install --disable-pip-version-check --upgrade pip setuptools
+        python -m pip install --disable-pip-version-check --upgrade pip setuptools wheel
         pip install -r .\dev-requirements.txt
       } elseif ($env:CONDA) {
         if ($env:CONDA -eq "27") { $env:CONDA = "" }
@@ -28,7 +29,7 @@ build_script:
   - ps: |
       if ($env:PYTHON) {
         python .\setup.py sdist
-        pip wheel .\ --no-deps -w .\dist\
+        cmd.exe --% /c call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %PLATFORM% & python .\setup.py bdist_wheel
         pip install mahi-gui --no-index -f .\dist\
       } else {
         conda build conda.recipe
