@@ -3,18 +3,11 @@ os:
   - linux
 
 dist: bionic
-addons:
-  apt:
-    packages:
-      - python3
-      - python3-pip
-      - python3-distutils
-      - python3-setuptools
 
 services:
   - docker
 
-matrix:
+jobs:
   include:
     - arch: amd64
       env: DOCKER_IMAGE=quay.io/pypa/manylinux2014_i686
@@ -26,20 +19,26 @@ matrix:
     - arch: arm64
       env: DOCKER_IMAGE=quay.io/pypa/manylinux2014_aarch64
            PLAT=manylinux2014_aarch64
+           ALLOW_FAIL=Y
     - arch: ppc64le
       env: DOCKER_IMAGE=quay.io/pypa/manylinux2014_ppc64le
            PLAT=manylinux2014_ppc64le
+           ALLOW_FAIL=Y
     # - arch: s390x
     #   env: DOCKER_IMAGE=quay.io/pypa/manylinux2014_s390x
-    #        PLAT=manylinux2014_s390x
+    #        PLAT=manylinux2014_s390x  
+  # Travis output hangs on some platforms with set secret env vars
+  allow_failures:
+    - branch: master
+      arch: arm64
+    - branch: master
+      arch: ppc64le
 
 install:
   - docker pull $DOCKER_IMAGE
-  - pip3 install travis-wait-improved
 
 script:
-  # Travis output hangs on some platforms, so allow for 30 minutes
-  - travis-wait-improved --timeout 30m docker run --rm -e PLAT=$PLAT -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/build-wheels.sh
+  - docker run --rm -e PLAT=$PLAT -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/build-wheels.sh
   - ls -lah wheelhouse/
   # ARTIFACT_URL_BASE=https://some.cloud.com/public.php/webdav/
   # ARTIFACT_USER=share_token
