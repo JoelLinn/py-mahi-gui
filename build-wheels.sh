@@ -3,12 +3,26 @@ set -e -x
 
 # To be executed inside manylinux docker container
 
+PYTHONS=(/opt/python/*/bin)
+
+echo "Python versions in this image:"
+for PYBIN in "${PYTHONS[@]}"; do
+    "${PYBIN}/python" --version
+done
+echo
+
 # PyPi cmake is outdated
-if [ "$(arch)" = "x86_64" ] || [ "$(arch)" = "aarch64" ] || [ "$(arch)" = "x86_64" ]  || [ "$(arch)" = "ppc64le" ]; then
+if [ "$(arch)" = "i686" ] || [ "$(arch)" = "x86_64" ]; then
+    echo "Installing cmake from pypi..."
+    PYBIN="${PYTHONS[0]}"
+    "${PYBIN}/pip" install cmake
+    ln -s "${PYBIN}/cmake" /usr/local/bin/cmake
+elif [ "$(arch)" = "aarch64" ] || [ "$(arch)" = "ppc64le" ]; then
+    # Cmake not available or incompatible from pypi for this platform
     echo "Installing cmake from epel..."
     yum install -y epel-release
     yum install -y cmake3
-    ln -s cmake3 /usr/bin/cmake
+    ln -s /usr/bin/cmake3 /usr/local/bin/cmake
 else
     CMAKE_VERSION=3.18.2
     # Build current cmake, epel is either outdated or to old
@@ -44,7 +58,7 @@ yum install -y              \
 
 
 # Compile wheels
-for PYBIN in /opt/python/*/bin; do
+for PYBIN in "${PYTHONS[@]}"; do
     "${PYBIN}/pip" install -r /io/dev-requirements.txt
     "${PYBIN}/pip" wheel /io/ --no-deps --no-build-isolation -w wheelhouse/
 done
@@ -55,7 +69,7 @@ for whl in wheelhouse/*.whl; do
 done
 
 # Install packages and test
-for PYBIN in /opt/python/*/bin; do
+for PYBIN in "${PYTHONS[@]}"; do
     "${PYBIN}/pip" install mahi-gui --no-index -f /io/wheelhouse
     "${PYBIN}/nosetests" -w /io/tests
 done

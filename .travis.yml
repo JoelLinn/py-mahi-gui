@@ -19,19 +19,17 @@ jobs:
     - arch: arm64
       env: DOCKER_IMAGE=quay.io/pypa/manylinux2014_aarch64
            PLAT=manylinux2014_aarch64
-           ALLOW_FAIL=Y
     - arch: ppc64le
       env: DOCKER_IMAGE=quay.io/pypa/manylinux2014_ppc64le
            PLAT=manylinux2014_ppc64le
-           ALLOW_FAIL=Y
     # - arch: s390x
     #   env: DOCKER_IMAGE=quay.io/pypa/manylinux2014_s390x
     #        PLAT=manylinux2014_s390x  
   # Travis output hangs on some platforms with set secret env vars
   allow_failures:
-    - branch: master
+    - if: branch=master
       arch: arm64
-    - branch: master
+    - if: branch=master
       arch: ppc64le
 
 install:
