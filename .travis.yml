@@ -38,7 +38,7 @@ install:
   - |
     if [[ -v QEMU_USER ]]; then
       apt-get update
-	    apt-get install -y --no-install-recommends binfmt-support
+      apt-get install -y --no-install-recommends binfmt-support
       git clone --depth 1 --branch v5.1.0 https://github.com/qemu/qemu.git
       mkdir qemu/build
       cd qemu/build
