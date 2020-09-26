@@ -38,6 +38,8 @@ install:
   - |
     if [[ -v QEMU_USER ]]; then
       sudo modprobe binfmt_misc
+      lsmod | grep binfmt
+      update-binfmts --display
       git clone --depth 1 --branch v5.1.0 https://github.com/qemu/qemu.git
       mkdir qemu/build
       cd qemu/build
