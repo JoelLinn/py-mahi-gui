@@ -45,7 +45,7 @@ install:
       cd qemu/build
       ../configure --static --target-list=aarch64-linux-user,ppc64le-linux-user
       make -j$(nproc)
-      sudo make install
+      sudo make recurse-install
       ../scripts/qemu-binfmt-conf.sh
       export MOUNT_BIN="-v /usr/local/bin/qemu-aarch64:/usr/local/bin/qemu-aarch64:ro -v /usr/local/bin/qemu-ppc64le:/usr/local/bin/qemu-ppc64le:ro"
       cd ../..
