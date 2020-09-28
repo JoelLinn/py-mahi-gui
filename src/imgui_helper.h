@@ -45,6 +45,13 @@ struct Float {
   float value;
 };
 
+struct Double {
+  Double() : value(0.0) {}
+  Double(double v) : value(v) {}
+
+  double value;
+};
+
 struct Int {
   Int() : value(0) {}
   Int(int v) : value(v) {}

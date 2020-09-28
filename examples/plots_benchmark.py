@@ -82,7 +82,7 @@ class PlotBench(mahi_gui.Application):
         imgui.checkbox("Animate", self.animate)
         imgui.text("{} lines, {} pts ea. @ {:.3f} FPS".format(self.PLOTS, self.POINTS, imgui.get_io().framerate))
         implot.set_next_plot_limits_x(0, self.POINTS)
-        if (implot.begin_plot("##Plot", None, None, imgui.Vec2(-1, -1), implot.Flags.Default | implot.Flags.NoChild)):
+        if (implot.begin_plot("##Plot", None, None, imgui.Vec2(-1, -1), implot.Flags.NoChild)):
             if (self.render.value):
                 for item in self.items:
                     implot.push_style_color(implot.Color.Line, item.color)

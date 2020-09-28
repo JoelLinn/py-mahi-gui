@@ -30,18 +30,9 @@ SOFTWARE.
 #include <pybind11/stl.h>
 
 #include "imgui_helper.h"
+#include "leaked_ptr.h"
 
 namespace py = pybind11;
-
-// "Smart pointer" that ensures pybind11 will not delete an object reference.
-template <typename T> struct leaked_ptr {
-  leaked_ptr(T* p) : p(p) {}
-  T* get() const { return p; }
-
-private:
-  T* p;
-};
-PYBIND11_DECLARE_HOLDER_TYPE(T, leaked_ptr<T>, true);
 
 void py_init_module_imgui_enums(py::module&);
 void py_init_module_imgui_classes(py::module&);
@@ -55,180 +46,320 @@ void py_init_module_imgui(py::module& m) {
 
 void py_init_module_imgui_enums(py::module& m) {
   py::enum_<ImGuiCond_>(m, "Condition", py::arithmetic())
-      .value("Always", ImGuiCond_::ImGuiCond_Always)
-      .value("Once", ImGuiCond_::ImGuiCond_Once)
-      .value("FirstUseEver", ImGuiCond_::ImGuiCond_FirstUseEver)
-      .value("Appearing", ImGuiCond_::ImGuiCond_Appearing)
-      .export_values();
+      .value("Always", ImGuiCond_Always)
+      .value("Once", ImGuiCond_Once)
+      .value("FirstUseEver", ImGuiCond_FirstUseEver)
+      .value("Appearing", ImGuiCond_Appearing);
 
   py::enum_<ImGuiWindowFlags_>(m, "WindowFlags", py::arithmetic())
-      .value("NoTitleBar", ImGuiWindowFlags_::ImGuiWindowFlags_NoTitleBar)
-      .value("NoResize", ImGuiWindowFlags_::ImGuiWindowFlags_NoResize)
-      .value("NoMove", ImGuiWindowFlags_::ImGuiWindowFlags_NoMove)
-      .value("NoScrollbar", ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollbar)
-      .value("NoScrollWithMouse",
-             ImGuiWindowFlags_::ImGuiWindowFlags_NoScrollWithMouse)
-      .value("NoCollapse", ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse)
-      .value("AlwaysAutoResize",
-             ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysAutoResize)
-      .value("NoBackground", ImGuiWindowFlags_::ImGuiWindowFlags_NoBackground)
-      .value("NoSavedSettings",
-             ImGuiWindowFlags_::ImGuiWindowFlags_NoSavedSettings)
-      .value("NoMouseInputs", ImGuiWindowFlags_::ImGuiWindowFlags_NoMouseInputs)
-      .value("MenuBar", ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar)
-      .value("HorizontalScrollbar",
-             ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar)
-      .value("NoFocusOnAppearing",
-             ImGuiWindowFlags_::ImGuiWindowFlags_NoFocusOnAppearing)
-      .value("NoBringToFrontOnFocus",
-             ImGuiWindowFlags_::ImGuiWindowFlags_NoBringToFrontOnFocus)
+      .value("NoTitleBar", ImGuiWindowFlags_NoTitleBar)
+      .value("NoResize", ImGuiWindowFlags_NoResize)
+      .value("NoMove", ImGuiWindowFlags_NoMove)
+      .value("NoScrollbar", ImGuiWindowFlags_NoScrollbar)
+      .value("NoScrollWithMouse", ImGuiWindowFlags_NoScrollWithMouse)
+      .value("NoCollapse", ImGuiWindowFlags_NoCollapse)
+      .value("AlwaysAutoResize", ImGuiWindowFlags_AlwaysAutoResize)
+      .value("NoBackground", ImGuiWindowFlags_NoBackground)
+      .value("NoSavedSettings", ImGuiWindowFlags_NoSavedSettings)
+      .value("NoMouseInputs", ImGuiWindowFlags_NoMouseInputs)
+      .value("MenuBar", ImGuiWindowFlags_MenuBar)
+      .value("HorizontalScrollbar", ImGuiWindowFlags_HorizontalScrollbar)
+      .value("NoFocusOnAppearing", ImGuiWindowFlags_NoFocusOnAppearing)
+      .value("NoBringToFrontOnFocus", ImGuiWindowFlags_NoBringToFrontOnFocus)
       .value("AlwaysVerticalScrollbar",
-             ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysVerticalScrollbar)
+             ImGuiWindowFlags_AlwaysVerticalScrollbar)
       .value("AlwaysHorizontalScrollbar",
-             ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysHorizontalScrollbar)
-      .value("AlwaysUseWindowPadding",
-             ImGuiWindowFlags_::ImGuiWindowFlags_AlwaysUseWindowPadding)
-      .value("NoNavInputs", ImGuiWindowFlags_::ImGuiWindowFlags_NoNavInputs)
-      .value("NoNavFocus", ImGuiWindowFlags_::ImGuiWindowFlags_NoNavFocus)
-      .value("UnsavedDocument",
-             ImGuiWindowFlags_::ImGuiWindowFlags_UnsavedDocument)
-      .value("NoNav ", ImGuiWindowFlags_::ImGuiWindowFlags_NoNav)
-      .value("NoDecoration", ImGuiWindowFlags_::ImGuiWindowFlags_NoDecoration)
-      .value("NoInputs", ImGuiWindowFlags_::ImGuiWindowFlags_NoInputs)
-      .export_values();
+             ImGuiWindowFlags_AlwaysHorizontalScrollbar)
+      .value("AlwaysUseWindowPadding", ImGuiWindowFlags_AlwaysUseWindowPadding)
+      .value("NoNavInputs", ImGuiWindowFlags_NoNavInputs)
+      .value("NoNavFocus", ImGuiWindowFlags_NoNavFocus)
+      .value("UnsavedDocument", ImGuiWindowFlags_UnsavedDocument)
+      .value("NoNav ", ImGuiWindowFlags_NoNav)
+      .value("NoDecoration", ImGuiWindowFlags_NoDecoration)
+      .value("NoInputs", ImGuiWindowFlags_NoInputs);
 
   py::enum_<ImGuiInputTextFlags_>(m, "InputTextFlags", py::arithmetic())
-      .value("CharsDecimal",
-             ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsDecimal)
-      .value("CharsHexadecimal",
-             ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsHexadecimal)
-      .value("CharsUppercase",
-             ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsUppercase)
-      .value("CharsNoBlank",
-             ImGuiInputTextFlags_::ImGuiInputTextFlags_CharsNoBlank)
-      .value("AutoSelectAll",
-             ImGuiInputTextFlags_::ImGuiInputTextFlags_AutoSelectAll)
-      .value("EnterReturnsTrue",
-             ImGuiInputTextFlags_::ImGuiInputTextFlags_EnterReturnsTrue)
+      .value("CharsDecimal", ImGuiInputTextFlags_CharsDecimal)
+      .value("CharsHexadecimal", ImGuiInputTextFlags_CharsHexadecimal)
+      .value("CharsUppercase", ImGuiInputTextFlags_CharsUppercase)
+      .value("CharsNoBlank", ImGuiInputTextFlags_CharsNoBlank)
+      .value("AutoSelectAll", ImGuiInputTextFlags_AutoSelectAll)
+      .value("EnterReturnsTrue", ImGuiInputTextFlags_EnterReturnsTrue)
       //.value("CallbackCompletion",
-      // ImGuiInputTextFlags_::ImGuiInputTextFlags_CallbackCompletion)
+      // ImGuiInputTextFlags_CallbackCompletion)
       //.value("CallbackHistory",
-      // ImGuiInputTextFlags_::ImGuiInputTextFlags_CallbackHistory)
+      // ImGuiInputTextFlags_CallbackHistory)
       //.value("CallbackAlways",
-      // ImGuiInputTextFlags_::ImGuiInputTextFlags_CallbackAlways)
+      // ImGuiInputTextFlags_CallbackAlways)
       //.value("CallbackCharFilter",
-      // ImGuiInputTextFlags_::ImGuiInputTextFlags_CallbackCharFilter)
-      .value("AllowTabInput",
-             ImGuiInputTextFlags_::ImGuiInputTextFlags_AllowTabInput)
-      .value("CtrlEnterForNewLine",
-             ImGuiInputTextFlags_::ImGuiInputTextFlags_CtrlEnterForNewLine)
-      .value("NoHorizontalScroll",
-             ImGuiInputTextFlags_::ImGuiInputTextFlags_NoHorizontalScroll)
-      .value("AlwaysInsertMode",
-             ImGuiInputTextFlags_::ImGuiInputTextFlags_AlwaysInsertMode)
-      .value("ReadOnly", ImGuiInputTextFlags_::ImGuiInputTextFlags_ReadOnly)
-      .value("Password", ImGuiInputTextFlags_::ImGuiInputTextFlags_Password)
+      // ImGuiInputTextFlags_CallbackCharFilter)
+      .value("AllowTabInput", ImGuiInputTextFlags_AllowTabInput)
+      .value("CtrlEnterForNewLine", ImGuiInputTextFlags_CtrlEnterForNewLine)
+      .value("NoHorizontalScroll", ImGuiInputTextFlags_NoHorizontalScroll)
+      .value("AlwaysInsertMode", ImGuiInputTextFlags_AlwaysInsertMode)
+      .value("ReadOnly", ImGuiInputTextFlags_ReadOnly)
+      .value("Password", ImGuiInputTextFlags_Password)
       //.value("NoUndoRedo",
-      // ImGuiInputTextFlags_::ImGuiInputTextFlags_NoUndoRedo)
-      .value("Multiline", ImGuiInputTextFlags_::ImGuiInputTextFlags_Multiline)
-      .export_values();
+      // ImGuiInputTextFlags_NoUndoRedo)
+      .value("CallbackEdit", ImGuiInputTextFlags_CallbackEdit)
+      .value("Multiline", ImGuiInputTextFlags_Multiline);
+
+  py::enum_<ImGuiTableFlags_>(m, "TableFlags", py::arithmetic())
+      // Features
+      .value("None", ImGuiTableFlags_None)
+      .value("Resizable", ImGuiTableFlags_Resizable, "Allow resizing columns.")
+      .value("Reorderable", ImGuiTableFlags_Reorderable,
+             "Allow reordering columns (need calling TableSetupColumn() + "
+             "TableAutoHeaders() or TableHeaders() to display headers)")
+      .value("Hideable", ImGuiTableFlags_Hideable,
+             "Allow hiding columns (with right-click on header) (FIXME-TABLE: "
+             "allow without headers).")
+      .value("Sortable", ImGuiTableFlags_Sortable,
+             "Allow sorting on one column (sort_specs_count will always be == "
+             "1). Call TableGetSortSpecs() to obtain sort specs.")
+      .value("MultiSortable", ImGuiTableFlags_MultiSortable,
+             "Allow sorting on multiple columns by holding Shift "
+             "(sort_specs_count may be > 1). Call TableGetSortSpecs() to "
+             "obtain sort specs.")
+      .value("NoSavedSettings", ImGuiTableFlags_NoSavedSettings,
+             "Disable persisting columns order, width and sort settings in the "
+             ".ini file.")
+      // Decoration
+      .value("RowBg", ImGuiTableFlags_RowBg,
+             "Set each RowBg color with ImGuiCol_TableRowBg or "
+             "ImGuiCol_TableRowBgAlt (equivalent to calling TableSetBgColor "
+             "with ImGuiTableBgFlags_RowBg0 on each row manually)")
+      .value("BordersInnerH", ImGuiTableFlags_BordersInnerH,
+             "Draw horizontal borders between rows.")
+      .value("BordersOuterH", ImGuiTableFlags_BordersOuterH,
+             "Draw horizontal borders at the top and bottom.")
+      .value("BordersInnerV", ImGuiTableFlags_BordersInnerV,
+             "Draw vertical borders between columns.")
+      .value("BordersOuterV", ImGuiTableFlags_BordersOuterV,
+             "Draw vertical borders on the left and right sides.")
+      .value("BordersH", ImGuiTableFlags_BordersH, "Draw horizontal borders.")
+      .value("BordersV", ImGuiTableFlags_BordersV, "Draw vertical borders.")
+      .value("BordersInner", ImGuiTableFlags_BordersInner,
+             "Draw inner borders.")
+      .value("BordersOuter", ImGuiTableFlags_BordersOuter,
+             "Draw outer borders.")
+      .value("Borders", ImGuiTableFlags_Borders, "Draw all borders.")
+      .value("BordersFullHeightV", ImGuiTableFlags_BordersFullHeightV,
+             "Borders covers all rows even when Headers are being used. Allow "
+             "resizing from any rows.")
+      // Padding, Sizing
+      .value("NoClipX", ImGuiTableFlags_NoClipX,
+             "Disable pushing clipping rectangle for every individual columns "
+             "(reduce draw command count, items will be able to overflow)")
+      .value("SizingPolicyFixedX", ImGuiTableFlags_SizingPolicyFixedX,
+             "Default if ScrollX is on. Columns will default to use "
+             "_WidthFixed or _WidthAlwaysAutoResize policy. Read description "
+             "above for more details.")
+      .value("SizingPolicyStretchX", ImGuiTableFlags_SizingPolicyStretchX,
+             "Default if ScrollX is off. Columns will default to use "
+             "_WidthStretch policy. Read description above for more details.")
+      .value(
+          "NoHeadersWidth", ImGuiTableFlags_NoHeadersWidth,
+          "Disable header width contribution to automatic width calculation.")
+      .value("NoHostExtendY", ImGuiTableFlags_NoHostExtendY,
+             "(FIXME-TABLE: Reword as SizingPolicy?) Disable extending past "
+             "the limit set by outer_size.y, only meaningful when neither of "
+             "ScrollX|ScrollY are set (data below the limit will be clipped "
+             "and not visible)")
+      .value("NoKeepColumnsVisible", ImGuiTableFlags_NoKeepColumnsVisible,
+             "(FIXME-TABLE) Disable code that keeps column always minimally "
+             "visible when table width gets too small and horizontal scrolling "
+             "is off.")
+      // Scrolling
+      .value("ScrollX", ImGuiTableFlags_ScrollX,
+             "Enable horizontal scrolling. Require 'outer_size' parameter of "
+             "begin_table() to specify the container size. Because this create "
+             "a child window, ScrollY is currently generally recommended when "
+             "using ScrollX.")
+      .value("ScrollY", ImGuiTableFlags_ScrollY,
+             "Enable vertical scrolling. Require 'outer_size' parameter of "
+             "begin_table() to specify the container size.")
+      .value("Scroll", ImGuiTableFlags_Scroll)
+      .value("ScrollFreezeTopRow", ImGuiTableFlags_ScrollFreezeTopRow,
+             "We can lock 1 to 3 rows (starting from the top). Use with "
+             "ScrollY enabled.")
+      .value("ScrollFreeze2Rows", ImGuiTableFlags_ScrollFreeze2Rows)
+      .value("ScrollFreeze3Rows", ImGuiTableFlags_ScrollFreeze3Rows)
+      .value("ScrollFreezeLeftColumn", ImGuiTableFlags_ScrollFreezeLeftColumn,
+             "We can lock 1 to 3 columns (starting from the left). Use with "
+             "ScrollX enabled.")
+      .value("ScrollFreeze2Columns", ImGuiTableFlags_ScrollFreeze2Columns)
+      .value("ScrollFreeze3Columns", ImGuiTableFlags_ScrollFreeze3Columns);
+
+  py::enum_<ImGuiTableColumnFlags_>(m, "TableColumnFlags", py::arithmetic())
+      .value("None", ImGuiTableColumnFlags_None)
+      .value("DefaultHide", ImGuiTableColumnFlags_DefaultHide,
+             "Default as a hidden column.")
+      .value("DefaultSort", ImGuiTableColumnFlags_DefaultSort,
+             "Default as a sorting column.")
+      .value("WidthFixed", ImGuiTableColumnFlags_WidthFixed,
+             "Column will keep a fixed size, preferable with horizontal "
+             "scrolling enabled (default if table sizing policy is "
+             "SizingPolicyFixedX and table is resizable).")
+      .value(
+          "WidthStretch", ImGuiTableColumnFlags_WidthStretch,
+          "Column will stretch, preferable with horizontal scrolling disabled "
+          "(default if table sizing policy is SizingPolicyStretchX).")
+      .value("WidthAlwaysAutoResize",
+             ImGuiTableColumnFlags_WidthAlwaysAutoResize,
+             "Column will keep resizing based on submitted contents (with a "
+             "one frame delay) == Fixed with auto resize (default if table "
+             "sizing policy is SizingPolicyFixedX and table is not resizable).")
+      .value("NoResize", ImGuiTableColumnFlags_NoResize,
+             "Disable manual resizing.")
+      .value("NoClipX", ImGuiTableColumnFlags_NoClipX,
+             "Disable clipping for this column (all NoClipX columns will "
+             "render in a same draw command).")
+      .value("NoSort", ImGuiTableColumnFlags_NoSort,
+             "Disable ability to sort on this field (even if "
+             "ImGuiTableFlags_Sortable is set on the table).")
+      .value("NoSortAscending", ImGuiTableColumnFlags_NoSortAscending,
+             "Disable ability to sort in the ascending direction.")
+      .value("NoSortDescending", ImGuiTableColumnFlags_NoSortDescending,
+             "Disable ability to sort in the descending direction.")
+      .value("NoHide", ImGuiTableColumnFlags_NoHide,
+             "Disable hiding this column.")
+      .value("NoHeaderWidth", ImGuiTableColumnFlags_NoHeaderWidth,
+             "Header width don't contribute to automatic column width.")
+      .value("PreferSortAscending", ImGuiTableColumnFlags_PreferSortAscending,
+             "Make the initial sort direction Ascending when first sorting on "
+             "this column (default).")
+      .value("PreferSortDescending", ImGuiTableColumnFlags_PreferSortDescending,
+             "Make the initial sort direction Descending when first sorting on "
+             "this column.")
+      .value("IndentEnable", ImGuiTableColumnFlags_IndentEnable,
+             "Use current Indent value when entering cell (default for 1st "
+             "column).")
+      .value("IndentDisable", ImGuiTableColumnFlags_IndentDisable,
+             "Ignore current Indent value when entering cell (default for "
+             "columns after the 1st one). Indentation changes _within_ the "
+             "cell will still be honored.")
+      .value("NoReorder", ImGuiTableColumnFlags_NoReorder,
+             "Disable reordering this column, this will also prevent other "
+             "columns from crossing over this column.");
+
+  py::enum_<ImGuiTableRowFlags_>(m, "TableRowFlags", py::arithmetic())
+      .value("None", ImGuiTableRowFlags_None)
+      .value("Headers", ImGuiTableRowFlags_Headers,
+             "Identify header row (set default background color + width of its "
+             "contents accounted different for auto column width)");
+
+  py::enum_<ImGuiTableBgTarget_>(m, "TableBgTarget")
+      .value("None", ImGuiTableBgTarget_None)
+      .value("ColumnBg0", ImGuiTableBgTarget_ColumnBg0)
+      .value("ColumnBg1", ImGuiTableBgTarget_ColumnBg1)
+      .value("RowBg0", ImGuiTableBgTarget_RowBg0,
+             "Set row background color 0 (generally used for background, "
+             "automatically set when ImGuiTableFlags_RowBg is used)")
+      .value(
+          "RowBg1", ImGuiTableBgTarget_RowBg1,
+          "Set row background color 1 (generally used for selection marking)")
+      .value("CellBg", ImGuiTableBgTarget_CellBg,
+             "Set cell background color (top-most color)");
 
   py::enum_<ImGuiDir_>(m, "Direction")
-      .value("None", ImGuiDir_::ImGuiDir_None)
-      .value("Left", ImGuiDir_::ImGuiDir_Left)
-      .value("Right", ImGuiDir_::ImGuiDir_Right)
-      .value("Up", ImGuiDir_::ImGuiDir_Up)
-      .value("Down", ImGuiDir_::ImGuiDir_Down);
+      .value("None", ImGuiDir_None)
+      .value("Left", ImGuiDir_Left)
+      .value("Right", ImGuiDir_Right)
+      .value("Up", ImGuiDir_Up)
+      .value("Down", ImGuiDir_Down);
 
   py::enum_<ImGuiCol_>(m, "Color")
-      .value("Text", ImGuiCol_::ImGuiCol_Text)
-      .value("TextDisabled", ImGuiCol_::ImGuiCol_TextDisabled)
-      .value("WindowBg", ImGuiCol_::ImGuiCol_WindowBg)
-      .value("ChildBg", ImGuiCol_::ImGuiCol_ChildBg)
-      .value("PopupBg", ImGuiCol_::ImGuiCol_PopupBg)
-      .value("Border", ImGuiCol_::ImGuiCol_Border)
-      .value("BorderShadow", ImGuiCol_::ImGuiCol_BorderShadow)
-      .value("FrameBg", ImGuiCol_::ImGuiCol_FrameBg)
-      .value("FrameBgHovered", ImGuiCol_::ImGuiCol_FrameBgHovered)
-      .value("FrameBgActive", ImGuiCol_::ImGuiCol_FrameBgActive)
-      .value("TitleBg", ImGuiCol_::ImGuiCol_TitleBg)
-      .value("TitleBgActive", ImGuiCol_::ImGuiCol_TitleBgActive)
-      .value("TitleBgCollapsed", ImGuiCol_::ImGuiCol_TitleBgCollapsed)
-      .value("MenuBarBg", ImGuiCol_::ImGuiCol_MenuBarBg)
-      .value("ScrollbarBg", ImGuiCol_::ImGuiCol_ScrollbarBg)
-      .value("ScrollbarGrab", ImGuiCol_::ImGuiCol_ScrollbarGrab)
-      .value("ScrollbarGrabHovered", ImGuiCol_::ImGuiCol_ScrollbarGrabHovered)
-      .value("ScrollbarGrabActive", ImGuiCol_::ImGuiCol_ScrollbarGrabActive)
-      .value("CheckMark", ImGuiCol_::ImGuiCol_CheckMark)
-      .value("SliderGrab", ImGuiCol_::ImGuiCol_SliderGrab)
-      .value("SliderGrabActive", ImGuiCol_::ImGuiCol_SliderGrabActive)
-      .value("Button", ImGuiCol_::ImGuiCol_Button)
-      .value("ButtonHovered", ImGuiCol_::ImGuiCol_ButtonHovered)
-      .value("ButtonActive", ImGuiCol_::ImGuiCol_ButtonActive)
-      .value("Header", ImGuiCol_::ImGuiCol_Header)
-      .value("HeaderHovered", ImGuiCol_::ImGuiCol_HeaderHovered)
-      .value("HeaderActive", ImGuiCol_::ImGuiCol_HeaderActive)
-      .value("Separator", ImGuiCol_::ImGuiCol_Separator)
-      .value("SeparatorHovered", ImGuiCol_::ImGuiCol_SeparatorHovered)
-      .value("SeparatorActive", ImGuiCol_::ImGuiCol_SeparatorActive)
-      .value("ResizeGrip", ImGuiCol_::ImGuiCol_ResizeGrip)
-      .value("ResizeGripHovered", ImGuiCol_::ImGuiCol_ResizeGripHovered)
-      .value("ResizeGripActive", ImGuiCol_::ImGuiCol_ResizeGripActive)
-      .value("Tab", ImGuiCol_::ImGuiCol_Tab)
-      .value("TabHovered", ImGuiCol_::ImGuiCol_TabHovered)
-      .value("TabActive", ImGuiCol_::ImGuiCol_TabActive)
-      .value("TabUnfocused", ImGuiCol_::ImGuiCol_TabUnfocused)
-      .value("TabUnfocusedActive", ImGuiCol_::ImGuiCol_TabUnfocusedActive)
-      .value("PlotLines", ImGuiCol_::ImGuiCol_PlotLines)
-      .value("PlotLinesHovered", ImGuiCol_::ImGuiCol_PlotLinesHovered)
-      .value("PlotHistogram", ImGuiCol_::ImGuiCol_PlotHistogram)
-      .value("PlotHistogramHovered", ImGuiCol_::ImGuiCol_PlotHistogramHovered)
-      .value("TextSelectedBg", ImGuiCol_::ImGuiCol_TextSelectedBg)
-      .value("DragDropTarget", ImGuiCol_::ImGuiCol_DragDropTarget)
-      .value("NavHighlight", ImGuiCol_::ImGuiCol_NavHighlight)
-      .value("NavWindowingHighlight", ImGuiCol_::ImGuiCol_NavWindowingHighlight)
-      .value("NavWindowingDimBg", ImGuiCol_::ImGuiCol_NavWindowingDimBg)
-      .value("ModalWindowDimBg", ImGuiCol_::ImGuiCol_ModalWindowDimBg)
-      // Obsolete names (will be removed)
-      .value("ChildWindowBg", ImGuiCol_::ImGuiCol_ChildBg)
-      .value("ModalWindowDarkening", ImGuiCol_::ImGuiCol_ModalWindowDimBg)
-      .export_values();
+      .value("Text", ImGuiCol_Text)
+      .value("TextDisabled", ImGuiCol_TextDisabled)
+      .value("WindowBg", ImGuiCol_WindowBg)
+      .value("ChildBg", ImGuiCol_ChildBg)
+      .value("PopupBg", ImGuiCol_PopupBg)
+      .value("Border", ImGuiCol_Border)
+      .value("BorderShadow", ImGuiCol_BorderShadow)
+      .value("FrameBg", ImGuiCol_FrameBg)
+      .value("FrameBgHovered", ImGuiCol_FrameBgHovered)
+      .value("FrameBgActive", ImGuiCol_FrameBgActive)
+      .value("TitleBg", ImGuiCol_TitleBg)
+      .value("TitleBgActive", ImGuiCol_TitleBgActive)
+      .value("TitleBgCollapsed", ImGuiCol_TitleBgCollapsed)
+      .value("MenuBarBg", ImGuiCol_MenuBarBg)
+      .value("ScrollbarBg", ImGuiCol_ScrollbarBg)
+      .value("ScrollbarGrab", ImGuiCol_ScrollbarGrab)
+      .value("ScrollbarGrabHovered", ImGuiCol_ScrollbarGrabHovered)
+      .value("ScrollbarGrabActive", ImGuiCol_ScrollbarGrabActive)
+      .value("CheckMark", ImGuiCol_CheckMark)
+      .value("SliderGrab", ImGuiCol_SliderGrab)
+      .value("SliderGrabActive", ImGuiCol_SliderGrabActive)
+      .value("Button", ImGuiCol_Button)
+      .value("ButtonHovered", ImGuiCol_ButtonHovered)
+      .value("ButtonActive", ImGuiCol_ButtonActive)
+      .value("Header", ImGuiCol_Header)
+      .value("HeaderHovered", ImGuiCol_HeaderHovered)
+      .value("HeaderActive", ImGuiCol_HeaderActive)
+      .value("Separator", ImGuiCol_Separator)
+      .value("SeparatorHovered", ImGuiCol_SeparatorHovered)
+      .value("SeparatorActive", ImGuiCol_SeparatorActive)
+      .value("ResizeGrip", ImGuiCol_ResizeGrip)
+      .value("ResizeGripHovered", ImGuiCol_ResizeGripHovered)
+      .value("ResizeGripActive", ImGuiCol_ResizeGripActive)
+      .value("Tab", ImGuiCol_Tab)
+      .value("TabHovered", ImGuiCol_TabHovered)
+      .value("TabActive", ImGuiCol_TabActive)
+      .value("TabUnfocused", ImGuiCol_TabUnfocused)
+      .value("TabUnfocusedActive", ImGuiCol_TabUnfocusedActive)
+      .value("PlotLines", ImGuiCol_PlotLines)
+      .value("PlotLinesHovered", ImGuiCol_PlotLinesHovered)
+      .value("PlotHistogram", ImGuiCol_PlotHistogram)
+      .value("PlotHistogramHovered", ImGuiCol_PlotHistogramHovered)
+      .value("TableHeaderBg", ImGuiCol_TableHeaderBg, "Table header background")
+      .value("TableBorderStrong", ImGuiCol_TableBorderStrong,
+             "Table outer and header borders (prefer using Alpha=1.0 here)")
+      .value("TableBorderLight", ImGuiCol_TableBorderLight,
+             "Table inner borders (prefer using Alpha=1.0 here)")
+      .value("TableRowBg", ImGuiCol_TableRowBg,
+             "Table row background (even rows)")
+      .value("TableRowBgAlt", ImGuiCol_TableRowBgAlt,
+             "Table row background (odd rows)")
+      .value("TextSelectedBg", ImGuiCol_TextSelectedBg)
+      .value("DragDropTarget", ImGuiCol_DragDropTarget)
+      .value("NavHighlight", ImGuiCol_NavHighlight)
+      .value("NavWindowingHighlight", ImGuiCol_NavWindowingHighlight)
+      .value("NavWindowingDimBg", ImGuiCol_NavWindowingDimBg)
+      .value("ModalWindowDimBg", ImGuiCol_ModalWindowDimBg);
 
   py::enum_<ImGuiStyleVar_>(m, "StyleVar")
-      .value("Alpha", ImGuiStyleVar_::ImGuiStyleVar_Alpha)
-      .value("WindowPadding", ImGuiStyleVar_::ImGuiStyleVar_WindowPadding)
-      .value("WindowRounding", ImGuiStyleVar_::ImGuiStyleVar_WindowRounding)
-      .value("WindowBorderSize", ImGuiStyleVar_::ImGuiStyleVar_WindowBorderSize)
-      .value("WindowMinSize", ImGuiStyleVar_::ImGuiStyleVar_WindowMinSize)
-      .value("WindowTitleAlign", ImGuiStyleVar_::ImGuiStyleVar_WindowTitleAlign)
-      .value("ChildRounding", ImGuiStyleVar_::ImGuiStyleVar_ChildRounding)
-      .value("ChildBorderSize", ImGuiStyleVar_::ImGuiStyleVar_ChildBorderSize)
-      .value("PopupRounding", ImGuiStyleVar_::ImGuiStyleVar_PopupRounding)
-      .value("PopupBorderSize", ImGuiStyleVar_::ImGuiStyleVar_PopupBorderSize)
-      .value("FramePadding", ImGuiStyleVar_::ImGuiStyleVar_FramePadding)
-      .value("FrameRounding", ImGuiStyleVar_::ImGuiStyleVar_FrameRounding)
-      .value("FrameBorderSize", ImGuiStyleVar_::ImGuiStyleVar_FrameBorderSize)
-      .value("ItemSpacing", ImGuiStyleVar_::ImGuiStyleVar_ItemSpacing)
-      .value("ItemInnerSpacing", ImGuiStyleVar_::ImGuiStyleVar_ItemInnerSpacing)
-      .value("IndentSpacing", ImGuiStyleVar_::ImGuiStyleVar_IndentSpacing)
-      .value("ScrollbarSize", ImGuiStyleVar_::ImGuiStyleVar_ScrollbarSize)
-      .value("ScrollbarRounding",
-             ImGuiStyleVar_::ImGuiStyleVar_ScrollbarRounding)
-      .value("GrabMinSize", ImGuiStyleVar_::ImGuiStyleVar_GrabMinSize)
-      .value("GrabRounding", ImGuiStyleVar_::ImGuiStyleVar_GrabRounding)
-      .value("TabRounding", ImGuiStyleVar_::ImGuiStyleVar_TabRounding)
-      .value("ButtonTextAlign", ImGuiStyleVar_::ImGuiStyleVar_ButtonTextAlign)
-      .value("SelectableTextAlign",
-             ImGuiStyleVar_::ImGuiStyleVar_SelectableTextAlign)
-      .export_values();
+      .value("Alpha", ImGuiStyleVar_Alpha)
+      .value("WindowPadding", ImGuiStyleVar_WindowPadding)
+      .value("WindowRounding", ImGuiStyleVar_WindowRounding)
+      .value("WindowBorderSize", ImGuiStyleVar_WindowBorderSize)
+      .value("WindowMinSize", ImGuiStyleVar_WindowMinSize)
+      .value("WindowTitleAlign", ImGuiStyleVar_WindowTitleAlign)
+      .value("ChildRounding", ImGuiStyleVar_ChildRounding)
+      .value("ChildBorderSize", ImGuiStyleVar_ChildBorderSize)
+      .value("PopupRounding", ImGuiStyleVar_PopupRounding)
+      .value("PopupBorderSize", ImGuiStyleVar_PopupBorderSize)
+      .value("FramePadding", ImGuiStyleVar_FramePadding)
+      .value("FrameRounding", ImGuiStyleVar_FrameRounding)
+      .value("FrameBorderSize", ImGuiStyleVar_FrameBorderSize)
+      .value("ItemSpacing", ImGuiStyleVar_ItemSpacing)
+      .value("ItemInnerSpacing", ImGuiStyleVar_ItemInnerSpacing)
+      .value("IndentSpacing", ImGuiStyleVar_IndentSpacing)
+      .value("CellPadding", ImGuiStyleVar_CellPadding)
+      .value("ScrollbarSize", ImGuiStyleVar_ScrollbarSize)
+      .value("ScrollbarRounding", ImGuiStyleVar_ScrollbarRounding)
+      .value("GrabMinSize", ImGuiStyleVar_GrabMinSize)
+      .value("GrabRounding", ImGuiStyleVar_GrabRounding)
+      .value("TabRounding", ImGuiStyleVar_TabRounding)
+      .value("ButtonTextAlign", ImGuiStyleVar_ButtonTextAlign)
+      .value("SelectableTextAlign", ImGuiStyleVar_SelectableTextAlign);
 
   py::enum_<ImGuiFocusedFlags_>(m, "FocusedFlags")
       .value("None", ImGuiFocusedFlags_None)
       .value("ChildWindows", ImGuiFocusedFlags_ChildWindows)
       .value("RootWindow", ImGuiFocusedFlags_RootWindow)
       .value("AnyWindow", ImGuiFocusedFlags_AnyWindow)
-      .value("RootAndChildWindows", ImGuiFocusedFlags_RootAndChildWindows)
-      .export_values();
+      .value("RootAndChildWindows", ImGuiFocusedFlags_RootAndChildWindows);
 
   py::enum_<ImGuiHoveredFlags_>(m, "HoveredFlags")
       .value("None", ImGuiHoveredFlags_None)
@@ -241,8 +372,7 @@ void py_init_module_imgui_enums(py::module& m) {
              ImGuiHoveredFlags_AllowWhenBlockedByActiveItem)
       .value("AllowWhenOverlapped", ImGuiHoveredFlags_AllowWhenOverlapped)
       .value("AllowWhenDisabled", ImGuiHoveredFlags_AllowWhenDisabled)
-      .value("RectOnly", ImGuiHoveredFlags_RectOnly)
-      .export_values();
+      .value("RectOnly", ImGuiHoveredFlags_RectOnly);
 
   py::enum_<ImDrawCornerFlags_>(m, "CornerFlags", py::arithmetic())
       .value("TopLeft", ImDrawCornerFlags_TopLeft)
@@ -253,8 +383,24 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("Bot", ImDrawCornerFlags_Bot)
       .value("Left", ImDrawCornerFlags_Left)
       .value("Right", ImDrawCornerFlags_Right)
-      .value("All", ImDrawCornerFlags_All)
-      .export_values();
+      .value("All", ImDrawCornerFlags_All);
+
+  py::enum_<ImGuiSliderFlags_>(m, "SliderFlags", py::arithmetic())
+      .value("None", ImGuiSliderFlags_None)
+      .value("ClampOnInput", ImGuiSliderFlags_ClampOnInput,
+             "Clamp value to min/max bounds when input manually with "
+             "CTRL+Click. By default CTRL+Click allows going out of bounds.")
+      .value("Logarithmic", ImGuiSliderFlags_Logarithmic,
+             "Make the widget logarithmic (linear otherwise). Consider using "
+             "ImGuiSliderFlags_NoRoundToFormat with this if using a "
+             "format-string with small amount of digits.")
+      .value(
+          "NoRoundToFormat", ImGuiSliderFlags_NoRoundToFormat,
+          "Disable rounding underlying value to match precision of the display "
+          "format string (e.g. %.3f values are rounded to those 3 digits)")
+      .value("NoInput", ImGuiSliderFlags_NoInput,
+             "Disable CTRL+Click or Enter key allowing to input text directly "
+             "into the widget");
 }
 
 void py_init_module_imgui_classes(py::module& m) {
@@ -805,6 +951,74 @@ void py_init_module_imgui_funcs(py::module& m) {
         py::arg("column_width"));
   m.def("get_columns_count", &ImGui::GetColumnsCount);
 
+  // Tables
+  m.def("begin_table", &ImGui::BeginTable, py::arg("str_id"),
+        py::arg("columns_count"), py::arg("flags") = ImGuiTableFlags(0),
+        py::arg("outer_size") = ImVec2(0, 0), py::arg("inner_width") = 0.0f);
+  m.def("end_table", &ImGui::EndTable,
+        "only call end_table() if begin_table() returns true!");
+  m.def("table_next_row", &ImGui::TableNextRow,
+        py::arg("row_flags") = ImGuiTableRowFlags(0),
+        py::arg("min_row_height") = 0.0f,
+        "append into the first cell of a new row.");
+  m.def("table_next_cell", &ImGui::TableNextCell,
+        "append into the next column (next column, or next row if currently in "
+        "last column). Return true if column is visible.");
+  m.def("table_set_column_index", &ImGui::TableSetColumnIndex,
+        py::arg("column_n"),
+        "append into the specified column. Return true if column is visible.");
+  m.def("table_get_column_index", &ImGui::TableGetColumnIndex,
+        "return current column index.");
+  m.def(
+      "table_get_column_name",
+      [](int colummn_n) -> std::string_view {
+        return std::string_view{ImGui::TableGetColumnName(colummn_n)};
+      },
+      py::arg("column_n") = -1,
+      "return NULL if column didn't have a name declared by "
+      "TableSetupColumn(). Pass -1 to use current column.");
+  m.def("table_get_column_is_visible", &ImGui::TableGetColumnIsVisible,
+        py::arg("column_n") = -1,
+        "return true if column is visible. Same value is also returned by "
+        "TableNextCell() and TableSetColumnIndex(). Pass -1 to use current "
+        "column.");
+  m.def("table_get_column_is_sorted", &ImGui::TableGetColumnIsSorted,
+        py::arg("column_n") = -1,
+        "return true if column is included in the sort specs. Rarely used, can "
+        "be useful to tell if a data change should trigger resort. Equivalent "
+        "to test ImGuiTableSortSpecs's ->ColumnsMask & (1 << column_n). Pass "
+        "-1 to use current column.");
+  m.def("table_get_hovered_column", &ImGui::TableGetHoveredColumn,
+        "return hovered column. return -1 when table is not hovered. return "
+        "columns_count if the unused space at the right of visible columns is "
+        "hovered.");
+  m.def("table_set_bg_color", &ImGui::TableSetBgColor, py::arg("bg_target"),
+        py::arg("color"), py::arg("column_n") = -1,
+        "change the color of a cell, row, or column. See ImGuiTableBgTarget_ "
+        "flags for details.");
+  m.def(
+      "table_setup_column", &ImGui::TableSetupColumn, py::arg("label"),
+      py::arg("flags") = ImGuiTableColumnFlags(0),
+      py::arg("init_width_or_weight") = -1.0f, py::arg("user_id") = 0,
+      "Tables: Headers & Columns declaration\n"
+      "- Use TableSetupColumn() to specify label, resizing policy, default "
+      "width, id, various other flags etc.\n"
+      "- The name passed to TableSetupColumn() is used by TableAutoHeaders() "
+      "and by the context-menu\n"
+      "- Use TableAutoHeaders() to submit the whole header row, otherwise you "
+      "may treat the header row as a regular row, manually call TableHeader() "
+      "and other widgets.\n"
+      "- Headers are required to perform some interactions: reordering, "
+      "sorting, context menu (FIXME-TABLE: context menu should work without!)");
+  m.def("table_auto_headers", &ImGui::TableAutoHeaders,
+        "submit all headers cells based on data provided to TableSetupColumn() "
+        "+ submit context menu");
+  m.def("table_header", &ImGui::TableHeader, py::arg("label"),
+        "submit one header cell manually.");
+  // FIXME: map ImGuiTableSortSpecs
+  // m.def("table_get_sort_specs", &ImGui::TableGetSortSpecs, "get latest sort
+  // specs for the table (NULL if not sorting).");
+
   m.def("begin_tab_bar", &ImGui::BeginTabBar, py::arg("str_id"),
         py::arg("flags") = 0);
   m.def("end_tab_bar", &ImGui::EndTabBar);
@@ -1081,189 +1295,53 @@ void py_init_module_imgui_funcs(py::module& m) {
   });
 
   m.def(
-      "slider_float",
-      [](const char* label, Float& v, float v_min, float v_max,
-         const char* display_format, float power) {
-        return ImGui::SliderFloat(label, &v.value, v_min, v_max, display_format,
-                                  power);
-      },
-      py::arg("label"), py::arg("v"), py::arg("v_min"), py::arg("v_max"),
-      py::arg("display_format") = "%.3f", py::arg("power") = 1.0f);
-  m.def(
-      "slider_float2",
-      [](const char* label, Float& v1, Float& v2, float v_min, float v_max,
-         const char* display_format, float power) {
-        float v[2] = {v1.value, v2.value};
-        bool result =
-            ImGui::SliderFloat2(label, v, v_min, v_max, display_format, power);
-        v1.value = v[0];
-        v2.value = v[1];
-        return result;
-      },
-      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_min"),
-      py::arg("v_max"), py::arg("display_format") = "%.3f",
-      py::arg("power") = 1.0f);
-  m.def(
-      "slider_float3",
-      [](const char* label, Float& v1, Float& v2, Float& v3, float v_min,
-         float v_max, const char* display_format, float power) {
-        float v[3] = {v1.value, v2.value, v3.value};
-        bool result =
-            ImGui::SliderFloat3(label, v, v_min, v_max, display_format, power);
-        v1.value = v[0];
-        v2.value = v[1];
-        v3.value = v[2];
-        return result;
-      },
-      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%.3f",
-      py::arg("power") = 1.0f);
-  m.def(
-      "slider_float4",
-      [](const char* label, Float& v1, Float& v2, Float& v3, Float& v4,
-         float v_min, float v_max, const char* display_format, float power) {
-        float v[4] = {v1.value, v2.value, v3.value, v4.value};
-        bool result =
-            ImGui::SliderFloat4(label, v, v_min, v_max, display_format, power);
-        v1.value = v[0];
-        v2.value = v[1];
-        v3.value = v[2];
-        v4.value = v[3];
-        return result;
-      },
-      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v4"), py::arg("v_min"), py::arg("v_max"),
-      py::arg("display_format") = "%.3f", py::arg("power") = 1.0f);
-
-  m.def(
-      "v_slider_float",
-      [](const char* label, const ImVec2& size, Float& v, float v_min,
-         float v_max, const char* display_format, float power) {
-        return ImGui::VSliderFloat(label, size, &v.value, v_min, v_max,
-                                   display_format, power);
-      },
-      py::arg("label"), py::arg("size"), py::arg("v"), py::arg("v_min"),
-      py::arg("v_max"), py::arg("display_format") = "%.3f",
-      py::arg("power") = 1.0f);
-
-  m.def(
-      "slider_angle",
-      [](const char* label, Float& v_rad, float v_degrees_min,
-         float v_degrees_max, const char* display_format) {
-        return ImGui::SliderAngle(label, &v_rad.value, v_degrees_min,
-                                  v_degrees_max, display_format);
-      },
-      py::arg("label"), py::arg("v_rad"), py::arg("v_degrees_min") = -360.0f,
-      py::arg("v_degrees_max") = +360.0f,
-      py::arg("display_format") = "%.0f deg");
-
-  m.def(
-      "slider_int",
-      [](const char* label, Int& v, int v_min, int v_max,
-         const char* display_format) {
-        return ImGui::SliderInt(label, &v.value, v_min, v_max, display_format);
-      },
-      py::arg("label"), py::arg("v"), py::arg("v_min"), py::arg("v_max"),
-      py::arg("display_format") = "%d");
-  m.def(
-      "slider_int2",
-      [](const char* label, Int& v1, Int& v2, int v_min, int v_max,
-         const char* display_format) {
-        int v[2] = {v1.value, v2.value};
-        bool result = ImGui::SliderInt2(label, v, v_min, v_max, display_format);
-        v1.value = v[0];
-        v2.value = v[1];
-        return result;
-      },
-      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_min"),
-      py::arg("v_max"), py::arg("display_format") = "%d");
-  m.def(
-      "slider_int3",
-      [](const char* label, Int& v1, Int& v2, Int& v3, int v_min, int v_max,
-         const char* display_format) {
-        int v[3] = {v1.value, v2.value, v3.value};
-        bool result = ImGui::SliderInt3(label, v, v_min, v_max, display_format);
-        v1.value = v[0];
-        v2.value = v[1];
-        v3.value = v[2];
-        return result;
-      },
-      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%d");
-  m.def(
-      "slider_int4",
-      [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4, int v_min,
-         int v_max, const char* display_format) {
-        int v[4] = {v1.value, v2.value, v3.value, v4.value};
-        bool result = ImGui::SliderInt4(label, v, v_min, v_max, display_format);
-        v1.value = v[0];
-        v2.value = v[1];
-        v3.value = v[2];
-        v4.value = v[3];
-        return result;
-      },
-      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v4"), py::arg("v_min"), py::arg("v_max"),
-      py::arg("display_format") = "%d");
-
-  m.def(
-      "v_slider_int",
-      [](const char* label, const ImVec2& size, Int& v, int v_min, int v_max,
-         const char* display_format) {
-        return ImGui::VSliderInt(label, size, &v.value, v_min, v_max,
-                                 display_format);
-      },
-      py::arg("label"), py::arg("size"), py::arg("v"), py::arg("v_min"),
-      py::arg("v_max"), py::arg("display_format") = "%d");
-
-  //
-  m.def(
       "drag_float",
       [](const char* label, Float& v, float v_speed, float v_min, float v_max,
-         const char* display_format, float power) {
-        return ImGui::DragFloat(label, &v.value, v_speed, v_min, v_max,
-                                display_format, power);
+         const char* format, ImGuiSliderFlags flags) {
+        return ImGui::DragFloat(label, &v.value, v_speed, v_min, v_max, format,
+                                flags);
       },
       py::arg("label"), py::arg("v"), py::arg("v_speed") = 1.0f,
-      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%.3f",
-      py::arg("power") = 1.0f);
+      py::arg("v_min") = 0.0f, py::arg("v_max") = 0.0f,
+      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags(0));
   m.def(
       "drag_float2",
       [](const char* label, Float& v1, Float& v2, float v_speed, float v_min,
-         float v_max, const char* display_format, float power) {
+         float v_max, const char* format, ImGuiSliderFlags flags) {
         float v[2] = {v1.value, v2.value};
-        bool result = ImGui::DragFloat2(label, v, v_speed, v_min, v_max,
-                                        display_format, power);
+        bool result =
+            ImGui::DragFloat2(label, v, v_speed, v_min, v_max, format, flags);
         v1.value = v[0];
         v2.value = v[1];
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_speed") = 1.0f,
-      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%.3f",
-      py::arg("power") = 1.0f);
+      py::arg("v_min") = 0.0f, py::arg("v_max") = 0.0f,
+      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags(0));
   m.def(
       "drag_float3",
       [](const char* label, Float& v1, Float& v2, Float& v3, float v_speed,
-         float v_min, float v_max, const char* display_format, float power) {
+         float v_min, float v_max, const char* format, ImGuiSliderFlags flags) {
         float v[3] = {v1.value, v2.value, v3.value};
-        bool result = ImGui::DragFloat3(label, v, v_speed, v_min, v_max,
-                                        display_format, power);
+        bool result =
+            ImGui::DragFloat3(label, v, v_speed, v_min, v_max, format, flags);
         v1.value = v[0];
         v2.value = v[1];
         v3.value = v[2];
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v_speed") = 1.0f, py::arg("v_min"), py::arg("v_max"),
-      py::arg("display_format") = "%.3f", py::arg("power") = 1.0f);
+      py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
+      py::arg("v_max") = 0.0f, py::arg("format") = "%.3f",
+      py::arg("flags") = ImGuiSliderFlags(0));
   m.def(
       "drag_float4",
       [](const char* label, Float& v1, Float& v2, Float& v3, Float& v4,
-         float v_speed, float v_min, float v_max, const char* display_format,
-         float power) {
+         float v_speed, float v_min, float v_max, const char* format,
+         ImGuiSliderFlags flags) {
         float v[4] = {v1.value, v2.value, v3.value, v4.value};
-        bool result = ImGui::DragFloat4(label, v, v_speed, v_min, v_max,
-                                        display_format, power);
+        bool result =
+            ImGui::DragFloat4(label, v, v_speed, v_min, v_max, format, flags);
         v1.value = v[0];
         v2.value = v[1];
         v3.value = v[2];
@@ -1271,54 +1349,69 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v4"), py::arg("v_speed") = 1.0f, py::arg("v_min"),
-      py::arg("v_max"), py::arg("display_format") = "%.3f",
-      py::arg("power") = 1.0f);
-
+      py::arg("v4"), py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
+      py::arg("v_max") = 0.0f, py::arg("format") = "%.3f",
+      py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "drag_float_range2",
+      [](const char* label, Float& v_current_min, Float& v_current_max,
+         float v_speed, float v_min, float v_max, const char* format,
+         const char* format_max, ImGuiSliderFlags flags) {
+        return ImGui::DragFloatRange2(label, &v_current_min.value,
+                                      &v_current_max.value, v_speed, v_min,
+                                      v_max, format, format_max, flags);
+      },
+      py::arg("label"), py::arg("v_current_min"), py::arg("v_current_max"),
+      py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
+      py::arg("v_max") = 0.0f, py::arg("format") = "%.3f",
+      py::arg("format_max") = nullptr, py::arg("flags") = ImGuiSliderFlags(0));
   m.def(
       "drag_int",
       [](const char* label, Int& v, float v_speed, int v_min, int v_max,
-         const char* display_format) {
-        return ImGui::DragInt(label, &v.value, v_speed, v_min, v_max,
-                              display_format);
+         const char* format, ImGuiSliderFlags flags) {
+        return ImGui::DragInt(label, &v.value, v_speed, v_min, v_max, format,
+                              flags);
       },
       py::arg("label"), py::arg("v"), py::arg("v_speed") = 1.0f,
-      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%d");
+      py::arg("v_min") = 0.0f, py::arg("v_max") = 0.0f,
+      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags(0));
   m.def(
       "drag_int2",
       [](const char* label, Int& v1, Int& v2, float v_speed, int v_min,
-         int v_max, const char* display_format) {
+         int v_max, const char* format, ImGuiSliderFlags flags) {
         int v[2] = {v1.value, v2.value};
         bool result =
-            ImGui::DragInt2(label, v, v_speed, v_min, v_max, display_format);
+            ImGui::DragInt2(label, v, v_speed, v_min, v_max, format, flags);
         v1.value = v[0];
         v2.value = v[1];
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_speed") = 1.0f,
-      py::arg("v_min"), py::arg("v_max"), py::arg("display_format") = "%d");
+      py::arg("v_min") = 0.0f, py::arg("v_max") = 0.0f,
+      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags(0));
   m.def(
       "drag_int3",
       [](const char* label, Int& v1, Int& v2, Int& v3, float v_speed, int v_min,
-         int v_max, const char* display_format) {
+         int v_max, const char* format, ImGuiSliderFlags flags) {
         int v[3] = {v1.value, v2.value, v3.value};
         bool result =
-            ImGui::DragInt3(label, v, v_speed, v_min, v_max, display_format);
+            ImGui::DragInt3(label, v, v_speed, v_min, v_max, format, flags);
         v1.value = v[0];
         v2.value = v[1];
         v3.value = v[2];
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v_speed") = 1.0f, py::arg("v_min"), py::arg("v_max"),
-      py::arg("display_format") = "%d");
+      py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
+      py::arg("v_max") = 0.0f, py::arg("format") = "%d",
+      py::arg("flags") = ImGuiSliderFlags(0));
   m.def(
       "drag_int4",
       [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4, float v_speed,
-         int v_min, int v_max, const char* display_format) {
+         int v_min, int v_max, const char* format, ImGuiSliderFlags flags) {
         int v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result =
-            ImGui::DragInt4(label, v, v_speed, v_min, v_max, display_format);
+            ImGui::DragInt4(label, v, v_speed, v_min, v_max, format, flags);
         v1.value = v[0];
         v2.value = v[1];
         v3.value = v[2];
@@ -1326,8 +1419,156 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v4"), py::arg("v_speed") = 1.0f, py::arg("v_min"),
-      py::arg("v_max"), py::arg("display_format") = "%d");
+      py::arg("v4"), py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
+      py::arg("v_max") = 0.0f, py::arg("format") = "%d",
+      py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "drag_int_range2",
+      [](const char* label, Int& v_current_min, Int& v_current_max,
+         float v_speed, float v_min, float v_max, const char* format,
+         const char* format_max, ImGuiSliderFlags flags) {
+        return ImGui::DragIntRange2(label, &v_current_min.value,
+                                    &v_current_max.value, v_speed, v_min, v_max,
+                                    format, format_max, flags);
+      },
+      py::arg("label"), py::arg("v_current_min"), py::arg("v_current_max"),
+      py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
+      py::arg("v_max") = 0.0f, py::arg("format") = "%.3f",
+      py::arg("format_max") = nullptr, py::arg("flags") = ImGuiSliderFlags(0));
+
+  m.def(
+      "slider_float",
+      [](const char* label, Float& v, float v_min, float v_max,
+         const char* format, ImGuiSliderFlags flags) {
+        return ImGui::SliderFloat(label, &v.value, v_min, v_max, format, flags);
+      },
+      py::arg("label"), py::arg("v"), py::arg("v_min"), py::arg("v_max"),
+      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "slider_float2",
+      [](const char* label, Float& v1, Float& v2, float v_min, float v_max,
+         const char* format, ImGuiSliderFlags flags) {
+        float v[2] = {v1.value, v2.value};
+        bool result =
+            ImGui::SliderFloat2(label, v, v_min, v_max, format, flags);
+        v1.value = v[0];
+        v2.value = v[1];
+        return result;
+      },
+      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_min"),
+      py::arg("v_max"), py::arg("format") = "%.3f",
+      py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "slider_float3",
+      [](const char* label, Float& v1, Float& v2, Float& v3, float v_min,
+         float v_max, const char* format, ImGuiSliderFlags flags) {
+        float v[3] = {v1.value, v2.value, v3.value};
+        bool result =
+            ImGui::SliderFloat3(label, v, v_min, v_max, format, flags);
+        v1.value = v[0];
+        v2.value = v[1];
+        v3.value = v[2];
+        return result;
+      },
+      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
+      py::arg("v_min"), py::arg("v_max"), py::arg("format") = "%.3f",
+      py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "slider_float4",
+      [](const char* label, Float& v1, Float& v2, Float& v3, Float& v4,
+         float v_min, float v_max, const char* format, ImGuiSliderFlags flags) {
+        float v[4] = {v1.value, v2.value, v3.value, v4.value};
+        bool result =
+            ImGui::SliderFloat4(label, v, v_min, v_max, format, flags);
+        v1.value = v[0];
+        v2.value = v[1];
+        v3.value = v[2];
+        v4.value = v[3];
+        return result;
+      },
+      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
+      py::arg("v4"), py::arg("v_min"), py::arg("v_max"),
+      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "slider_angle",
+      [](const char* label, Float& v_rad, float v_degrees_min,
+         float v_degrees_max, const char* format, ImGuiSliderFlags flags) {
+        return ImGui::SliderAngle(label, &v_rad.value, v_degrees_min,
+                                  v_degrees_max, format, flags);
+      },
+      py::arg("label"), py::arg("v_rad"), py::arg("v_degrees_min") = -360.0f,
+      py::arg("v_degrees_max") = +360.0f, py::arg("format") = "%.0f deg",
+      py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "slider_int",
+      [](const char* label, Int& v, int v_min, int v_max, const char* format,
+         ImGuiSliderFlags flags) {
+        return ImGui::SliderInt(label, &v.value, v_min, v_max, format, flags);
+      },
+      py::arg("label"), py::arg("v"), py::arg("v_min"), py::arg("v_max"),
+      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "slider_int2",
+      [](const char* label, Int& v1, Int& v2, int v_min, int v_max,
+         const char* format, ImGuiSliderFlags flags) {
+        int v[2] = {v1.value, v2.value};
+        bool result = ImGui::SliderInt2(label, v, v_min, v_max, format, flags);
+        v1.value = v[0];
+        v2.value = v[1];
+        return result;
+      },
+      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_min"),
+      py::arg("v_max"), py::arg("format") = "%d",
+      py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "slider_int3",
+      [](const char* label, Int& v1, Int& v2, Int& v3, int v_min, int v_max,
+         const char* format, ImGuiSliderFlags flags) {
+        int v[3] = {v1.value, v2.value, v3.value};
+        bool result = ImGui::SliderInt3(label, v, v_min, v_max, format, flags);
+        v1.value = v[0];
+        v2.value = v[1];
+        v3.value = v[2];
+        return result;
+      },
+      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
+      py::arg("v_min"), py::arg("v_max"), py::arg("format") = "%d",
+      py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "slider_int4",
+      [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4, int v_min,
+         int v_max, const char* format, ImGuiSliderFlags flags) {
+        int v[4] = {v1.value, v2.value, v3.value, v4.value};
+        bool result = ImGui::SliderInt4(label, v, v_min, v_max, format, flags);
+        v1.value = v[0];
+        v2.value = v[1];
+        v3.value = v[2];
+        v4.value = v[3];
+        return result;
+      },
+      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
+      py::arg("v4"), py::arg("v_min"), py::arg("v_max"),
+      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "v_slider_float",
+      [](const char* label, const ImVec2& size, Float& v, float v_min,
+         float v_max, const char* format, ImGuiSliderFlags flags) {
+        return ImGui::VSliderFloat(label, size, &v.value, v_min, v_max, format,
+                                   flags);
+      },
+      py::arg("label"), py::arg("size"), py::arg("v"), py::arg("v_min"),
+      py::arg("v_max"), py::arg("format") = "%.3f",
+      py::arg("flags") = ImGuiSliderFlags(0));
+  m.def(
+      "v_slider_int",
+      [](const char* label, const ImVec2& size, Int& v, int v_min, int v_max,
+         const char* format, ImGuiSliderFlags flags) {
+        return ImGui::VSliderInt(label, size, &v.value, v_min, v_max, format,
+                                 flags);
+      },
+      py::arg("label"), py::arg("size"), py::arg("v"), py::arg("v_min"),
+      py::arg("v_max"), py::arg("format") = "%d",
+      py::arg("flags") = ImGuiSliderFlags(0));
 
   m.def(
       "plot_lines",
