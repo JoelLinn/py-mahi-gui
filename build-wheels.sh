@@ -3,10 +3,20 @@ set -e -x
 
 # To be executed inside manylinux docker container
 
-PYTHONS=(/opt/python/*/bin)
+PYTHONS=()
+for PYBIN in /opt/python/*/bin; do
+    for BLOCKED in $PYTHON_BLOCKLIST; do
+        if [[ $PYBIN == *"$BLOCKED"* ]]; then
+            PYBIN=""
+            break
+        fi
+    done
+    PYTHONS+=( $PYBIN )
+done
 
-echo "Python versions in this image:"
+echo "Used Python versions:"
 for PYBIN in "${PYTHONS[@]}"; do
+    echo "${PYBIN} at version:"
     "${PYBIN}/python" --version
 done
 echo
