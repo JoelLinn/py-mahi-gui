@@ -62,13 +62,18 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
     name='mahi_gui',
-    version='0.1.2',
+    version='0.2.0',
     author='Joel Linn',
     author_email='jl@conductive.de',
     description='Python bindings for mahi-gui imgui and implot.',
-    long_description='',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/JoelLinn/py-mahi-gui',
     ext_modules=[CMakeExtension('mahi_gui')],
     cmdclass=dict(build_ext=CMakeBuild),
