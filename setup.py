@@ -68,7 +68,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='mahi_gui',
-    version='0.2.0',
+    version='0.2.1',
     author='Joel Linn',
     author_email='jl@conductive.de',
     description='Python bindings for mahi-gui imgui and implot.',

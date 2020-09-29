@@ -143,7 +143,8 @@ private:
 void py_init_module_implot(py::module& m) {
 
   py::enum_<ImPlotFlags_>(m, "Flags", py::arithmetic(), "Options for plots.")
-      .value("None", ImPlotFlags_None, "default")
+      // None is a keyword in Python
+      .value("None_", ImPlotFlags_None, "default")
       .value("NoLegend", ImPlotFlags_NoLegend,
              "the top-left legend will not be displayed")
       .value("NoMenus", ImPlotFlags_NoMenus,
@@ -176,7 +177,8 @@ void py_init_module_implot(py::module& m) {
 
   py::enum_<ImPlotAxisFlags_>(m, "AxisFlags", py::arithmetic(),
                               "Options for plot axes (X and Y).")
-      .value("None", ImPlotAxisFlags_None, "default")
+      // None is a keyword in Python
+      .value("None_", ImPlotAxisFlags_None, "default")
       .value("NoGridLines", ImPlotAxisFlags_NoGridLines,
              "no grid lines will be displayed")
       .value("NoTickMarks", ImPlotAxisFlags_NoTickMarks,
@@ -302,7 +304,8 @@ void py_init_module_implot(py::module& m) {
              "ImVec2, minimum size plot frame can be when shrunk");
 
   py::enum_<ImPlotMarker_>(m, "Marker", "Marker specifications.")
-      .value("None", ImPlotMarker_None, "no marker")
+      // None is a keyword in Python
+      .value("None_", ImPlotMarker_None, "no marker")
       .value("Circle", ImPlotMarker_Circle, "a circle marker")
       .value("Square", ImPlotMarker_Square, "a square maker")
       .value("Diamond", ImPlotMarker_Diamond, "a diamond marker")
