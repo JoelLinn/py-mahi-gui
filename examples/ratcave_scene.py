@@ -51,7 +51,14 @@ def redirect_pyglet():
 
 class MahiRat(mahi_gui.Application):
     def __init__(self):
-        super(MahiRat, self).__init__(800, 800, "Mahi-Gui with ratcave scene renderer")
+        conf = mahi_gui.Application.Config()
+        conf.width = 800
+        conf.height = 800
+        conf.title = "Mahi-Gui with ratcave scene renderer"
+        # pyglet uses legacy OpenGL features so we need to enable them
+        # https://pyglet.readthedocs.io/en/latest/programming_guide/context.html
+        conf.gl_forward_compat = False
+        super(MahiRat, self).__init__(conf)
         redirect_pyglet()
         imgui.get_io().ini_filename = None
         imgui.disable_viewports()
