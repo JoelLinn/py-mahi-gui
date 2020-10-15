@@ -21,31 +21,33 @@ for PYBIN in "${PYTHONS[@]}"; do
 done
 echo
 
-# PyPi cmake is outdated
-if [ "$(arch)" = "i686" ] || [ "$(arch)" = "x86_64" ]; then
-    echo "Installing cmake from pypi..."
-    PYBIN="${PYTHONS[0]}"
-    "${PYBIN}/pip" install cmake
-    ln -s "${PYBIN}/cmake" /usr/local/bin/cmake
-elif [ "$(arch)" = "aarch64" ] || [ "$(arch)" = "ppc64le" ]; then
-    # Cmake not available or incompatible from pypi for this platform
-    echo "Installing cmake from epel..."
-    yum install -y epel-release
-    yum install -y cmake3
-    ln -s /usr/bin/cmake3 /usr/local/bin/cmake
-else
-    CMAKE_VERSION=3.18.2
-    # Build current cmake, epel is either outdated or to old
-    echo "Building cmake..."
-    yum install -y wget
-    wget -qO /root/cmake.tar.gz https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz
-    mkdir /root/cmake-src
-    cd /root/cmake-src
-    tar -xzf /root/cmake.tar.gz --strip-components 1 -C ./
-    ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_USE_OPENSSL=OFF
-    make
-    make install
-    cd /
+# manylinux 2014 images now have cmake installed
+if ! command -v /usr/local/bin/cmake &> /dev/null; then
+    if [ "$(arch)" = "i686" ] || [ "$(arch)" = "x86_64" ]; then
+        echo "Installing cmake from pypi..."
+        PYBIN="${PYTHONS[0]}"
+        "${PYBIN}/pip" install cmake
+        ln -s "${PYBIN}/cmake" /usr/local/bin/cmake
+    elif [ "$(arch)" = "aarch64" ] || [ "$(arch)" = "ppc64le" ]; then
+        # Cmake not available or incompatible from pypi for this platform
+        echo "Installing cmake from epel..."
+        yum install -y epel-release
+        yum install -y cmake3
+        ln -s /usr/bin/cmake3 /usr/local/bin/cmake
+    else
+        CMAKE_VERSION=3.18.2
+        # Build current cmake, epel is either outdated or to old
+        echo "Building cmake..."
+        yum install -y wget
+        wget -qO /root/cmake.tar.gz https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz
+        mkdir /root/cmake-src
+        cd /root/cmake-src
+        tar -xzf /root/cmake.tar.gz --strip-components 1 -C ./
+        ./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_USE_OPENSSL=OFF
+        make
+        make install
+        cd /
+    fi
 fi
 cmake --version
 
