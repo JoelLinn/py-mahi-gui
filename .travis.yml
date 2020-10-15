@@ -2,7 +2,7 @@ language: cpp
 os:
   - linux
 
-dist: bionic
+dist: focal
 
 services:
   - docker
@@ -20,7 +20,9 @@ jobs:
     - arch: amd64
       env: DOCKER_IMAGE=pypywheels/manylinux2010-pypy_x86_64
            PLAT=manylinux2010_x86_64
-    - arch: arm64
+    - arch: arm64-graviton2
+      group: edge
+      virt: vm
       env: DOCKER_IMAGE=quay.io/pypa/manylinux2014_aarch64
            PLAT=manylinux2014_aarch64
     - arch: ppc64le
@@ -28,11 +30,9 @@ jobs:
            PLAT=manylinux2014_ppc64le
     # - arch: s390x
     #   env: DOCKER_IMAGE=quay.io/pypa/manylinux2014_s390x
-    #        PLAT=manylinux2014_s390x  
-  # Travis output hangs on some platforms with set secret env vars
+    #        PLAT=manylinux2014_s390x
+  # Travis output hangs when lxd virt is used and secret env vars are set
   allow_failures:
-    - if: branch=master
-      arch: arm64
     - if: branch=master
       arch: ppc64le
 
