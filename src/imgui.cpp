@@ -45,6 +45,65 @@ void py_init_module_imgui(py::module& m) {
 }
 
 void py_init_module_imgui_enums(py::module& m) {
+  py::enum_<ImGuiCol_>(m, "Color")
+      .value("Text", ImGuiCol_Text)
+      .value("TextDisabled", ImGuiCol_TextDisabled)
+      .value("WindowBg", ImGuiCol_WindowBg)
+      .value("ChildBg", ImGuiCol_ChildBg)
+      .value("PopupBg", ImGuiCol_PopupBg)
+      .value("Border", ImGuiCol_Border)
+      .value("BorderShadow", ImGuiCol_BorderShadow)
+      .value("FrameBg", ImGuiCol_FrameBg)
+      .value("FrameBgHovered", ImGuiCol_FrameBgHovered)
+      .value("FrameBgActive", ImGuiCol_FrameBgActive)
+      .value("TitleBg", ImGuiCol_TitleBg)
+      .value("TitleBgActive", ImGuiCol_TitleBgActive)
+      .value("TitleBgCollapsed", ImGuiCol_TitleBgCollapsed)
+      .value("MenuBarBg", ImGuiCol_MenuBarBg)
+      .value("ScrollbarBg", ImGuiCol_ScrollbarBg)
+      .value("ScrollbarGrab", ImGuiCol_ScrollbarGrab)
+      .value("ScrollbarGrabHovered", ImGuiCol_ScrollbarGrabHovered)
+      .value("ScrollbarGrabActive", ImGuiCol_ScrollbarGrabActive)
+      .value("CheckMark", ImGuiCol_CheckMark)
+      .value("SliderGrab", ImGuiCol_SliderGrab)
+      .value("SliderGrabActive", ImGuiCol_SliderGrabActive)
+      .value("Button", ImGuiCol_Button)
+      .value("ButtonHovered", ImGuiCol_ButtonHovered)
+      .value("ButtonActive", ImGuiCol_ButtonActive)
+      .value("Header", ImGuiCol_Header)
+      .value("HeaderHovered", ImGuiCol_HeaderHovered)
+      .value("HeaderActive", ImGuiCol_HeaderActive)
+      .value("Separator", ImGuiCol_Separator)
+      .value("SeparatorHovered", ImGuiCol_SeparatorHovered)
+      .value("SeparatorActive", ImGuiCol_SeparatorActive)
+      .value("ResizeGrip", ImGuiCol_ResizeGrip)
+      .value("ResizeGripHovered", ImGuiCol_ResizeGripHovered)
+      .value("ResizeGripActive", ImGuiCol_ResizeGripActive)
+      .value("Tab", ImGuiCol_Tab)
+      .value("TabHovered", ImGuiCol_TabHovered)
+      .value("TabActive", ImGuiCol_TabActive)
+      .value("TabUnfocused", ImGuiCol_TabUnfocused)
+      .value("TabUnfocusedActive", ImGuiCol_TabUnfocusedActive)
+      .value("PlotLines", ImGuiCol_PlotLines)
+      .value("PlotLinesHovered", ImGuiCol_PlotLinesHovered)
+      .value("PlotHistogram", ImGuiCol_PlotHistogram)
+      .value("PlotHistogramHovered", ImGuiCol_PlotHistogramHovered)
+      .value("TableHeaderBg", ImGuiCol_TableHeaderBg, "Table header background")
+      .value("TableBorderStrong", ImGuiCol_TableBorderStrong,
+             "Table outer and header borders (prefer using Alpha=1.0 here)")
+      .value("TableBorderLight", ImGuiCol_TableBorderLight,
+             "Table inner borders (prefer using Alpha=1.0 here)")
+      .value("TableRowBg", ImGuiCol_TableRowBg,
+             "Table row background (even rows)")
+      .value("TableRowBgAlt", ImGuiCol_TableRowBgAlt,
+             "Table row background (odd rows)")
+      .value("TextSelectedBg", ImGuiCol_TextSelectedBg)
+      .value("DragDropTarget", ImGuiCol_DragDropTarget)
+      .value("NavHighlight", ImGuiCol_NavHighlight)
+      .value("NavWindowingHighlight", ImGuiCol_NavWindowingHighlight)
+      .value("NavWindowingDimBg", ImGuiCol_NavWindowingDimBg)
+      .value("ModalWindowDimBg", ImGuiCol_ModalWindowDimBg);
+
   py::enum_<ImGuiCond_>(m, "Condition", py::arithmetic())
       .value("None_", ImGuiCond_None)
       .value("Always", ImGuiCond_Always)
@@ -52,33 +111,149 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("FirstUseEver", ImGuiCond_FirstUseEver)
       .value("Appearing", ImGuiCond_Appearing);
 
-  py::enum_<ImGuiWindowFlags_>(m, "WindowFlags", py::arithmetic())
-      .value("None_", ImGuiWindowFlags_None)
-      .value("NoTitleBar", ImGuiWindowFlags_NoTitleBar)
-      .value("NoResize", ImGuiWindowFlags_NoResize)
-      .value("NoMove", ImGuiWindowFlags_NoMove)
-      .value("NoScrollbar", ImGuiWindowFlags_NoScrollbar)
-      .value("NoScrollWithMouse", ImGuiWindowFlags_NoScrollWithMouse)
-      .value("NoCollapse", ImGuiWindowFlags_NoCollapse)
-      .value("AlwaysAutoResize", ImGuiWindowFlags_AlwaysAutoResize)
-      .value("NoBackground", ImGuiWindowFlags_NoBackground)
-      .value("NoSavedSettings", ImGuiWindowFlags_NoSavedSettings)
-      .value("NoMouseInputs", ImGuiWindowFlags_NoMouseInputs)
-      .value("MenuBar", ImGuiWindowFlags_MenuBar)
-      .value("HorizontalScrollbar", ImGuiWindowFlags_HorizontalScrollbar)
-      .value("NoFocusOnAppearing", ImGuiWindowFlags_NoFocusOnAppearing)
-      .value("NoBringToFrontOnFocus", ImGuiWindowFlags_NoBringToFrontOnFocus)
-      .value("AlwaysVerticalScrollbar",
-             ImGuiWindowFlags_AlwaysVerticalScrollbar)
-      .value("AlwaysHorizontalScrollbar",
-             ImGuiWindowFlags_AlwaysHorizontalScrollbar)
-      .value("AlwaysUseWindowPadding", ImGuiWindowFlags_AlwaysUseWindowPadding)
-      .value("NoNavInputs", ImGuiWindowFlags_NoNavInputs)
-      .value("NoNavFocus", ImGuiWindowFlags_NoNavFocus)
-      .value("UnsavedDocument", ImGuiWindowFlags_UnsavedDocument)
-      .value("NoNav ", ImGuiWindowFlags_NoNav)
-      .value("NoDecoration", ImGuiWindowFlags_NoDecoration)
-      .value("NoInputs", ImGuiWindowFlags_NoInputs);
+  py::enum_<ImGuiDir_>(m, "Direction")
+      .value("None_", ImGuiDir_None)
+      .value("Left", ImGuiDir_Left)
+      .value("Right", ImGuiDir_Right)
+      .value("Up", ImGuiDir_Up)
+      .value("Down", ImGuiDir_Down);
+
+  py::enum_<ImGuiStyleVar_>(m, "StyleVar")
+      .value("Alpha", ImGuiStyleVar_Alpha)
+      .value("WindowPadding", ImGuiStyleVar_WindowPadding)
+      .value("WindowRounding", ImGuiStyleVar_WindowRounding)
+      .value("WindowBorderSize", ImGuiStyleVar_WindowBorderSize)
+      .value("WindowMinSize", ImGuiStyleVar_WindowMinSize)
+      .value("WindowTitleAlign", ImGuiStyleVar_WindowTitleAlign)
+      .value("ChildRounding", ImGuiStyleVar_ChildRounding)
+      .value("ChildBorderSize", ImGuiStyleVar_ChildBorderSize)
+      .value("PopupRounding", ImGuiStyleVar_PopupRounding)
+      .value("PopupBorderSize", ImGuiStyleVar_PopupBorderSize)
+      .value("FramePadding", ImGuiStyleVar_FramePadding)
+      .value("FrameRounding", ImGuiStyleVar_FrameRounding)
+      .value("FrameBorderSize", ImGuiStyleVar_FrameBorderSize)
+      .value("ItemSpacing", ImGuiStyleVar_ItemSpacing)
+      .value("ItemInnerSpacing", ImGuiStyleVar_ItemInnerSpacing)
+      .value("IndentSpacing", ImGuiStyleVar_IndentSpacing)
+      .value("CellPadding", ImGuiStyleVar_CellPadding)
+      .value("ScrollbarSize", ImGuiStyleVar_ScrollbarSize)
+      .value("ScrollbarRounding", ImGuiStyleVar_ScrollbarRounding)
+      .value("GrabMinSize", ImGuiStyleVar_GrabMinSize)
+      .value("GrabRounding", ImGuiStyleVar_GrabRounding)
+      .value("TabRounding", ImGuiStyleVar_TabRounding)
+      .value("ButtonTextAlign", ImGuiStyleVar_ButtonTextAlign)
+      .value("SelectableTextAlign", ImGuiStyleVar_SelectableTextAlign);
+
+  py::enum_<ImGuiTableBgTarget_>(m, "TableBgTarget")
+      .value("None_", ImGuiTableBgTarget_None)
+      .value("ColumnBg0", ImGuiTableBgTarget_ColumnBg0)
+      .value("ColumnBg1", ImGuiTableBgTarget_ColumnBg1)
+      .value("RowBg0", ImGuiTableBgTarget_RowBg0,
+             "Set row background color 0 (generally used for background, "
+             "automatically set when ImGuiTableFlags_RowBg is used)")
+      .value(
+          "RowBg1", ImGuiTableBgTarget_RowBg1,
+          "Set row background color 1 (generally used for selection marking)")
+      .value("CellBg", ImGuiTableBgTarget_CellBg,
+             "Set cell background color (top-most color)");
+
+  py::enum_<ImDrawCornerFlags_>(m, "DrawCornerFlags", py::arithmetic())
+      .value("None_", ImDrawCornerFlags_None)
+      .value("TopLeft", ImDrawCornerFlags_TopLeft)
+      .value("TopRight", ImDrawCornerFlags_TopRight)
+      .value("BotRight", ImDrawCornerFlags_BotRight)
+      .value("BotLeft", ImDrawCornerFlags_BotLeft)
+      .value("Top", ImDrawCornerFlags_Top)
+      .value("Bot", ImDrawCornerFlags_Bot)
+      .value("Left", ImDrawCornerFlags_Left)
+      .value("Right", ImDrawCornerFlags_Right)
+      .value("All", ImDrawCornerFlags_All);
+
+  py::enum_<ImGuiColorEditFlags_>(m, "ColorEditFlags", py::arithmetic())
+      .value("None", ImGuiColorEditFlags_None)
+      .value("NoAlpha", ImGuiColorEditFlags_NoAlpha,
+             "ColorEdit, ColorPicker, ColorButton: ignore Alpha component "
+             "(will only read 3 components from the input pointer).")
+      .value("NoPicker", ImGuiColorEditFlags_NoPicker,
+             "ColorEdit: disable picker when clicking on colored square.")
+      .value("NoOptions", ImGuiColorEditFlags_NoOptions,
+             "ColorEdit: disable toggling options menu when right-clicking on "
+             "inputs/small preview.")
+      .value("NoSmallPreview", ImGuiColorEditFlags_NoSmallPreview,
+             "ColorEdit, ColorPicker: disable colored square preview next to "
+             "the inputs. (e.g. to show only the inputs)")
+      .value("NoInputs", ImGuiColorEditFlags_NoInputs,
+             "ColorEdit, ColorPicker: disable inputs sliders/text widgets "
+             "(e.g. to show only the small preview colored square).")
+      .value("NoTooltip", ImGuiColorEditFlags_NoTooltip,
+             "ColorEdit, ColorPicker, ColorButton: disable tooltip when "
+             "hovering the preview.")
+      .value("NoLabel", ImGuiColorEditFlags_NoLabel,
+             "ColorEdit, ColorPicker: disable display of inline text label "
+             "(the label is still forwarded to the tooltip and picker).")
+      .value("NoSidePreview", ImGuiColorEditFlags_NoSidePreview,
+             "ColorPicker: disable bigger color preview on right side of the "
+             "picker, use small colored square preview instead.")
+      .value("NoDragDrop", ImGuiColorEditFlags_NoDragDrop,
+             "ColorEdit: disable drag and drop target. ColorButton: disable "
+             "drag and drop source.")
+      .value("NoBorder", ImGuiColorEditFlags_NoBorder,
+             "ColorButton: disable border (which is enforced by default)")
+      //
+      .value(
+          "AlphaBar", ImGuiColorEditFlags_AlphaBar,
+          "ColorEdit, ColorPicker: show vertical alpha bar/gradient in picker.")
+      .value("AlphaPreview", ImGuiColorEditFlags_AlphaPreview,
+             "ColorEdit, ColorPicker, ColorButton: display preview as a "
+             "transparent color over a checkerboard, instead of opaque.")
+      .value("AlphaPreviewHalf", ImGuiColorEditFlags_AlphaPreviewHalf,
+             "ColorEdit, ColorPicker, ColorButton: display half opaque / half "
+             "checkerboard, instead of opaque.")
+      .value("HDR", ImGuiColorEditFlags_HDR,
+             "(WIP) ColorEdit: Currently only disable 0.0f..1.0f limits in "
+             "RGBA edition (note: you probably want to use "
+             "ImGuiColorEditFlags_Float flag as well).")
+      .value(
+          "DisplayRGB", ImGuiColorEditFlags_DisplayRGB,
+          "ColorEdit: override _display_ type among RGB/HSV/Hex. ColorPicker: "
+          "select any combination using one or more of RGB/HSV/Hex.")
+      .value("DisplayHSV", ImGuiColorEditFlags_DisplayHSV)
+      .value("DisplayHex", ImGuiColorEditFlags_DisplayHex)
+      .value("Uint8", ImGuiColorEditFlags_Uint8,
+             "ColorEdit, ColorPicker, ColorButton: _display_ values formatted "
+             "as 0..255.")
+      .value("Float", ImGuiColorEditFlags_Float,
+             "ColorEdit, ColorPicker, ColorButton: _display_ values formatted "
+             "as 0.0f..1.0f floats instead of 0..255 integers. No round-trip "
+             "of value via integers.")
+      .value("PickerHueBar", ImGuiColorEditFlags_PickerHueBar,
+             "ColorPicker: bar for Hue, rectangle for Sat/Value.")
+      .value("PickerHueWheel", ImGuiColorEditFlags_PickerHueWheel,
+             "ColorPicker: wheel for Hue, triangle for Sat/Value.")
+      .value("InputRGB", ImGuiColorEditFlags_InputRGB,
+             "ColorEdit, ColorPicker: input and output data in RGB format.")
+      .value("InputHSV", ImGuiColorEditFlags_InputHSV,
+             "ColorEdit, ColorPicker: input and output data in HSV format.");
+
+  py::enum_<ImGuiComboFlags_>(m, "ComboFlags", py::arithmetic())
+      .value("None_", ImGuiComboFlags_None)
+      .value("PopupAlignLeft", ImGuiComboFlags_PopupAlignLeft,
+             "Align the popup toward the left by default")
+      .value("HeightSmall", ImGuiComboFlags_HeightSmall,
+             "Max ~4 items visible. Tip: If you want your combo popup to be a "
+             "specific size you can use SetNextWindowSizeConstraints() prior "
+             "to calling BeginCombo()")
+      .value("HeightRegular", ImGuiComboFlags_HeightRegular,
+             "Max ~8 items visible (default)")
+      .value("HeightLarge", ImGuiComboFlags_HeightLarge,
+             "Max ~20 items visible")
+      .value("HeightLargest", ImGuiComboFlags_HeightLargest,
+             "As many fitting items as possible")
+      .value("NoArrowButton", ImGuiComboFlags_NoArrowButton,
+             "Display on the preview box without the square arrow button")
+      .value("NoPreview", ImGuiComboFlags_NoPreview,
+             "Display only a square arrow button")
+      .value("HeightMask_", ImGuiComboFlags_HeightMask_);
 
   py::enum_<ImGuiDragDropFlags_>(m, "DragDropFlags", py::arithmetic())
       .value("None_", ImGuiDragDropFlags_None)
@@ -97,6 +272,26 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("AcceptNoPreviewTooltip",
              ImGuiDragDropFlags_AcceptNoPreviewTooltip)
       .value("AcceptPeekOnly", ImGuiDragDropFlags_AcceptPeekOnly);
+
+  py::enum_<ImGuiFocusedFlags_>(m, "FocusedFlags")
+      .value("None_", ImGuiFocusedFlags_None)
+      .value("ChildWindows", ImGuiFocusedFlags_ChildWindows)
+      .value("RootWindow", ImGuiFocusedFlags_RootWindow)
+      .value("AnyWindow", ImGuiFocusedFlags_AnyWindow)
+      .value("RootAndChildWindows", ImGuiFocusedFlags_RootAndChildWindows);
+
+  py::enum_<ImGuiHoveredFlags_>(m, "HoveredFlags")
+      .value("None_", ImGuiHoveredFlags_None)
+      .value("ChildWindows", ImGuiHoveredFlags_ChildWindows)
+      .value("RootWindow", ImGuiHoveredFlags_RootWindow)
+      .value("AnyWindow", ImGuiHoveredFlags_AnyWindow)
+      .value("AllowWhenBlockedByPopup",
+             ImGuiHoveredFlags_AllowWhenBlockedByPopup)
+      .value("AllowWhenBlockedByActiveItem",
+             ImGuiHoveredFlags_AllowWhenBlockedByActiveItem)
+      .value("AllowWhenOverlapped", ImGuiHoveredFlags_AllowWhenOverlapped)
+      .value("AllowWhenDisabled", ImGuiHoveredFlags_AllowWhenDisabled)
+      .value("RectOnly", ImGuiHoveredFlags_RectOnly);
 
   py::enum_<ImGuiInputTextFlags_>(m, "InputTextFlags", py::arithmetic())
       .value("None_", ImGuiInputTextFlags_None)
@@ -125,23 +320,88 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("CallbackEdit", ImGuiInputTextFlags_CallbackEdit)
       .value("Multiline", ImGuiInputTextFlags_Multiline);
 
-  py::enum_<ImGuiTreeNodeFlags_>(m, "TreeNodeFlags", py::arithmetic())
-      .value("None_", ImGuiTreeNodeFlags_None)
-      .value("Selected", ImGuiTreeNodeFlags_Selected)
-      .value("Framed", ImGuiTreeNodeFlags_Framed)
-      .value("AllowItemOverlap", ImGuiTreeNodeFlags_AllowItemOverlap)
-      .value("NoTreePushOnOpen", ImGuiTreeNodeFlags_NoTreePushOnOpen)
-      .value("NoAutoOpenOnLog", ImGuiTreeNodeFlags_NoAutoOpenOnLog)
-      .value("DefaultOpen", ImGuiTreeNodeFlags_DefaultOpen)
-      .value("OpenOnDoubleClick", ImGuiTreeNodeFlags_OpenOnDoubleClick)
-      .value("OpenOnArrow", ImGuiTreeNodeFlags_OpenOnArrow)
-      .value("Leaf", ImGuiTreeNodeFlags_Leaf)
-      .value("Bullet", ImGuiTreeNodeFlags_Bullet)
-      .value("FramePadding", ImGuiTreeNodeFlags_FramePadding)
-      .value("SpanAvailWidth", ImGuiTreeNodeFlags_SpanAvailWidth)
-      .value("SpanFullWidth", ImGuiTreeNodeFlags_SpanFullWidth)
-      .value("NavLeftJumpsBackHere", ImGuiTreeNodeFlags_NavLeftJumpsBackHere)
-      .value("CollapsingHeader", ImGuiTreeNodeFlags_CollapsingHeader);
+  py::enum_<ImGuiSelectableFlags_>(m, "SelectableFlags", py::arithmetic())
+      .value("None", ImGuiSelectableFlags_None)
+      .value("DontClosePopups", ImGuiSelectableFlags_DontClosePopups,
+             "Clicking this don't close parent popup window")
+      .value("SpanAllColumns", ImGuiSelectableFlags_SpanAllColumns,
+             "Selectable frame can span all columns (text will still fit in "
+             "current column)")
+      .value("AllowDoubleClick", ImGuiSelectableFlags_AllowDoubleClick,
+             "Generate press events on double clicks too")
+      .value("Disabled", ImGuiSelectableFlags_Disabled,
+             "Cannot be selected, display grayed out text")
+      .value(
+          "AllowItemOverlap", ImGuiSelectableFlags_AllowItemOverlap,
+          "(WIP) Hit testing to allow subsequent widgets to overlap this one");
+
+  py::enum_<ImGuiSliderFlags_>(m, "SliderFlags", py::arithmetic())
+      .value("None_", ImGuiSliderFlags_None)
+      .value("ClampOnInput", ImGuiSliderFlags_ClampOnInput,
+             "Clamp value to min/max bounds when input manually with "
+             "CTRL+Click. By default CTRL+Click allows going out of bounds.")
+      .value("Logarithmic", ImGuiSliderFlags_Logarithmic,
+             "Make the widget logarithmic (linear otherwise). Consider using "
+             "ImGuiSliderFlags_NoRoundToFormat with this if using a "
+             "format-string with small amount of digits.")
+      .value(
+          "NoRoundToFormat", ImGuiSliderFlags_NoRoundToFormat,
+          "Disable rounding underlying value to match precision of the display "
+          "format string (e.g. %.3f values are rounded to those 3 digits)")
+      .value("NoInput", ImGuiSliderFlags_NoInput,
+             "Disable CTRL+Click or Enter key allowing to input text directly "
+             "into the widget");
+
+  py::enum_<ImGuiTabBarFlags_>(m, "TabBarFlags", py::arithmetic())
+      .value("None_", ImGuiTabBarFlags_None)
+      .value("Reorderable", ImGuiTabBarFlags_Reorderable,
+             "Allow manually dragging tabs to re-order them + New tabs are "
+             "appended at the end of list")
+      .value("AutoSelectNewTabs", ImGuiTabBarFlags_AutoSelectNewTabs,
+             "Automatically select new tabs when they appear")
+      .value("TabListPopupButton", ImGuiTabBarFlags_TabListPopupButton,
+             "Disable buttons to open the tab list popup")
+      .value("NoCloseWithMiddleMouseButton",
+             ImGuiTabBarFlags_NoCloseWithMiddleMouseButton,
+             "Disable behavior of closing tabs (that are submitted with p_open "
+             "!= NULL) with middle mouse button. You can still repro this "
+             "behavior on user's side with if (IsItemHovered() && "
+             "IsMouseClicked(2)) *p_open = false.")
+      .value("NoTabListScrollingButtons",
+             ImGuiTabBarFlags_NoTabListScrollingButtons,
+             "Disable scrolling buttons (apply when fitting policy is "
+             "ImGuiTabBarFlags_FittingPolicyScroll)")
+      .value("NoTooltip", ImGuiTabBarFlags_NoTooltip,
+             "Disable tooltips when hovering a tab")
+      .value("FittingPolicyResizeDown",
+             ImGuiTabBarFlags_FittingPolicyResizeDown,
+             "Resize tabs when they don't fit")
+      .value("FittingPolicyScroll", ImGuiTabBarFlags_FittingPolicyScroll,
+             "Add scroll buttons when tabs don't fit")
+      .value("FittingPolicyMask_", ImGuiTabBarFlags_FittingPolicyMask_)
+      .value("FittingPolicyDefault_", ImGuiTabBarFlags_FittingPolicyDefault_);
+
+  py::enum_<ImGuiTabItemFlags_>(m, "TabItemFlags", py::arithmetic())
+      .value("None_", ImGuiTabItemFlags_None)
+      .value("UnsavedDocument", ImGuiTabItemFlags_UnsavedDocument,
+             "Append '*' to title without affecting the ID, as a convenience "
+             "to avoid using the ### operator. Also: tab is selected on "
+             "closure and closure is deferred by one frame to allow code to "
+             "undo it without flicker.")
+      .value("SetSelected", ImGuiTabItemFlags_SetSelected,
+             "Trigger flag to programmatically make the tab selected when "
+             "calling BeginTabItem()")
+      .value("NoCloseWithMiddleMouseButton",
+             ImGuiTabItemFlags_NoCloseWithMiddleMouseButton,
+             "Disable behavior of closing tabs (that are submitted with p_open "
+             "!= NULL) with middle mouse button. You can still repro this "
+             "behavior on user's side with if (IsItemHovered() && "
+             "IsMouseClicked(2)) *p_open = false.")
+      .value(
+          "NoPushId", ImGuiTabItemFlags_NoPushId,
+          "Don't call PushID(tab->ID)/PopID() on BeginTabItem()/EndTabItem()")
+      .value("NoTooltip", ImGuiTabItemFlags_NoTooltip,
+             "Disable tooltip for the given tab");
 
   py::enum_<ImGuiTableFlags_>(m, "TableFlags", py::arithmetic())
       // Features
@@ -288,174 +548,51 @@ void py_init_module_imgui_enums(py::module& m) {
              "Identify header row (set default background color + width of its "
              "contents accounted different for auto column width)");
 
-  py::enum_<ImGuiTableBgTarget_>(m, "TableBgTarget")
-      .value("None_", ImGuiTableBgTarget_None)
-      .value("ColumnBg0", ImGuiTableBgTarget_ColumnBg0)
-      .value("ColumnBg1", ImGuiTableBgTarget_ColumnBg1)
-      .value("RowBg0", ImGuiTableBgTarget_RowBg0,
-             "Set row background color 0 (generally used for background, "
-             "automatically set when ImGuiTableFlags_RowBg is used)")
-      .value(
-          "RowBg1", ImGuiTableBgTarget_RowBg1,
-          "Set row background color 1 (generally used for selection marking)")
-      .value("CellBg", ImGuiTableBgTarget_CellBg,
-             "Set cell background color (top-most color)");
+  py::enum_<ImGuiTreeNodeFlags_>(m, "TreeNodeFlags", py::arithmetic())
+      .value("None_", ImGuiTreeNodeFlags_None)
+      .value("Selected", ImGuiTreeNodeFlags_Selected)
+      .value("Framed", ImGuiTreeNodeFlags_Framed)
+      .value("AllowItemOverlap", ImGuiTreeNodeFlags_AllowItemOverlap)
+      .value("NoTreePushOnOpen", ImGuiTreeNodeFlags_NoTreePushOnOpen)
+      .value("NoAutoOpenOnLog", ImGuiTreeNodeFlags_NoAutoOpenOnLog)
+      .value("DefaultOpen", ImGuiTreeNodeFlags_DefaultOpen)
+      .value("OpenOnDoubleClick", ImGuiTreeNodeFlags_OpenOnDoubleClick)
+      .value("OpenOnArrow", ImGuiTreeNodeFlags_OpenOnArrow)
+      .value("Leaf", ImGuiTreeNodeFlags_Leaf)
+      .value("Bullet", ImGuiTreeNodeFlags_Bullet)
+      .value("FramePadding", ImGuiTreeNodeFlags_FramePadding)
+      .value("SpanAvailWidth", ImGuiTreeNodeFlags_SpanAvailWidth)
+      .value("SpanFullWidth", ImGuiTreeNodeFlags_SpanFullWidth)
+      .value("NavLeftJumpsBackHere", ImGuiTreeNodeFlags_NavLeftJumpsBackHere)
+      .value("CollapsingHeader", ImGuiTreeNodeFlags_CollapsingHeader);
 
-  py::enum_<ImGuiDir_>(m, "Direction")
-      .value("None_", ImGuiDir_None)
-      .value("Left", ImGuiDir_Left)
-      .value("Right", ImGuiDir_Right)
-      .value("Up", ImGuiDir_Up)
-      .value("Down", ImGuiDir_Down);
-
-  py::enum_<ImGuiCol_>(m, "Color")
-      .value("Text", ImGuiCol_Text)
-      .value("TextDisabled", ImGuiCol_TextDisabled)
-      .value("WindowBg", ImGuiCol_WindowBg)
-      .value("ChildBg", ImGuiCol_ChildBg)
-      .value("PopupBg", ImGuiCol_PopupBg)
-      .value("Border", ImGuiCol_Border)
-      .value("BorderShadow", ImGuiCol_BorderShadow)
-      .value("FrameBg", ImGuiCol_FrameBg)
-      .value("FrameBgHovered", ImGuiCol_FrameBgHovered)
-      .value("FrameBgActive", ImGuiCol_FrameBgActive)
-      .value("TitleBg", ImGuiCol_TitleBg)
-      .value("TitleBgActive", ImGuiCol_TitleBgActive)
-      .value("TitleBgCollapsed", ImGuiCol_TitleBgCollapsed)
-      .value("MenuBarBg", ImGuiCol_MenuBarBg)
-      .value("ScrollbarBg", ImGuiCol_ScrollbarBg)
-      .value("ScrollbarGrab", ImGuiCol_ScrollbarGrab)
-      .value("ScrollbarGrabHovered", ImGuiCol_ScrollbarGrabHovered)
-      .value("ScrollbarGrabActive", ImGuiCol_ScrollbarGrabActive)
-      .value("CheckMark", ImGuiCol_CheckMark)
-      .value("SliderGrab", ImGuiCol_SliderGrab)
-      .value("SliderGrabActive", ImGuiCol_SliderGrabActive)
-      .value("Button", ImGuiCol_Button)
-      .value("ButtonHovered", ImGuiCol_ButtonHovered)
-      .value("ButtonActive", ImGuiCol_ButtonActive)
-      .value("Header", ImGuiCol_Header)
-      .value("HeaderHovered", ImGuiCol_HeaderHovered)
-      .value("HeaderActive", ImGuiCol_HeaderActive)
-      .value("Separator", ImGuiCol_Separator)
-      .value("SeparatorHovered", ImGuiCol_SeparatorHovered)
-      .value("SeparatorActive", ImGuiCol_SeparatorActive)
-      .value("ResizeGrip", ImGuiCol_ResizeGrip)
-      .value("ResizeGripHovered", ImGuiCol_ResizeGripHovered)
-      .value("ResizeGripActive", ImGuiCol_ResizeGripActive)
-      .value("Tab", ImGuiCol_Tab)
-      .value("TabHovered", ImGuiCol_TabHovered)
-      .value("TabActive", ImGuiCol_TabActive)
-      .value("TabUnfocused", ImGuiCol_TabUnfocused)
-      .value("TabUnfocusedActive", ImGuiCol_TabUnfocusedActive)
-      .value("PlotLines", ImGuiCol_PlotLines)
-      .value("PlotLinesHovered", ImGuiCol_PlotLinesHovered)
-      .value("PlotHistogram", ImGuiCol_PlotHistogram)
-      .value("PlotHistogramHovered", ImGuiCol_PlotHistogramHovered)
-      .value("TableHeaderBg", ImGuiCol_TableHeaderBg, "Table header background")
-      .value("TableBorderStrong", ImGuiCol_TableBorderStrong,
-             "Table outer and header borders (prefer using Alpha=1.0 here)")
-      .value("TableBorderLight", ImGuiCol_TableBorderLight,
-             "Table inner borders (prefer using Alpha=1.0 here)")
-      .value("TableRowBg", ImGuiCol_TableRowBg,
-             "Table row background (even rows)")
-      .value("TableRowBgAlt", ImGuiCol_TableRowBgAlt,
-             "Table row background (odd rows)")
-      .value("TextSelectedBg", ImGuiCol_TextSelectedBg)
-      .value("DragDropTarget", ImGuiCol_DragDropTarget)
-      .value("NavHighlight", ImGuiCol_NavHighlight)
-      .value("NavWindowingHighlight", ImGuiCol_NavWindowingHighlight)
-      .value("NavWindowingDimBg", ImGuiCol_NavWindowingDimBg)
-      .value("ModalWindowDimBg", ImGuiCol_ModalWindowDimBg);
-
-  py::enum_<ImGuiStyleVar_>(m, "StyleVar")
-      .value("Alpha", ImGuiStyleVar_Alpha)
-      .value("WindowPadding", ImGuiStyleVar_WindowPadding)
-      .value("WindowRounding", ImGuiStyleVar_WindowRounding)
-      .value("WindowBorderSize", ImGuiStyleVar_WindowBorderSize)
-      .value("WindowMinSize", ImGuiStyleVar_WindowMinSize)
-      .value("WindowTitleAlign", ImGuiStyleVar_WindowTitleAlign)
-      .value("ChildRounding", ImGuiStyleVar_ChildRounding)
-      .value("ChildBorderSize", ImGuiStyleVar_ChildBorderSize)
-      .value("PopupRounding", ImGuiStyleVar_PopupRounding)
-      .value("PopupBorderSize", ImGuiStyleVar_PopupBorderSize)
-      .value("FramePadding", ImGuiStyleVar_FramePadding)
-      .value("FrameRounding", ImGuiStyleVar_FrameRounding)
-      .value("FrameBorderSize", ImGuiStyleVar_FrameBorderSize)
-      .value("ItemSpacing", ImGuiStyleVar_ItemSpacing)
-      .value("ItemInnerSpacing", ImGuiStyleVar_ItemInnerSpacing)
-      .value("IndentSpacing", ImGuiStyleVar_IndentSpacing)
-      .value("CellPadding", ImGuiStyleVar_CellPadding)
-      .value("ScrollbarSize", ImGuiStyleVar_ScrollbarSize)
-      .value("ScrollbarRounding", ImGuiStyleVar_ScrollbarRounding)
-      .value("GrabMinSize", ImGuiStyleVar_GrabMinSize)
-      .value("GrabRounding", ImGuiStyleVar_GrabRounding)
-      .value("TabRounding", ImGuiStyleVar_TabRounding)
-      .value("ButtonTextAlign", ImGuiStyleVar_ButtonTextAlign)
-      .value("SelectableTextAlign", ImGuiStyleVar_SelectableTextAlign);
-
-  py::enum_<ImGuiFocusedFlags_>(m, "FocusedFlags")
-      .value("None_", ImGuiFocusedFlags_None)
-      .value("ChildWindows", ImGuiFocusedFlags_ChildWindows)
-      .value("RootWindow", ImGuiFocusedFlags_RootWindow)
-      .value("AnyWindow", ImGuiFocusedFlags_AnyWindow)
-      .value("RootAndChildWindows", ImGuiFocusedFlags_RootAndChildWindows);
-
-  py::enum_<ImGuiHoveredFlags_>(m, "HoveredFlags")
-      .value("None_", ImGuiHoveredFlags_None)
-      .value("ChildWindows", ImGuiHoveredFlags_ChildWindows)
-      .value("RootWindow", ImGuiHoveredFlags_RootWindow)
-      .value("AnyWindow", ImGuiHoveredFlags_AnyWindow)
-      .value("AllowWhenBlockedByPopup",
-             ImGuiHoveredFlags_AllowWhenBlockedByPopup)
-      .value("AllowWhenBlockedByActiveItem",
-             ImGuiHoveredFlags_AllowWhenBlockedByActiveItem)
-      .value("AllowWhenOverlapped", ImGuiHoveredFlags_AllowWhenOverlapped)
-      .value("AllowWhenDisabled", ImGuiHoveredFlags_AllowWhenDisabled)
-      .value("RectOnly", ImGuiHoveredFlags_RectOnly);
-
-  py::enum_<ImDrawCornerFlags_>(m, "CornerFlags", py::arithmetic())
-      .value("None_", ImDrawCornerFlags_None)
-      .value("TopLeft", ImDrawCornerFlags_TopLeft)
-      .value("TopRight", ImDrawCornerFlags_TopRight)
-      .value("BotRight", ImDrawCornerFlags_BotRight)
-      .value("BotLeft", ImDrawCornerFlags_BotLeft)
-      .value("Top", ImDrawCornerFlags_Top)
-      .value("Bot", ImDrawCornerFlags_Bot)
-      .value("Left", ImDrawCornerFlags_Left)
-      .value("Right", ImDrawCornerFlags_Right)
-      .value("All", ImDrawCornerFlags_All);
-
-  py::enum_<ImGuiSelectableFlags_>(m, "SelectableFlags", py::arithmetic())
-      .value("None", ImGuiSelectableFlags_None)
-      .value("DontClosePopups", ImGuiSelectableFlags_DontClosePopups,
-             "Clicking this don't close parent popup window")
-      .value("SpanAllColumns", ImGuiSelectableFlags_SpanAllColumns,
-             "Selectable frame can span all columns (text will still fit in "
-             "current column)")
-      .value("AllowDoubleClick", ImGuiSelectableFlags_AllowDoubleClick,
-             "Generate press events on double clicks too")
-      .value("Disabled", ImGuiSelectableFlags_Disabled,
-             "Cannot be selected, display grayed out text")
-      .value(
-          "AllowItemOverlap", ImGuiSelectableFlags_AllowItemOverlap,
-          "(WIP) Hit testing to allow subsequent widgets to overlap this one");
-
-  py::enum_<ImGuiSliderFlags_>(m, "SliderFlags", py::arithmetic())
-      .value("None_", ImGuiSliderFlags_None)
-      .value("ClampOnInput", ImGuiSliderFlags_ClampOnInput,
-             "Clamp value to min/max bounds when input manually with "
-             "CTRL+Click. By default CTRL+Click allows going out of bounds.")
-      .value("Logarithmic", ImGuiSliderFlags_Logarithmic,
-             "Make the widget logarithmic (linear otherwise). Consider using "
-             "ImGuiSliderFlags_NoRoundToFormat with this if using a "
-             "format-string with small amount of digits.")
-      .value(
-          "NoRoundToFormat", ImGuiSliderFlags_NoRoundToFormat,
-          "Disable rounding underlying value to match precision of the display "
-          "format string (e.g. %.3f values are rounded to those 3 digits)")
-      .value("NoInput", ImGuiSliderFlags_NoInput,
-             "Disable CTRL+Click or Enter key allowing to input text directly "
-             "into the widget");
+  py::enum_<ImGuiWindowFlags_>(m, "WindowFlags", py::arithmetic())
+      .value("None_", ImGuiWindowFlags_None)
+      .value("NoTitleBar", ImGuiWindowFlags_NoTitleBar)
+      .value("NoResize", ImGuiWindowFlags_NoResize)
+      .value("NoMove", ImGuiWindowFlags_NoMove)
+      .value("NoScrollbar", ImGuiWindowFlags_NoScrollbar)
+      .value("NoScrollWithMouse", ImGuiWindowFlags_NoScrollWithMouse)
+      .value("NoCollapse", ImGuiWindowFlags_NoCollapse)
+      .value("AlwaysAutoResize", ImGuiWindowFlags_AlwaysAutoResize)
+      .value("NoBackground", ImGuiWindowFlags_NoBackground)
+      .value("NoSavedSettings", ImGuiWindowFlags_NoSavedSettings)
+      .value("NoMouseInputs", ImGuiWindowFlags_NoMouseInputs)
+      .value("MenuBar", ImGuiWindowFlags_MenuBar)
+      .value("HorizontalScrollbar", ImGuiWindowFlags_HorizontalScrollbar)
+      .value("NoFocusOnAppearing", ImGuiWindowFlags_NoFocusOnAppearing)
+      .value("NoBringToFrontOnFocus", ImGuiWindowFlags_NoBringToFrontOnFocus)
+      .value("AlwaysVerticalScrollbar",
+             ImGuiWindowFlags_AlwaysVerticalScrollbar)
+      .value("AlwaysHorizontalScrollbar",
+             ImGuiWindowFlags_AlwaysHorizontalScrollbar)
+      .value("AlwaysUseWindowPadding", ImGuiWindowFlags_AlwaysUseWindowPadding)
+      .value("NoNavInputs", ImGuiWindowFlags_NoNavInputs)
+      .value("NoNavFocus", ImGuiWindowFlags_NoNavFocus)
+      .value("UnsavedDocument", ImGuiWindowFlags_UnsavedDocument)
+      .value("NoNav ", ImGuiWindowFlags_NoNav)
+      .value("NoDecoration", ImGuiWindowFlags_NoDecoration)
+      .value("NoInputs", ImGuiWindowFlags_NoInputs);
 }
 
 void py_init_module_imgui_classes(py::module& m) {
@@ -732,7 +869,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "begin",
       [](const std::string& name, Bool& opened,
-         ImGuiWindowFlags_ flags) -> bool {
+         ImGuiWindowFlags flags) -> bool {
         return ImGui::Begin(name.c_str(), opened.null ? nullptr : &opened.value,
                             flags);
       },
@@ -744,7 +881,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "begin_child",
       [](const std::string& str_id, const ImVec2& size, bool border,
-         ImGuiWindowFlags_ extra_flags) -> bool {
+         ImGuiWindowFlags extra_flags) -> bool {
         return ImGui::BeginChild(str_id.c_str(), size, border);
       },
       "begin a scrolling region. size==0.0f: use remaining window size, "
@@ -808,7 +945,7 @@ void py_init_module_imgui_funcs(py::module& m) {
       "consistent with popup behaviors)");
   m.def(
       "begin_popup",
-      [](std::string str_id, ImGuiWindowFlags_ flags) -> bool {
+      [](std::string str_id, ImGuiWindowFlags flags) -> bool {
         return ImGui::BeginPopup(str_id.c_str(), flags);
       },
       "", py::arg("name"), py::arg("flags") = ImGuiWindowFlags_(0));
@@ -1075,12 +1212,12 @@ void py_init_module_imgui_funcs(py::module& m) {
   // specs for the table (NULL if not sorting).");
 
   m.def("begin_tab_bar", &ImGui::BeginTabBar, py::arg("str_id"),
-        py::arg("flags") = ImGuiTabBarFlags_(0));
+        py::arg("flags") = ImGuiTabBarFlags(0));
   m.def("end_tab_bar", &ImGui::EndTabBar);
   m.def(
       "begin_tab_item",
       [](const std::string& label, Bool& opened,
-         ImGuiTabItemFlags_ flags) -> bool {
+         ImGuiTabItemFlags flags) -> bool {
         return ImGui::BeginTabItem(
             label.c_str(), opened.null ? nullptr : &opened.value, flags);
       },
@@ -1134,7 +1271,7 @@ void py_init_module_imgui_funcs(py::module& m) {
         py::arg("cond") = 0);
   m.def(
       "collapsing_header",
-      [](const char* label, ImGuiTreeNodeFlags_ flags) {
+      [](const char* label, ImGuiTreeNodeFlags flags) {
         return ImGui::CollapsingHeader(label, flags);
       },
       py::arg("label"), py::arg("flags") = ImGuiTreeNodeFlags_(0));
@@ -1173,7 +1310,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_text",
       [](const char* label, String& text, size_t buf_size,
-         ImGuiInputTextFlags_ flags) {
+         ImGuiInputTextFlags flags) {
         bool result = false;
         if (buf_size > 255) {
           char* buff = new char[buf_size + 1];
@@ -1198,7 +1335,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_text_multiline",
       [](const char* label, String& text, size_t buf_size, const ImVec2& size,
-         ImGuiInputTextFlags_ flags) {
+         ImGuiInputTextFlags flags) {
         bool result = false;
         if (buf_size > 255) {
           char* buff = new char[buf_size + 1];
@@ -1226,7 +1363,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_text_with_hint",
       [](const char* label, const char* hint, String& text, size_t buf_size,
-         ImGuiInputTextFlags_ flags) {
+         ImGuiInputTextFlags flags) {
         bool result = false;
         if (buf_size > 255) {
           char* buff = new char[buf_size];
@@ -1251,7 +1388,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_float",
       [](const char* label, Float& v, float step, float step_fast,
-         const char* display_format, ImGuiInputTextFlags_ flags) {
+         const char* display_format, ImGuiInputTextFlags flags) {
         return ImGui::InputFloat(label, &v.value, step, step_fast,
                                  display_format, flags);
       },
@@ -1261,7 +1398,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_float2",
       [](const char* label, Float& v1, Float& v2, const char* display_format,
-         ImGuiInputTextFlags_ flags) {
+         ImGuiInputTextFlags flags) {
         float v[2] = {v1.value, v2.value};
         bool result = ImGui::InputFloat2(label, v, display_format, flags);
         v1.value = v[0];
@@ -1274,7 +1411,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_float3",
       [](const char* label, Float& v1, Float& v2, Float& v3,
-         const char* display_format, ImGuiInputTextFlags_ flags) {
+         const char* display_format, ImGuiInputTextFlags flags) {
         float v[3] = {v1.value, v2.value, v3.value};
         bool result = ImGui::InputFloat3(label, v, display_format, flags);
         v1.value = v[0];
@@ -1288,7 +1425,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_float4",
       [](const char* label, Float& v1, Float& v2, Float& v3, Float& v4,
-         const char* display_format, ImGuiInputTextFlags_ flags) {
+         const char* display_format, ImGuiInputTextFlags flags) {
         float v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result = ImGui::InputFloat4(label, v, display_format, flags);
         v1.value = v[0];
@@ -1303,14 +1440,14 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_int",
       [](const char* label, Int& v, int step, int step_fast,
-         ImGuiInputTextFlags_ flags) {
+         ImGuiInputTextFlags flags) {
         return ImGui::InputInt(label, &v.value, step, step_fast, flags);
       },
       py::arg("label"), py::arg("v"), py::arg("step") = 1,
       py::arg("step_fast") = 100, py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_int2",
-      [](const char* label, Int& v1, Int& v2, ImGuiInputTextFlags_ flags) {
+      [](const char* label, Int& v1, Int& v2, ImGuiInputTextFlags flags) {
         int v[2] = {v1.value, v2.value};
         bool result = ImGui::InputInt2(label, v, flags);
         v1.value = v[0];
@@ -1322,7 +1459,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_int3",
       [](const char* label, Int& v1, Int& v2, Int& v3,
-         ImGuiInputTextFlags_ flags) {
+         ImGuiInputTextFlags flags) {
         int v[3] = {v1.value, v2.value, v3.value};
         bool result = ImGui::InputInt3(label, v, flags);
         v1.value = v[0];
@@ -1335,7 +1472,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_int4",
       [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4,
-         ImGuiInputTextFlags_ flags) {
+         ImGuiInputTextFlags flags) {
         int v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result = ImGui::InputInt4(label, v, flags);
         v1.value = v[0];
@@ -1357,7 +1494,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "drag_float",
       [](const char* label, Float& v, float v_speed, float v_min, float v_max,
-         const char* format, ImGuiSliderFlags_ flags) {
+         const char* format, ImGuiSliderFlags flags) {
         return ImGui::DragFloat(label, &v.value, v_speed, v_min, v_max, format,
                                 flags);
       },
@@ -1367,7 +1504,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "drag_float2",
       [](const char* label, Float& v1, Float& v2, float v_speed, float v_min,
-         float v_max, const char* format, ImGuiSliderFlags_ flags) {
+         float v_max, const char* format, ImGuiSliderFlags flags) {
         float v[2] = {v1.value, v2.value};
         bool result =
             ImGui::DragFloat2(label, v, v_speed, v_min, v_max, format, flags);
@@ -1381,8 +1518,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "drag_float3",
       [](const char* label, Float& v1, Float& v2, Float& v3, float v_speed,
-         float v_min, float v_max, const char* format,
-         ImGuiSliderFlags_ flags) {
+         float v_min, float v_max, const char* format, ImGuiSliderFlags flags) {
         float v[3] = {v1.value, v2.value, v3.value};
         bool result =
             ImGui::DragFloat3(label, v, v_speed, v_min, v_max, format, flags);
@@ -1399,7 +1535,7 @@ void py_init_module_imgui_funcs(py::module& m) {
       "drag_float4",
       [](const char* label, Float& v1, Float& v2, Float& v3, Float& v4,
          float v_speed, float v_min, float v_max, const char* format,
-         ImGuiSliderFlags_ flags) {
+         ImGuiSliderFlags flags) {
         float v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result =
             ImGui::DragFloat4(label, v, v_speed, v_min, v_max, format, flags);
@@ -1417,7 +1553,7 @@ void py_init_module_imgui_funcs(py::module& m) {
       "drag_float_range2",
       [](const char* label, Float& v_current_min, Float& v_current_max,
          float v_speed, float v_min, float v_max, const char* format,
-         const char* format_max, ImGuiSliderFlags_ flags) {
+         const char* format_max, ImGuiSliderFlags flags) {
         return ImGui::DragFloatRange2(label, &v_current_min.value,
                                       &v_current_max.value, v_speed, v_min,
                                       v_max, format, format_max, flags);
@@ -1429,7 +1565,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "drag_int",
       [](const char* label, Int& v, float v_speed, int v_min, int v_max,
-         const char* format, ImGuiSliderFlags_ flags) {
+         const char* format, ImGuiSliderFlags flags) {
         return ImGui::DragInt(label, &v.value, v_speed, v_min, v_max, format,
                               flags);
       },
@@ -1439,7 +1575,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "drag_int2",
       [](const char* label, Int& v1, Int& v2, float v_speed, int v_min,
-         int v_max, const char* format, ImGuiSliderFlags_ flags) {
+         int v_max, const char* format, ImGuiSliderFlags flags) {
         int v[2] = {v1.value, v2.value};
         bool result =
             ImGui::DragInt2(label, v, v_speed, v_min, v_max, format, flags);
@@ -1453,7 +1589,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "drag_int3",
       [](const char* label, Int& v1, Int& v2, Int& v3, float v_speed, int v_min,
-         int v_max, const char* format, ImGuiSliderFlags_ flags) {
+         int v_max, const char* format, ImGuiSliderFlags flags) {
         int v[3] = {v1.value, v2.value, v3.value};
         bool result =
             ImGui::DragInt3(label, v, v_speed, v_min, v_max, format, flags);
@@ -1469,7 +1605,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "drag_int4",
       [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4, float v_speed,
-         int v_min, int v_max, const char* format, ImGuiSliderFlags_ flags) {
+         int v_min, int v_max, const char* format, ImGuiSliderFlags flags) {
         int v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result =
             ImGui::DragInt4(label, v, v_speed, v_min, v_max, format, flags);
@@ -1486,8 +1622,8 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "drag_int_range2",
       [](const char* label, Int& v_current_min, Int& v_current_max,
-         float v_speed, float v_min, float v_max, const char* format,
-         const char* format_max, ImGuiSliderFlags_ flags) {
+         float v_speed, int v_min, int v_max, const char* format,
+         const char* format_max, ImGuiSliderFlags flags) {
         return ImGui::DragIntRange2(label, &v_current_min.value,
                                     &v_current_max.value, v_speed, v_min, v_max,
                                     format, format_max, flags);
@@ -1500,7 +1636,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "slider_float",
       [](const char* label, Float& v, float v_min, float v_max,
-         const char* format, ImGuiSliderFlags_ flags) {
+         const char* format, ImGuiSliderFlags flags) {
         return ImGui::SliderFloat(label, &v.value, v_min, v_max, format, flags);
       },
       py::arg("label"), py::arg("v"), py::arg("v_min"), py::arg("v_max"),
@@ -1508,7 +1644,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "slider_float2",
       [](const char* label, Float& v1, Float& v2, float v_min, float v_max,
-         const char* format, ImGuiSliderFlags_ flags) {
+         const char* format, ImGuiSliderFlags flags) {
         float v[2] = {v1.value, v2.value};
         bool result =
             ImGui::SliderFloat2(label, v, v_min, v_max, format, flags);
@@ -1522,7 +1658,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "slider_float3",
       [](const char* label, Float& v1, Float& v2, Float& v3, float v_min,
-         float v_max, const char* format, ImGuiSliderFlags_ flags) {
+         float v_max, const char* format, ImGuiSliderFlags flags) {
         float v[3] = {v1.value, v2.value, v3.value};
         bool result =
             ImGui::SliderFloat3(label, v, v_min, v_max, format, flags);
@@ -1537,8 +1673,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "slider_float4",
       [](const char* label, Float& v1, Float& v2, Float& v3, Float& v4,
-         float v_min, float v_max, const char* format,
-         ImGuiSliderFlags_ flags) {
+         float v_min, float v_max, const char* format, ImGuiSliderFlags flags) {
         float v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result =
             ImGui::SliderFloat4(label, v, v_min, v_max, format, flags);
@@ -1554,7 +1689,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "slider_angle",
       [](const char* label, Float& v_rad, float v_degrees_min,
-         float v_degrees_max, const char* format, ImGuiSliderFlags_ flags) {
+         float v_degrees_max, const char* format, ImGuiSliderFlags flags) {
         return ImGui::SliderAngle(label, &v_rad.value, v_degrees_min,
                                   v_degrees_max, format, flags);
       },
@@ -1564,7 +1699,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "slider_int",
       [](const char* label, Int& v, int v_min, int v_max, const char* format,
-         ImGuiSliderFlags_ flags) {
+         ImGuiSliderFlags flags) {
         return ImGui::SliderInt(label, &v.value, v_min, v_max, format, flags);
       },
       py::arg("label"), py::arg("v"), py::arg("v_min"), py::arg("v_max"),
@@ -1572,7 +1707,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "slider_int2",
       [](const char* label, Int& v1, Int& v2, int v_min, int v_max,
-         const char* format, ImGuiSliderFlags_ flags) {
+         const char* format, ImGuiSliderFlags flags) {
         int v[2] = {v1.value, v2.value};
         bool result = ImGui::SliderInt2(label, v, v_min, v_max, format, flags);
         v1.value = v[0];
@@ -1585,7 +1720,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "slider_int3",
       [](const char* label, Int& v1, Int& v2, Int& v3, int v_min, int v_max,
-         const char* format, ImGuiSliderFlags_ flags) {
+         const char* format, ImGuiSliderFlags flags) {
         int v[3] = {v1.value, v2.value, v3.value};
         bool result = ImGui::SliderInt3(label, v, v_min, v_max, format, flags);
         v1.value = v[0];
@@ -1599,7 +1734,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "slider_int4",
       [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4, int v_min,
-         int v_max, const char* format, ImGuiSliderFlags_ flags) {
+         int v_max, const char* format, ImGuiSliderFlags flags) {
         int v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result = ImGui::SliderInt4(label, v, v_min, v_max, format, flags);
         v1.value = v[0];
@@ -1614,7 +1749,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "v_slider_float",
       [](const char* label, const ImVec2& size, Float& v, float v_min,
-         float v_max, const char* format, ImGuiSliderFlags_ flags) {
+         float v_max, const char* format, ImGuiSliderFlags flags) {
         return ImGui::VSliderFloat(label, size, &v.value, v_min, v_max, format,
                                    flags);
       },
@@ -1624,7 +1759,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "v_slider_int",
       [](const char* label, const ImVec2& size, Int& v, int v_min, int v_max,
-         const char* format, ImGuiSliderFlags_ flags) {
+         const char* format, ImGuiSliderFlags flags) {
         return ImGui::VSliderInt(label, size, &v.value, v_min, v_max, format,
                                  flags);
       },
@@ -1634,10 +1769,9 @@ void py_init_module_imgui_funcs(py::module& m) {
 
   m.def(
       "plot_lines",
-      [](const char* label, const std::vector<float>& values,
-         int values_offset = 0, const char* overlay_text = NULL,
-         float scale_min = FLT_MAX, float scale_max = FLT_MAX,
-         ImVec2 graph_size = ImVec2(0, 0), int stride = sizeof(float)) {
+      [](const char* label, const std::vector<float>& values, int values_offset,
+         const char* overlay_text, float scale_min, float scale_max,
+         ImVec2 graph_size, int stride) {
         ImGui::PlotLines(label, values.data(), (int)values.size(),
                          values_offset, overlay_text, scale_min, scale_max,
                          graph_size, stride);
@@ -1658,30 +1792,31 @@ void py_init_module_imgui_funcs(py::module& m) {
 
   m.def(
       "selectable",
-      [](std::string label, bool selected = false, ImGuiSelectableFlags_ flags,
-         ImVec2 size) -> bool {
-        return ImGui::Selectable(label.c_str(), selected, flags, size);
+      [](std::string label, bool selected, ImGuiSelectableFlags flags,
+         const ImVec2& size_arg) -> bool {
+        return ImGui::Selectable(label.c_str(), selected, flags, size_arg);
       },
       py::arg("label"), py::arg("selected") = false,
       py::arg("flags") = ImGuiSelectableFlags_(0),
-      py::arg("size") = ImVec2(0, 0));
+      py::arg("size_arg") = ImVec2(0, 0));
 
   m.def(
       "selectable",
-      [](std::string label, Bool& selected, ImGuiSelectableFlags_ flags,
-         ImVec2 size) -> bool {
-        return ImGui::Selectable(label.c_str(), &selected.value, flags, size);
+      [](std::string label, Bool& selected, ImGuiSelectableFlags flags,
+         const ImVec2& size_arg) -> bool {
+        return ImGui::Selectable(label.c_str(), &selected.value, flags,
+                                 size_arg);
       },
       py::arg("label"), py::arg("selected"),
       py::arg("flags") = ImGuiSelectableFlags_(0),
-      py::arg("size") = ImVec2(0, 0));
+      py::arg("size_arg") = ImVec2(0, 0));
 
   m.def(
       "list_box_header",
-      [](std::string label, ImVec2 size = ImVec2(0, 0)) {
+      [](std::string label, ImVec2 size) {
         ImGui::ListBoxHeader(label.c_str(), size);
       },
-      py::arg("label"), py::arg("size"));
+      py::arg("label"), py::arg("size") = ImVec2(0, 0));
 
   m.def("list_box_footer", &ImGui::ListBoxFooter);
 
@@ -1744,7 +1879,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def("begin_drag_drop_target", &ImGui::BeginDragDropTarget);
   m.def(
       "accept_drag_drop_payload_string",
-      [](ImGuiDragDropFlags_ flags) -> std::string {
+      [](ImGuiDragDropFlags flags) -> std::string {
         auto payload = ImGui::AcceptDragDropPayload("string", flags);
         if (!payload->IsDataType("string") || !payload->Data)
           return "";
