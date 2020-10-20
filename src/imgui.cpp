@@ -104,6 +104,24 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("CallbackEdit", ImGuiInputTextFlags_CallbackEdit)
       .value("Multiline", ImGuiInputTextFlags_Multiline);
 
+  py::enum_<ImGuiTreeNodeFlags_>(m, "TreeNodeFlags", py::arithmetic())
+      .value("None_", ImGuiTreeNodeFlags_None)
+      .value("Selected", ImGuiTreeNodeFlags_Selected)
+      .value("Framed", ImGuiTreeNodeFlags_Framed)
+      .value("AllowItemOverlap", ImGuiTreeNodeFlags_AllowItemOverlap)
+      .value("NoTreePushOnOpen", ImGuiTreeNodeFlags_NoTreePushOnOpen)
+      .value("NoAutoOpenOnLog", ImGuiTreeNodeFlags_NoAutoOpenOnLog)
+      .value("DefaultOpen", ImGuiTreeNodeFlags_DefaultOpen)
+      .value("OpenOnDoubleClick", ImGuiTreeNodeFlags_OpenOnDoubleClick)
+      .value("OpenOnArrow", ImGuiTreeNodeFlags_OpenOnArrow)
+      .value("Leaf", ImGuiTreeNodeFlags_Leaf)
+      .value("Bullet", ImGuiTreeNodeFlags_Bullet)
+      .value("FramePadding", ImGuiTreeNodeFlags_FramePadding)
+      .value("SpanAvailWidth", ImGuiTreeNodeFlags_SpanAvailWidth)
+      .value("SpanFullWidth", ImGuiTreeNodeFlags_SpanFullWidth)
+      .value("NavLeftJumpsBackHere", ImGuiTreeNodeFlags_NavLeftJumpsBackHere)
+      .value("CollapsingHeader", ImGuiTreeNodeFlags_CollapsingHeader);
+
   py::enum_<ImGuiTableFlags_>(m, "TableFlags", py::arithmetic())
       // Features
       .value("None", ImGuiTableFlags_None)
