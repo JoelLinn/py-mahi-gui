@@ -14,7 +14,7 @@ install:
       if ($env:PYTHON) {
         if ($env:PLATFORM -eq "x64") { $env:PYTHON = "$env:PYTHON-x64" }
         $env:PATH = "C:\Python$env:PYTHON\;C:\Python$env:PYTHON\Scripts\;$env:PATH"
-        python -m pip install --disable-pip-version-check --upgrade pip setuptools wheel
+        python -m pip install --disable-pip-version-check --upgrade pip setuptools wheel nose
         pip install -r .\dev-requirements.txt
       } elseif ($env:CONDA) {
         if ($env:CONDA -eq "27") { $env:CONDA = "" }
@@ -36,6 +36,6 @@ build_script:
         conda install --use-local mahi_gui
       }
 test_script:
-  - ps: python tests\test.py
+  - nosetests -w tests\
 artifacts:
   - path: 'dist\*'
