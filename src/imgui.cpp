@@ -46,12 +46,14 @@ void py_init_module_imgui(py::module& m) {
 
 void py_init_module_imgui_enums(py::module& m) {
   py::enum_<ImGuiCond_>(m, "Condition", py::arithmetic())
+      .value("None_", ImGuiCond_None)
       .value("Always", ImGuiCond_Always)
       .value("Once", ImGuiCond_Once)
       .value("FirstUseEver", ImGuiCond_FirstUseEver)
       .value("Appearing", ImGuiCond_Appearing);
 
   py::enum_<ImGuiWindowFlags_>(m, "WindowFlags", py::arithmetic())
+      .value("None_", ImGuiWindowFlags_None)
       .value("NoTitleBar", ImGuiWindowFlags_NoTitleBar)
       .value("NoResize", ImGuiWindowFlags_NoResize)
       .value("NoMove", ImGuiWindowFlags_NoMove)
@@ -78,7 +80,26 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("NoDecoration", ImGuiWindowFlags_NoDecoration)
       .value("NoInputs", ImGuiWindowFlags_NoInputs);
 
+  py::enum_<ImGuiDragDropFlags_>(m, "DragDropFlags", py::arithmetic())
+      .value("None_", ImGuiDragDropFlags_None)
+      .value("SourceNoPreviewTooltip",
+             ImGuiDragDropFlags_SourceNoPreviewTooltip)
+      .value("SourceNoDisableHover", ImGuiDragDropFlags_SourceNoDisableHover)
+      .value("SourceNoHoldToOpenOthers",
+             ImGuiDragDropFlags_SourceNoHoldToOpenOthers)
+      .value("SourceAllowNullID", ImGuiDragDropFlags_SourceAllowNullID)
+      .value("SourceExtern", ImGuiDragDropFlags_SourceExtern)
+      .value("SourceAutoExpirePayload",
+             ImGuiDragDropFlags_SourceAutoExpirePayload)
+      .value("AcceptBeforeDelivery", ImGuiDragDropFlags_AcceptBeforeDelivery)
+      .value("AcceptNoDrawDefaultRect",
+             ImGuiDragDropFlags_AcceptNoDrawDefaultRect)
+      .value("AcceptNoPreviewTooltip",
+             ImGuiDragDropFlags_AcceptNoPreviewTooltip)
+      .value("AcceptPeekOnly", ImGuiDragDropFlags_AcceptPeekOnly);
+
   py::enum_<ImGuiInputTextFlags_>(m, "InputTextFlags", py::arithmetic())
+      .value("None_", ImGuiInputTextFlags_None)
       .value("CharsDecimal", ImGuiInputTextFlags_CharsDecimal)
       .value("CharsHexadecimal", ImGuiInputTextFlags_CharsHexadecimal)
       .value("CharsUppercase", ImGuiInputTextFlags_CharsUppercase)
@@ -393,6 +414,7 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("RectOnly", ImGuiHoveredFlags_RectOnly);
 
   py::enum_<ImDrawCornerFlags_>(m, "CornerFlags", py::arithmetic())
+      .value("None_", ImDrawCornerFlags_None)
       .value("TopLeft", ImDrawCornerFlags_TopLeft)
       .value("TopRight", ImDrawCornerFlags_TopRight)
       .value("BotRight", ImDrawCornerFlags_BotRight)
@@ -402,6 +424,21 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("Left", ImDrawCornerFlags_Left)
       .value("Right", ImDrawCornerFlags_Right)
       .value("All", ImDrawCornerFlags_All);
+
+  py::enum_<ImGuiSelectableFlags_>(m, "SelectableFlags", py::arithmetic())
+      .value("None", ImGuiSelectableFlags_None)
+      .value("DontClosePopups", ImGuiSelectableFlags_DontClosePopups,
+             "Clicking this don't close parent popup window")
+      .value("SpanAllColumns", ImGuiSelectableFlags_SpanAllColumns,
+             "Selectable frame can span all columns (text will still fit in "
+             "current column)")
+      .value("AllowDoubleClick", ImGuiSelectableFlags_AllowDoubleClick,
+             "Generate press events on double clicks too")
+      .value("Disabled", ImGuiSelectableFlags_Disabled,
+             "Cannot be selected, display grayed out text")
+      .value(
+          "AllowItemOverlap", ImGuiSelectableFlags_AllowItemOverlap,
+          "(WIP) Hit testing to allow subsequent widgets to overlap this one");
 
   py::enum_<ImGuiSliderFlags_>(m, "SliderFlags", py::arithmetic())
       .value("None_", ImGuiSliderFlags_None)
@@ -695,7 +732,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "begin",
       [](const std::string& name, Bool& opened,
-         ImGuiWindowFlags flags) -> bool {
+         ImGuiWindowFlags_ flags) -> bool {
         return ImGui::Begin(name.c_str(), opened.null ? nullptr : &opened.value,
                             flags);
       },
@@ -707,7 +744,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "begin_child",
       [](const std::string& str_id, const ImVec2& size, bool border,
-         ImGuiWindowFlags extra_flags) -> bool {
+         ImGuiWindowFlags_ extra_flags) -> bool {
         return ImGui::BeginChild(str_id.c_str(), size, border);
       },
       "begin a scrolling region. size==0.0f: use remaining window size, "
@@ -771,7 +808,7 @@ void py_init_module_imgui_funcs(py::module& m) {
       "consistent with popup behaviors)");
   m.def(
       "begin_popup",
-      [](std::string str_id, ImGuiWindowFlags flags) -> bool {
+      [](std::string str_id, ImGuiWindowFlags_ flags) -> bool {
         return ImGui::BeginPopup(str_id.c_str(), flags);
       },
       "", py::arg("name"), py::arg("flags") = ImGuiWindowFlags_(0));
@@ -971,12 +1008,12 @@ void py_init_module_imgui_funcs(py::module& m) {
 
   // Tables
   m.def("begin_table", &ImGui::BeginTable, py::arg("str_id"),
-        py::arg("columns_count"), py::arg("flags") = ImGuiTableFlags(0),
+        py::arg("columns_count"), py::arg("flags") = ImGuiTableFlags_(0),
         py::arg("outer_size") = ImVec2(0, 0), py::arg("inner_width") = 0.0f);
   m.def("end_table", &ImGui::EndTable,
         "only call end_table() if begin_table() returns true!");
   m.def("table_next_row", &ImGui::TableNextRow,
-        py::arg("row_flags") = ImGuiTableRowFlags(0),
+        py::arg("row_flags") = ImGuiTableRowFlags_(0),
         py::arg("min_row_height") = 0.0f,
         "append into the first cell of a new row.");
   m.def("table_next_cell", &ImGui::TableNextCell,
@@ -1016,7 +1053,7 @@ void py_init_module_imgui_funcs(py::module& m) {
         "flags for details.");
   m.def(
       "table_setup_column", &ImGui::TableSetupColumn, py::arg("label"),
-      py::arg("flags") = ImGuiTableColumnFlags(0),
+      py::arg("flags") = ImGuiTableColumnFlags_(0),
       py::arg("init_width_or_weight") = -1.0f, py::arg("user_id") = 0,
       "Tables: Headers & Columns declaration\n"
       "- Use TableSetupColumn() to specify label, resizing policy, default "
@@ -1038,17 +1075,17 @@ void py_init_module_imgui_funcs(py::module& m) {
   // specs for the table (NULL if not sorting).");
 
   m.def("begin_tab_bar", &ImGui::BeginTabBar, py::arg("str_id"),
-        py::arg("flags") = 0);
+        py::arg("flags") = ImGuiTabBarFlags_(0));
   m.def("end_tab_bar", &ImGui::EndTabBar);
   m.def(
       "begin_tab_item",
       [](const std::string& label, Bool& opened,
-         ImGuiTabItemFlags flags) -> bool {
+         ImGuiTabItemFlags_ flags) -> bool {
         return ImGui::BeginTabItem(
             label.c_str(), opened.null ? nullptr : &opened.value, flags);
       },
       "create a Tab. Returns true if the Tab is selected.", py::arg("label"),
-      py::arg("opened") = null, py::arg("flags") = 0);
+      py::arg("opened") = null, py::arg("flags") = ImGuiTabItemFlags_(0));
   m.def("end_tab_item", &ImGui::EndTabItem);
   m.def("set_tab_item_closed", &ImGui::SetTabItemClosed,
         py::arg("tab_or_docked_window_label"));
@@ -1097,10 +1134,10 @@ void py_init_module_imgui_funcs(py::module& m) {
         py::arg("cond") = 0);
   m.def(
       "collapsing_header",
-      [](const char* label, ImGuiTreeNodeFlags flags) {
+      [](const char* label, ImGuiTreeNodeFlags_ flags) {
         return ImGui::CollapsingHeader(label, flags);
       },
-      py::arg("label"), py::arg("flags") = 0);
+      py::arg("label"), py::arg("flags") = ImGuiTreeNodeFlags_(0));
   m.def("checkbox", [](const char* label, Bool& v) {
     return ImGui::Checkbox(label, &v.value);
   });
@@ -1109,7 +1146,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   });
 
   m.def("begin_combo", &ImGui::BeginCombo, py::arg("label"),
-        py::arg("preview_value"), py::arg("flags") = 0);
+        py::arg("preview_value"), py::arg("flags") = ImGuiComboFlags_(0));
   m.def("end_combo", &ImGui::EndCombo,
         "only call EndCombo() if BeginCombo() returns true!");
   m.def("combo", [](const char* label, Int& current_item,
@@ -1136,7 +1173,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "input_text",
       [](const char* label, String& text, size_t buf_size,
-         ImGuiInputTextFlags flags) {
+         ImGuiInputTextFlags_ flags) {
         bool result = false;
         if (buf_size > 255) {
           char* buff = new char[buf_size + 1];
@@ -1157,11 +1194,11 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("text"), py::arg("buf_size"),
-      py::arg("flags") = 0);
+      py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_text_multiline",
       [](const char* label, String& text, size_t buf_size, const ImVec2& size,
-         ImGuiInputTextFlags flags) {
+         ImGuiInputTextFlags_ flags) {
         bool result = false;
         if (buf_size > 255) {
           char* buff = new char[buf_size + 1];
@@ -1184,11 +1221,12 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("text"), py::arg("buf_size"),
-      py::arg("size") = ImVec2(0, 0), py::arg("flags") = 0);
+      py::arg("size") = ImVec2(0, 0),
+      py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_text_with_hint",
       [](const char* label, const char* hint, String& text, size_t buf_size,
-         ImGuiInputTextFlags flags) {
+         ImGuiInputTextFlags_ flags) {
         bool result = false;
         if (buf_size > 255) {
           char* buff = new char[buf_size];
@@ -1209,21 +1247,21 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("hint"), py::arg("text"), py::arg("buf_size"),
-      py::arg("flags") = 0);
+      py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_float",
       [](const char* label, Float& v, float step, float step_fast,
-         const char* display_format, ImGuiInputTextFlags flags) {
+         const char* display_format, ImGuiInputTextFlags_ flags) {
         return ImGui::InputFloat(label, &v.value, step, step_fast,
                                  display_format, flags);
       },
       py::arg("label"), py::arg("v"), py::arg("step") = 0.0f,
       py::arg("step_fast") = 0.0f, py::arg("display_format") = "%.3f",
-      py::arg("flags") = 0);
+      py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_float2",
       [](const char* label, Float& v1, Float& v2, const char* display_format,
-         ImGuiInputTextFlags flags) {
+         ImGuiInputTextFlags_ flags) {
         float v[2] = {v1.value, v2.value};
         bool result = ImGui::InputFloat2(label, v, display_format, flags);
         v1.value = v[0];
@@ -1231,11 +1269,12 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"),
-      py::arg("display_format") = "%.3f", py::arg("flags") = 0);
+      py::arg("display_format") = "%.3f",
+      py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_float3",
       [](const char* label, Float& v1, Float& v2, Float& v3,
-         const char* display_format, ImGuiInputTextFlags flags) {
+         const char* display_format, ImGuiInputTextFlags_ flags) {
         float v[3] = {v1.value, v2.value, v3.value};
         bool result = ImGui::InputFloat3(label, v, display_format, flags);
         v1.value = v[0];
@@ -1244,11 +1283,12 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("display_format") = "%.3f", py::arg("flags") = 0);
+      py::arg("display_format") = "%.3f",
+      py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_float4",
       [](const char* label, Float& v1, Float& v2, Float& v3, Float& v4,
-         const char* display_format, ImGuiInputTextFlags flags) {
+         const char* display_format, ImGuiInputTextFlags_ flags) {
         float v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result = ImGui::InputFloat4(label, v, display_format, flags);
         v1.value = v[0];
@@ -1258,29 +1298,31 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v4"), py::arg("display_format") = "%.3f", py::arg("flags") = 0);
+      py::arg("v4"), py::arg("display_format") = "%.3f",
+      py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_int",
       [](const char* label, Int& v, int step, int step_fast,
-         ImGuiInputTextFlags flags) {
+         ImGuiInputTextFlags_ flags) {
         return ImGui::InputInt(label, &v.value, step, step_fast, flags);
       },
       py::arg("label"), py::arg("v"), py::arg("step") = 1,
-      py::arg("step_fast") = 100, py::arg("flags") = 0);
+      py::arg("step_fast") = 100, py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_int2",
-      [](const char* label, Int& v1, Int& v2, ImGuiInputTextFlags flags) {
+      [](const char* label, Int& v1, Int& v2, ImGuiInputTextFlags_ flags) {
         int v[2] = {v1.value, v2.value};
         bool result = ImGui::InputInt2(label, v, flags);
         v1.value = v[0];
         v2.value = v[1];
         return result;
       },
-      py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("flags") = 0);
+      py::arg("label"), py::arg("v1"), py::arg("v2"),
+      py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_int3",
       [](const char* label, Int& v1, Int& v2, Int& v3,
-         ImGuiInputTextFlags flags) {
+         ImGuiInputTextFlags_ flags) {
         int v[3] = {v1.value, v2.value, v3.value};
         bool result = ImGui::InputInt3(label, v, flags);
         v1.value = v[0];
@@ -1289,11 +1331,11 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("flags") = 0);
+      py::arg("flags") = ImGuiInputTextFlags_(0));
   m.def(
       "input_int4",
       [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4,
-         ImGuiInputTextFlags flags) {
+         ImGuiInputTextFlags_ flags) {
         int v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result = ImGui::InputInt4(label, v, flags);
         v1.value = v[0];
@@ -1303,7 +1345,7 @@ void py_init_module_imgui_funcs(py::module& m) {
         return result;
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
-      py::arg("v4"), py::arg("flags") = 0);
+      py::arg("v4"), py::arg("flags") = ImGuiInputTextFlags_(0));
 
   m.def("color_edit", [](const char* label, ImVec4& col) -> bool {
     return ImGui::ColorEdit4(label, &col.x);
@@ -1315,17 +1357,17 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def(
       "drag_float",
       [](const char* label, Float& v, float v_speed, float v_min, float v_max,
-         const char* format, ImGuiSliderFlags flags) {
+         const char* format, ImGuiSliderFlags_ flags) {
         return ImGui::DragFloat(label, &v.value, v_speed, v_min, v_max, format,
                                 flags);
       },
       py::arg("label"), py::arg("v"), py::arg("v_speed") = 1.0f,
       py::arg("v_min") = 0.0f, py::arg("v_max") = 0.0f,
-      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "drag_float2",
       [](const char* label, Float& v1, Float& v2, float v_speed, float v_min,
-         float v_max, const char* format, ImGuiSliderFlags flags) {
+         float v_max, const char* format, ImGuiSliderFlags_ flags) {
         float v[2] = {v1.value, v2.value};
         bool result =
             ImGui::DragFloat2(label, v, v_speed, v_min, v_max, format, flags);
@@ -1335,11 +1377,12 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_speed") = 1.0f,
       py::arg("v_min") = 0.0f, py::arg("v_max") = 0.0f,
-      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "drag_float3",
       [](const char* label, Float& v1, Float& v2, Float& v3, float v_speed,
-         float v_min, float v_max, const char* format, ImGuiSliderFlags flags) {
+         float v_min, float v_max, const char* format,
+         ImGuiSliderFlags_ flags) {
         float v[3] = {v1.value, v2.value, v3.value};
         bool result =
             ImGui::DragFloat3(label, v, v_speed, v_min, v_max, format, flags);
@@ -1351,12 +1394,12 @@ void py_init_module_imgui_funcs(py::module& m) {
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
       py::arg("v_max") = 0.0f, py::arg("format") = "%.3f",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "drag_float4",
       [](const char* label, Float& v1, Float& v2, Float& v3, Float& v4,
          float v_speed, float v_min, float v_max, const char* format,
-         ImGuiSliderFlags flags) {
+         ImGuiSliderFlags_ flags) {
         float v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result =
             ImGui::DragFloat4(label, v, v_speed, v_min, v_max, format, flags);
@@ -1369,12 +1412,12 @@ void py_init_module_imgui_funcs(py::module& m) {
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v4"), py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
       py::arg("v_max") = 0.0f, py::arg("format") = "%.3f",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "drag_float_range2",
       [](const char* label, Float& v_current_min, Float& v_current_max,
          float v_speed, float v_min, float v_max, const char* format,
-         const char* format_max, ImGuiSliderFlags flags) {
+         const char* format_max, ImGuiSliderFlags_ flags) {
         return ImGui::DragFloatRange2(label, &v_current_min.value,
                                       &v_current_max.value, v_speed, v_min,
                                       v_max, format, format_max, flags);
@@ -1382,21 +1425,21 @@ void py_init_module_imgui_funcs(py::module& m) {
       py::arg("label"), py::arg("v_current_min"), py::arg("v_current_max"),
       py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
       py::arg("v_max") = 0.0f, py::arg("format") = "%.3f",
-      py::arg("format_max") = nullptr, py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("format_max") = nullptr, py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "drag_int",
       [](const char* label, Int& v, float v_speed, int v_min, int v_max,
-         const char* format, ImGuiSliderFlags flags) {
+         const char* format, ImGuiSliderFlags_ flags) {
         return ImGui::DragInt(label, &v.value, v_speed, v_min, v_max, format,
                               flags);
       },
       py::arg("label"), py::arg("v"), py::arg("v_speed") = 1.0f,
       py::arg("v_min") = 0.0f, py::arg("v_max") = 0.0f,
-      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "drag_int2",
       [](const char* label, Int& v1, Int& v2, float v_speed, int v_min,
-         int v_max, const char* format, ImGuiSliderFlags flags) {
+         int v_max, const char* format, ImGuiSliderFlags_ flags) {
         int v[2] = {v1.value, v2.value};
         bool result =
             ImGui::DragInt2(label, v, v_speed, v_min, v_max, format, flags);
@@ -1406,11 +1449,11 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_speed") = 1.0f,
       py::arg("v_min") = 0.0f, py::arg("v_max") = 0.0f,
-      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "drag_int3",
       [](const char* label, Int& v1, Int& v2, Int& v3, float v_speed, int v_min,
-         int v_max, const char* format, ImGuiSliderFlags flags) {
+         int v_max, const char* format, ImGuiSliderFlags_ flags) {
         int v[3] = {v1.value, v2.value, v3.value};
         bool result =
             ImGui::DragInt3(label, v, v_speed, v_min, v_max, format, flags);
@@ -1422,11 +1465,11 @@ void py_init_module_imgui_funcs(py::module& m) {
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
       py::arg("v_max") = 0.0f, py::arg("format") = "%d",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "drag_int4",
       [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4, float v_speed,
-         int v_min, int v_max, const char* format, ImGuiSliderFlags flags) {
+         int v_min, int v_max, const char* format, ImGuiSliderFlags_ flags) {
         int v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result =
             ImGui::DragInt4(label, v, v_speed, v_min, v_max, format, flags);
@@ -1439,12 +1482,12 @@ void py_init_module_imgui_funcs(py::module& m) {
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v4"), py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
       py::arg("v_max") = 0.0f, py::arg("format") = "%d",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "drag_int_range2",
       [](const char* label, Int& v_current_min, Int& v_current_max,
          float v_speed, float v_min, float v_max, const char* format,
-         const char* format_max, ImGuiSliderFlags flags) {
+         const char* format_max, ImGuiSliderFlags_ flags) {
         return ImGui::DragIntRange2(label, &v_current_min.value,
                                     &v_current_max.value, v_speed, v_min, v_max,
                                     format, format_max, flags);
@@ -1452,20 +1495,20 @@ void py_init_module_imgui_funcs(py::module& m) {
       py::arg("label"), py::arg("v_current_min"), py::arg("v_current_max"),
       py::arg("v_speed") = 1.0f, py::arg("v_min") = 0.0f,
       py::arg("v_max") = 0.0f, py::arg("format") = "%.3f",
-      py::arg("format_max") = nullptr, py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("format_max") = nullptr, py::arg("flags") = ImGuiSliderFlags_(0));
 
   m.def(
       "slider_float",
       [](const char* label, Float& v, float v_min, float v_max,
-         const char* format, ImGuiSliderFlags flags) {
+         const char* format, ImGuiSliderFlags_ flags) {
         return ImGui::SliderFloat(label, &v.value, v_min, v_max, format, flags);
       },
       py::arg("label"), py::arg("v"), py::arg("v_min"), py::arg("v_max"),
-      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "slider_float2",
       [](const char* label, Float& v1, Float& v2, float v_min, float v_max,
-         const char* format, ImGuiSliderFlags flags) {
+         const char* format, ImGuiSliderFlags_ flags) {
         float v[2] = {v1.value, v2.value};
         bool result =
             ImGui::SliderFloat2(label, v, v_min, v_max, format, flags);
@@ -1475,11 +1518,11 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_min"),
       py::arg("v_max"), py::arg("format") = "%.3f",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "slider_float3",
       [](const char* label, Float& v1, Float& v2, Float& v3, float v_min,
-         float v_max, const char* format, ImGuiSliderFlags flags) {
+         float v_max, const char* format, ImGuiSliderFlags_ flags) {
         float v[3] = {v1.value, v2.value, v3.value};
         bool result =
             ImGui::SliderFloat3(label, v, v_min, v_max, format, flags);
@@ -1490,11 +1533,12 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v_min"), py::arg("v_max"), py::arg("format") = "%.3f",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "slider_float4",
       [](const char* label, Float& v1, Float& v2, Float& v3, Float& v4,
-         float v_min, float v_max, const char* format, ImGuiSliderFlags flags) {
+         float v_min, float v_max, const char* format,
+         ImGuiSliderFlags_ flags) {
         float v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result =
             ImGui::SliderFloat4(label, v, v_min, v_max, format, flags);
@@ -1506,29 +1550,29 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v4"), py::arg("v_min"), py::arg("v_max"),
-      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("format") = "%.3f", py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "slider_angle",
       [](const char* label, Float& v_rad, float v_degrees_min,
-         float v_degrees_max, const char* format, ImGuiSliderFlags flags) {
+         float v_degrees_max, const char* format, ImGuiSliderFlags_ flags) {
         return ImGui::SliderAngle(label, &v_rad.value, v_degrees_min,
                                   v_degrees_max, format, flags);
       },
       py::arg("label"), py::arg("v_rad"), py::arg("v_degrees_min") = -360.0f,
       py::arg("v_degrees_max") = +360.0f, py::arg("format") = "%.0f deg",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "slider_int",
       [](const char* label, Int& v, int v_min, int v_max, const char* format,
-         ImGuiSliderFlags flags) {
+         ImGuiSliderFlags_ flags) {
         return ImGui::SliderInt(label, &v.value, v_min, v_max, format, flags);
       },
       py::arg("label"), py::arg("v"), py::arg("v_min"), py::arg("v_max"),
-      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "slider_int2",
       [](const char* label, Int& v1, Int& v2, int v_min, int v_max,
-         const char* format, ImGuiSliderFlags flags) {
+         const char* format, ImGuiSliderFlags_ flags) {
         int v[2] = {v1.value, v2.value};
         bool result = ImGui::SliderInt2(label, v, v_min, v_max, format, flags);
         v1.value = v[0];
@@ -1537,11 +1581,11 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v_min"),
       py::arg("v_max"), py::arg("format") = "%d",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "slider_int3",
       [](const char* label, Int& v1, Int& v2, Int& v3, int v_min, int v_max,
-         const char* format, ImGuiSliderFlags flags) {
+         const char* format, ImGuiSliderFlags_ flags) {
         int v[3] = {v1.value, v2.value, v3.value};
         bool result = ImGui::SliderInt3(label, v, v_min, v_max, format, flags);
         v1.value = v[0];
@@ -1551,11 +1595,11 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v_min"), py::arg("v_max"), py::arg("format") = "%d",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "slider_int4",
       [](const char* label, Int& v1, Int& v2, Int& v3, Int& v4, int v_min,
-         int v_max, const char* format, ImGuiSliderFlags flags) {
+         int v_max, const char* format, ImGuiSliderFlags_ flags) {
         int v[4] = {v1.value, v2.value, v3.value, v4.value};
         bool result = ImGui::SliderInt4(label, v, v_min, v_max, format, flags);
         v1.value = v[0];
@@ -1566,27 +1610,27 @@ void py_init_module_imgui_funcs(py::module& m) {
       },
       py::arg("label"), py::arg("v1"), py::arg("v2"), py::arg("v3"),
       py::arg("v4"), py::arg("v_min"), py::arg("v_max"),
-      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("format") = "%d", py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "v_slider_float",
       [](const char* label, const ImVec2& size, Float& v, float v_min,
-         float v_max, const char* format, ImGuiSliderFlags flags) {
+         float v_max, const char* format, ImGuiSliderFlags_ flags) {
         return ImGui::VSliderFloat(label, size, &v.value, v_min, v_max, format,
                                    flags);
       },
       py::arg("label"), py::arg("size"), py::arg("v"), py::arg("v_min"),
       py::arg("v_max"), py::arg("format") = "%.3f",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
   m.def(
       "v_slider_int",
       [](const char* label, const ImVec2& size, Int& v, int v_min, int v_max,
-         const char* format, ImGuiSliderFlags flags) {
+         const char* format, ImGuiSliderFlags_ flags) {
         return ImGui::VSliderInt(label, size, &v.value, v_min, v_max, format,
                                  flags);
       },
       py::arg("label"), py::arg("size"), py::arg("v"), py::arg("v_min"),
       py::arg("v_max"), py::arg("format") = "%d",
-      py::arg("flags") = ImGuiSliderFlags(0));
+      py::arg("flags") = ImGuiSliderFlags_(0));
 
   m.def(
       "plot_lines",
@@ -1607,26 +1651,29 @@ void py_init_module_imgui_funcs(py::module& m) {
         py::arg("size_arg") = ImVec2(-1, 0), py::arg("overlay") = nullptr);
 
   m.def("color_button", &ImGui::ColorButton, py::arg("desc_id"), py::arg("col"),
-        py::arg("flags") = 0, py::arg("size") = ImVec2(0, 0),
+        py::arg("flags") = ImGuiColorEditFlags_(0),
+        py::arg("size") = ImVec2(0, 0),
         "display a colored square/button, hover for details, return true when "
         "pressed.");
 
   m.def(
       "selectable",
-      [](std::string label, bool selected = false,
-         ImGuiSelectableFlags flags = 0, ImVec2 size = ImVec2(0, 0)) -> bool {
+      [](std::string label, bool selected = false, ImGuiSelectableFlags_ flags,
+         ImVec2 size) -> bool {
         return ImGui::Selectable(label.c_str(), selected, flags, size);
       },
-      py::arg("label"), py::arg("selected") = false, py::arg("flags") = 0,
+      py::arg("label"), py::arg("selected") = false,
+      py::arg("flags") = ImGuiSelectableFlags_(0),
       py::arg("size") = ImVec2(0, 0));
 
   m.def(
       "selectable",
-      [](std::string label, Bool& selected, ImGuiSelectableFlags flags = 0,
-         ImVec2 size = ImVec2(0, 0)) -> bool {
+      [](std::string label, Bool& selected, ImGuiSelectableFlags_ flags,
+         ImVec2 size) -> bool {
         return ImGui::Selectable(label.c_str(), &selected.value, flags, size);
       },
-      py::arg("label"), py::arg("selected"), py::arg("flags") = 0,
+      py::arg("label"), py::arg("selected"),
+      py::arg("flags") = ImGuiSelectableFlags_(0),
       py::arg("size") = ImVec2(0, 0));
 
   m.def(
@@ -1641,7 +1688,8 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def("set_item_default_focus", &ImGui::SetItemDefaultFocus);
   m.def("set_keyboard_focus_here", &ImGui::SetKeyboardFocusHere);
 
-  m.def("is_item_hovered", &ImGui::IsItemHovered, py::arg("flags") = 0);
+  m.def("is_item_hovered", &ImGui::IsItemHovered,
+        py::arg("flags") = ImGuiHoveredFlags_(0));
   m.def("is_item_active", &ImGui::IsItemActive);
   m.def("is_item_focused", &ImGui::IsItemFocused);
   m.def("is_item_clicked", &ImGui::IsItemClicked);
@@ -1686,26 +1734,6 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def("capture_keyboard_from_app", &ImGui::CaptureKeyboardFromApp);
   m.def("capture_mouse_from_app", &ImGui::CaptureMouseFromApp);
 
-  py::enum_<ImGuiDragDropFlags_>(m, "DragDropFlags")
-      .value("SourceNoPreviewTooltip",
-             ImGuiDragDropFlags_SourceNoPreviewTooltip)
-      .value("SourceNoDisableHover", ImGuiDragDropFlags_SourceNoDisableHover)
-      .value("SourceNoHoldToOpenOthers",
-             ImGuiDragDropFlags_SourceNoHoldToOpenOthers)
-      .value("SourceAllowNullID", ImGuiDragDropFlags_SourceAllowNullID)
-      .value("SourceExtern", ImGuiDragDropFlags_SourceExtern)
-      .value("SourceAutoExpirePayload",
-             ImGuiDragDropFlags_SourceAutoExpirePayload)
-
-      .value("AcceptBeforeDelivery", ImGuiDragDropFlags_AcceptBeforeDelivery)
-      .value("AcceptNoDrawDefaultRect",
-             ImGuiDragDropFlags_AcceptNoDrawDefaultRect)
-      .value("AcceptNoPreviewTooltip",
-             ImGuiDragDropFlags_AcceptNoPreviewTooltip)
-      .value("AcceptPeekOnly", ImGuiDragDropFlags_AcceptPeekOnly)
-
-      .export_values();
-
   m.def("begin_drag_drop_source", &ImGui::BeginDragDropSource);
   // todo:
   // m.def("set_drag_drop_payload", &ImGui::SetDragDropPayload);
@@ -1714,30 +1742,19 @@ void py_init_module_imgui_funcs(py::module& m) {
   });
   m.def("end_drag_drop_source", &ImGui::EndDragDropSource);
   m.def("begin_drag_drop_target", &ImGui::BeginDragDropTarget);
-  // todo:
-  // m.def("accept_drag_drop_payload", &ImGui::AcceptDragDropPayload);
-  m.def("accept_drag_drop_payload_string_preview",
-        [](ImGuiDragDropFlags flags = 0) -> std::string {
-          auto payload = ImGui::AcceptDragDropPayload("string", flags);
-          if (!payload->IsDataType("string") || !payload->Data)
-            return "";
-          if (payload->IsPreview())
-            return std::string(static_cast<char*>(payload->Data),
-                               payload->DataSize);
-          else
-            return "";
-        });
-  m.def("accept_drag_drop_payload_string",
-        [](ImGuiDragDropFlags flags = 0) -> std::string {
-          auto payload = ImGui::AcceptDragDropPayload("string", flags);
-          if (!payload->IsDataType("string") || !payload->Data)
-            return "";
-          if (payload->IsDelivery())
-            return std::string(static_cast<char*>(payload->Data),
-                               payload->DataSize);
-          else
-            return "";
-        });
+  m.def(
+      "accept_drag_drop_payload_string",
+      [](ImGuiDragDropFlags_ flags) -> std::string {
+        auto payload = ImGui::AcceptDragDropPayload("string", flags);
+        if (!payload->IsDataType("string") || !payload->Data)
+          return "";
+        if (payload->IsDelivery())
+          return std::string(static_cast<char*>(payload->Data),
+                             payload->DataSize);
+        else
+          return "";
+      },
+      py::arg("flags") = ImGuiDragDropFlags_(0));
 
   m.def("end_drag_drop_target", &ImGui::EndDragDropTarget);
   m.def("get_drag_drop_payload", []() -> std::string {
