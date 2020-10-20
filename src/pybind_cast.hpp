@@ -51,8 +51,7 @@ namespace detail {
 // Cast mahi::util::Time as a 64 bit signed integer
 template <> class type_caster<mahi::util::Time> {
   using py_type = int64_t;
-  using util_type = std::result_of<decltype (
-      &mahi::util::Time::as_microseconds)(mahi::util::Time)>::type;
+  using util_type = mahi::util::int64;
   static_assert(sizeof(py_type) == sizeof(util_type));
   static_assert(std::is_signed<util_type>::value);
 

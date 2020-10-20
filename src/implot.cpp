@@ -539,46 +539,24 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_bars",
-      [](const char* label_id, py::buffer values, double width, double shift) {
+      [](const char* label_id, py::buffer values, double width) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
         ImPlot::PlotBarsG(label_id, value_getter.get_getter_func(),
-                          &value_getter, value_getter.count(), width, shift);
+                          &value_getter, value_getter.count(), width);
       },
       py::arg("label_id"), py::arg("values"), py::arg("width") = 0.67,
-      py::arg("shift") = 0.0,
-      "Plots a vertical bar graph. #width and #shift are in X units.");
-  m.def(
-      "plot_bars",
-      [](const char* label_id, py::buffer xs, py::buffer ys, float height) {
-        auto value_getter = ValueGetter(xs, ys);
-        py::gil_scoped_release release;
-        ImPlot::PlotBarsG(label_id, value_getter.get_getter_func(),
-                          &value_getter, value_getter.count(), height);
-      },
-      py::arg("label_id"), py::arg("xs"), py::arg("ys"), py::arg("width"),
       "Plots a vertical bar graph. #width and #shift are in X units.");
 
   m.def(
       "plot_bars_h",
-      [](const char* label_id, py::buffer values, double height, double shift) {
+      [](const char* label_id, py::buffer values, double height) {
         auto value_getter = ValueGetter(values);
-        py::gil_scoped_release release;
-        ImPlot::PlotBarsHG(label_id, value_getter.get_getter_func(),
-                           &value_getter, value_getter.count(), height, shift);
-      },
-      py::arg("label_id"), py::arg("values"), py::arg("height") = 0.67,
-      py::arg("shift") = 0.0,
-      "Plots a horizontal bar graph. #height and #shift are in Y units.");
-  m.def(
-      "plot_bars_h",
-      [](const char* label_id, py::buffer xs, py::buffer ys, double height) {
-        auto value_getter = ValueGetter(xs, ys);
         py::gil_scoped_release release;
         ImPlot::PlotBarsHG(label_id, value_getter.get_getter_func(),
                            &value_getter, value_getter.count(), height);
       },
-      py::arg("label_id"), py::arg("xs"), py::arg("ys"), py::arg("height"),
+      py::arg("label_id"), py::arg("values"), py::arg("height") = 0.67,
       "Plots a horizontal bar graph. #height and #shift are in Y units.");
 
   m.def(
