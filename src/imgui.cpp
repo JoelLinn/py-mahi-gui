@@ -106,7 +106,7 @@ void py_init_module_imgui_enums(py::module& m) {
 
   py::enum_<ImGuiTableFlags_>(m, "TableFlags", py::arithmetic())
       // Features
-      .value("None", ImGuiTableFlags_None)
+      .value("None_", ImGuiTableFlags_None)
       .value("Resizable", ImGuiTableFlags_Resizable, "Allow resizing columns.")
       .value("Reorderable", ImGuiTableFlags_Reorderable,
              "Allow reordering columns (need calling TableSetupColumn() + "
@@ -192,7 +192,7 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("ScrollFreeze3Columns", ImGuiTableFlags_ScrollFreeze3Columns);
 
   py::enum_<ImGuiTableColumnFlags_>(m, "TableColumnFlags", py::arithmetic())
-      .value("None", ImGuiTableColumnFlags_None)
+      .value("None_", ImGuiTableColumnFlags_None)
       .value("DefaultHide", ImGuiTableColumnFlags_DefaultHide,
              "Default as a hidden column.")
       .value("DefaultSort", ImGuiTableColumnFlags_DefaultSort,
@@ -244,13 +244,13 @@ void py_init_module_imgui_enums(py::module& m) {
              "columns from crossing over this column.");
 
   py::enum_<ImGuiTableRowFlags_>(m, "TableRowFlags", py::arithmetic())
-      .value("None", ImGuiTableRowFlags_None)
+      .value("None_", ImGuiTableRowFlags_None)
       .value("Headers", ImGuiTableRowFlags_Headers,
              "Identify header row (set default background color + width of its "
              "contents accounted different for auto column width)");
 
   py::enum_<ImGuiTableBgTarget_>(m, "TableBgTarget")
-      .value("None", ImGuiTableBgTarget_None)
+      .value("None_", ImGuiTableBgTarget_None)
       .value("ColumnBg0", ImGuiTableBgTarget_ColumnBg0)
       .value("ColumnBg1", ImGuiTableBgTarget_ColumnBg1)
       .value("RowBg0", ImGuiTableBgTarget_RowBg0,
@@ -263,7 +263,7 @@ void py_init_module_imgui_enums(py::module& m) {
              "Set cell background color (top-most color)");
 
   py::enum_<ImGuiDir_>(m, "Direction")
-      .value("None", ImGuiDir_None)
+      .value("None_", ImGuiDir_None)
       .value("Left", ImGuiDir_Left)
       .value("Right", ImGuiDir_Right)
       .value("Up", ImGuiDir_Up)
@@ -355,14 +355,14 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("SelectableTextAlign", ImGuiStyleVar_SelectableTextAlign);
 
   py::enum_<ImGuiFocusedFlags_>(m, "FocusedFlags")
-      .value("None", ImGuiFocusedFlags_None)
+      .value("None_", ImGuiFocusedFlags_None)
       .value("ChildWindows", ImGuiFocusedFlags_ChildWindows)
       .value("RootWindow", ImGuiFocusedFlags_RootWindow)
       .value("AnyWindow", ImGuiFocusedFlags_AnyWindow)
       .value("RootAndChildWindows", ImGuiFocusedFlags_RootAndChildWindows);
 
   py::enum_<ImGuiHoveredFlags_>(m, "HoveredFlags")
-      .value("None", ImGuiHoveredFlags_None)
+      .value("None_", ImGuiHoveredFlags_None)
       .value("ChildWindows", ImGuiHoveredFlags_ChildWindows)
       .value("RootWindow", ImGuiHoveredFlags_RootWindow)
       .value("AnyWindow", ImGuiHoveredFlags_AnyWindow)
@@ -386,7 +386,7 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("All", ImDrawCornerFlags_All);
 
   py::enum_<ImGuiSliderFlags_>(m, "SliderFlags", py::arithmetic())
-      .value("None", ImGuiSliderFlags_None)
+      .value("None_", ImGuiSliderFlags_None)
       .value("ClampOnInput", ImGuiSliderFlags_ClampOnInput,
              "Clamp value to min/max bounds when input manually with "
              "CTRL+Click. By default CTRL+Click allows going out of bounds.")
