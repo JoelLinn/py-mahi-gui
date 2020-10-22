@@ -92,7 +92,12 @@ public:
 #undef VG_EMIT_GET_GETTER_Y
   }
 
-  int count() const { return this->infoY.shape.at(0); };
+  int count() const {
+    auto count = this->infoY.shape.at(0);
+    assert(count >= 0);
+    assert(count <= std::numeric_limits<int>::max);
+    return static_cast<int>(count);
+  };
 
 protected:
   static const constexpr char* error_dim = "Incompatible buffer dimension!";
@@ -925,7 +930,8 @@ void py_init_module_implot(py::module& m) {
   m.def(
       "push_colormap",
       [](const std::vector<ImVec4>& colormap) {
-        ImPlot::PushColormap(colormap.data(), colormap.size());
+        ImPlot::PushColormap(colormap.data(),
+                             static_cast<int>(colormap.size()));
       },
       py::arg("colormap"),
       "Temporarily switch to your custom colormap. The pointer data must "
@@ -936,7 +942,7 @@ void py_init_module_implot(py::module& m) {
   m.def(
       "set_colormap",
       [](const std::vector<ImVec4>& colors) {
-        ImPlot::SetColormap(colors.data(), colors.size());
+        ImPlot::SetColormap(colors.data(), static_cast<int>(colors.size()));
       },
       py::arg("colors"),
       "Permanently sets a custom colormap. The colors will be copied to "
