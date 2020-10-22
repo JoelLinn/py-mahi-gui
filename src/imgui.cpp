@@ -147,8 +147,8 @@ void py_init_module_imgui_enums(py::module& m) {
 
   py::enum_<ImGuiTableBgTarget_>(m, "TableBgTarget")
       .value("None_", ImGuiTableBgTarget_None)
-      .value("ColumnBg0", ImGuiTableBgTarget_ColumnBg0)
-      .value("ColumnBg1", ImGuiTableBgTarget_ColumnBg1)
+      //.value("ColumnBg0", ImGuiTableBgTarget_ColumnBg0)
+      //.value("ColumnBg1", ImGuiTableBgTarget_ColumnBg1)
       .value("RowBg0", ImGuiTableBgTarget_RowBg0,
              "Set row background color 0 (generally used for background, "
              "automatically set when ImGuiTableFlags_RowBg is used)")
@@ -176,16 +176,16 @@ void py_init_module_imgui_enums(py::module& m) {
              "ColorEdit, ColorPicker, ColorButton: ignore Alpha component "
              "(will only read 3 components from the input pointer).")
       .value("NoPicker", ImGuiColorEditFlags_NoPicker,
-             "ColorEdit: disable picker when clicking on colored square.")
+             "ColorEdit: disable picker when clicking on color square.")
       .value("NoOptions", ImGuiColorEditFlags_NoOptions,
              "ColorEdit: disable toggling options menu when right-clicking on "
              "inputs/small preview.")
       .value("NoSmallPreview", ImGuiColorEditFlags_NoSmallPreview,
-             "ColorEdit, ColorPicker: disable colored square preview next to "
+             "ColorEdit, ColorPicker: disable color square preview next to "
              "the inputs. (e.g. to show only the inputs)")
       .value("NoInputs", ImGuiColorEditFlags_NoInputs,
              "ColorEdit, ColorPicker: disable inputs sliders/text widgets "
-             "(e.g. to show only the small preview colored square).")
+             "(e.g. to show only the small preview color square).")
       .value("NoTooltip", ImGuiColorEditFlags_NoTooltip,
              "ColorEdit, ColorPicker, ColorButton: disable tooltip when "
              "hovering the preview.")
@@ -194,7 +194,7 @@ void py_init_module_imgui_enums(py::module& m) {
              "(the label is still forwarded to the tooltip and picker).")
       .value("NoSidePreview", ImGuiColorEditFlags_NoSidePreview,
              "ColorPicker: disable bigger color preview on right side of the "
-             "picker, use small colored square preview instead.")
+             "picker, use small color square preview instead.")
       .value("NoDragDrop", ImGuiColorEditFlags_NoDragDrop,
              "ColorEdit: disable drag and drop target. ColorButton: disable "
              "drag and drop source.")
@@ -338,7 +338,7 @@ void py_init_module_imgui_enums(py::module& m) {
 
   py::enum_<ImGuiSliderFlags_>(m, "SliderFlags", py::arithmetic())
       .value("None_", ImGuiSliderFlags_None)
-      .value("ClampOnInput", ImGuiSliderFlags_ClampOnInput,
+      .value("AlwaysClamp", ImGuiSliderFlags_AlwaysClamp,
              "Clamp value to min/max bounds when input manually with "
              "CTRL+Click. By default CTRL+Click allows going out of bounds.")
       .value("Logarithmic", ImGuiSliderFlags_Logarithmic,
@@ -402,18 +402,26 @@ void py_init_module_imgui_enums(py::module& m) {
           "NoPushId", ImGuiTabItemFlags_NoPushId,
           "Don't call PushID(tab->ID)/PopID() on BeginTabItem()/EndTabItem()")
       .value("NoTooltip", ImGuiTabItemFlags_NoTooltip,
-             "Disable tooltip for the given tab");
+             "Disable tooltip for the given tab")
+      .value("NoReorder", ImGuiTabItemFlags_NoReorder,
+             "Disable reordering this tab or having another tab cross over "
+             "this tab")
+      .value("Leading", ImGuiTabItemFlags_Leading,
+             "Enforce the tab position to the left of the tab bar (after the "
+             "tab list popup button)")
+      .value("Trailing", ImGuiTabItemFlags_Trailing,
+             "Enforce the tab position to the right of the tab bar (before the "
+             "scrolling buttons)");
 
   py::enum_<ImGuiTableFlags_>(m, "TableFlags", py::arithmetic())
       // Features
       .value("None_", ImGuiTableFlags_None)
       .value("Resizable", ImGuiTableFlags_Resizable, "Allow resizing columns.")
       .value("Reorderable", ImGuiTableFlags_Reorderable,
-             "Allow reordering columns (need calling TableSetupColumn() + "
-             "TableAutoHeaders() or TableHeaders() to display headers)")
+             "Allow reordering columns in header row (need calling "
+             "TableSetupColumn() + TableHeadersRow() to display headers)")
       .value("Hideable", ImGuiTableFlags_Hideable,
-             "Allow hiding columns (with right-click on header) (FIXME-TABLE: "
-             "allow without headers).")
+             "Allow hiding columns in context menu.")
       .value("Sortable", ImGuiTableFlags_Sortable,
              "Allow sorting on one column (sort_specs_count will always be == "
              "1). Call TableGetSortSpecs() to obtain sort specs.")
@@ -424,6 +432,9 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("NoSavedSettings", ImGuiTableFlags_NoSavedSettings,
              "Disable persisting columns order, width and sort settings in the "
              ".ini file.")
+      .value("ContextMenuInBody", ImGuiTableFlags_ContextMenuInBody,
+             "Right-click on columns body/contents will display table context "
+             "menu. By default it is available in TableHeadersRow().")
       // Decoration
       .value("RowBg", ImGuiTableFlags_RowBg,
              "Set each RowBg color with ImGuiCol_TableRowBg or "
@@ -444,32 +455,53 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("BordersOuter", ImGuiTableFlags_BordersOuter,
              "Draw outer borders.")
       .value("Borders", ImGuiTableFlags_Borders, "Draw all borders.")
-      .value("BordersFullHeightV", ImGuiTableFlags_BordersFullHeightV,
-             "Borders covers all rows even when Headers are being used. Allow "
-             "resizing from any rows.")
-      // Padding, Sizing
-      .value("NoClipX", ImGuiTableFlags_NoClipX,
-             "Disable pushing clipping rectangle for every individual columns "
-             "(reduce draw command count, items will be able to overflow)")
-      .value("SizingPolicyFixedX", ImGuiTableFlags_SizingPolicyFixedX,
-             "Default if ScrollX is on. Columns will default to use "
-             "_WidthFixed or _WidthAlwaysAutoResize policy. Read description "
-             "above for more details.")
-      .value("SizingPolicyStretchX", ImGuiTableFlags_SizingPolicyStretchX,
+      .value("NoBordersInBody", ImGuiTableFlags_NoBordersInBody,
+             "Disable vertical borders in columns Body (borders will always "
+             "appears in Headers).")
+      .value("NoBordersInBodyUntilResize",
+             ImGuiTableFlags_NoBordersInBodyUntilResize,
+             "Disable vertical borders in columns Body until hovered for "
+             "resize (borders will always appears in Headers).")
+      // Sizing
+      .value("ColumnsWidthStretch", ImGuiTableFlags_ColumnsWidthStretch,
              "Default if ScrollX is off. Columns will default to use "
-             "_WidthStretch policy. Read description above for more details.")
-      .value(
-          "NoHeadersWidth", ImGuiTableFlags_NoHeadersWidth,
-          "Disable header width contribution to automatic width calculation.")
+             "_WidthStretch. Read description above for more details.")
+      .value("ColumnsWidthFixed", ImGuiTableFlags_ColumnsWidthFixed,
+             "Default if ScrollX is on. Columns will default to use "
+             "_WidthFixed or _WidthAutoResize policy (if Resizable is off). "
+             "Read description above for more details.")
+      .value("SameWidths", ImGuiTableFlags_SameWidths,
+             "Make all columns the same widths which is useful with Fixed "
+             "columns policy (but granted by default with Stretch policy + no "
+             "resize). Implicitly enable ImGuiTableFlags_NoKeepColumnsVisible "
+             "and disable ImGuiTableFlags_Resizable.")
+      .value("NoHeadersWidth", ImGuiTableFlags_NoHeadersWidth,
+             "Disable headers' contribution to automatic width calculation.")
       .value("NoHostExtendY", ImGuiTableFlags_NoHostExtendY,
-             "(FIXME-TABLE: Reword as SizingPolicy?) Disable extending past "
-             "the limit set by outer_size.y, only meaningful when neither of "
-             "ScrollX|ScrollY are set (data below the limit will be clipped "
-             "and not visible)")
+             "Disable extending past the limit set by outer_size.y, only "
+             "meaningful when neither of ScrollX|ScrollY are set (data below "
+             "the limit will be clipped and not visible)")
       .value("NoKeepColumnsVisible", ImGuiTableFlags_NoKeepColumnsVisible,
-             "(FIXME-TABLE) Disable code that keeps column always minimally "
-             "visible when table width gets too small and horizontal scrolling "
-             "is off.")
+             "Disable keeping column always minimally visible when ScrollX is "
+             "off and table gets too small.")
+      .value("PreciseWidths", ImGuiTableFlags_PreciseWidths,
+             "Disable distributing remainder width to stretched columns (width "
+             "allocation on a 100-wide table with 3 columns: Without this "
+             "flag: 33,33,34. With this flag: 33,33,33). With larger number of "
+             "columns, resizing will appear to be less smooth.")
+      .value("NoClip", ImGuiTableFlags_NoClip,
+             "Disable clipping rectangle for every individual columns (reduce "
+             "draw command count, items will be able to overflow into other "
+             "columns). Generally incompatible with TableSetupScrollFreeze().")
+      // Padding
+      .value("PadOuterX", ImGuiTableFlags_PadOuterX,
+             "Default if BordersOuterV is on. Enable outer-most padding.")
+      .value("NoPadOuterX", ImGuiTableFlags_NoPadOuterX,
+             "Default if BordersOuterV is off. Disable outer-most padding.")
+      .value(
+          "NoPadInnerX", ImGuiTableFlags_NoPadInnerX,
+          "Disable inner padding between columns (double inner padding if "
+          "BordersOuterV is on, single inner padding if BordersOuterV is off).")
       // Scrolling
       .value("ScrollX", ImGuiTableFlags_ScrollX,
              "Enable horizontal scrolling. Require 'outer_size' parameter of "
@@ -478,18 +510,7 @@ void py_init_module_imgui_enums(py::module& m) {
              "using ScrollX.")
       .value("ScrollY", ImGuiTableFlags_ScrollY,
              "Enable vertical scrolling. Require 'outer_size' parameter of "
-             "begin_table() to specify the container size.")
-      .value("Scroll", ImGuiTableFlags_Scroll)
-      .value("ScrollFreezeTopRow", ImGuiTableFlags_ScrollFreezeTopRow,
-             "We can lock 1 to 3 rows (starting from the top). Use with "
-             "ScrollY enabled.")
-      .value("ScrollFreeze2Rows", ImGuiTableFlags_ScrollFreeze2Rows)
-      .value("ScrollFreeze3Rows", ImGuiTableFlags_ScrollFreeze3Rows)
-      .value("ScrollFreezeLeftColumn", ImGuiTableFlags_ScrollFreezeLeftColumn,
-             "We can lock 1 to 3 columns (starting from the left). Use with "
-             "ScrollX enabled.")
-      .value("ScrollFreeze2Columns", ImGuiTableFlags_ScrollFreeze2Columns)
-      .value("ScrollFreeze3Columns", ImGuiTableFlags_ScrollFreeze3Columns);
+             "begin_table() to specify the container size.");
 
   py::enum_<ImGuiTableColumnFlags_>(m, "TableColumnFlags", py::arithmetic())
       .value("None_", ImGuiTableColumnFlags_None)
@@ -497,24 +518,28 @@ void py_init_module_imgui_enums(py::module& m) {
              "Default as a hidden column.")
       .value("DefaultSort", ImGuiTableColumnFlags_DefaultSort,
              "Default as a sorting column.")
-      .value("WidthFixed", ImGuiTableColumnFlags_WidthFixed,
-             "Column will keep a fixed size, preferable with horizontal "
-             "scrolling enabled (default if table sizing policy is "
-             "SizingPolicyFixedX and table is resizable).")
       .value(
           "WidthStretch", ImGuiTableColumnFlags_WidthStretch,
-          "Column will stretch, preferable with horizontal scrolling disabled "
-          "(default if table sizing policy is SizingPolicyStretchX).")
-      .value("WidthAlwaysAutoResize",
-             ImGuiTableColumnFlags_WidthAlwaysAutoResize,
-             "Column will keep resizing based on submitted contents (with a "
-             "one frame delay) == Fixed with auto resize (default if table "
-             "sizing policy is SizingPolicyFixedX and table is not resizable).")
+          "Column will stretch. Preferable with horizontal scrolling disabled "
+          "(default if table sizing policy is _ColumnsWidthStretch).")
+      .value("WidthFixed", ImGuiTableColumnFlags_WidthFixed,
+             "Column will not stretch. Preferable with horizontal scrolling "
+             "enabled (default if table sizing policy is _ColumnsWidthFixed "
+             "and table is resizable).")
+      .value("WidthAutoResize", ImGuiTableColumnFlags_WidthAutoResize,
+             "Column will not stretch and keep resizing based on submitted "
+             "contents (default if table sizing policy is _ColumnsWidthFixed "
+             "and table is not resizable).")
       .value("NoResize", ImGuiTableColumnFlags_NoResize,
              "Disable manual resizing.")
-      .value("NoClipX", ImGuiTableColumnFlags_NoClipX,
-             "Disable clipping for this column (all NoClipX columns will "
-             "render in a same draw command).")
+      .value("NoReorder", ImGuiTableColumnFlags_NoReorder,
+             "Disable manual reordering this column, this will also prevent "
+             "other columns from crossing over this column.")
+      .value("NoHide", ImGuiTableColumnFlags_NoHide,
+             "Disable ability to hide this column.")
+      .value("NoClip", ImGuiTableColumnFlags_NoClip,
+             "Disable clipping for this column (all NoClip columns will render "
+             "in a same draw command).")
       .value("NoSort", ImGuiTableColumnFlags_NoSort,
              "Disable ability to sort on this field (even if "
              "ImGuiTableFlags_Sortable is set on the table).")
@@ -522,8 +547,6 @@ void py_init_module_imgui_enums(py::module& m) {
              "Disable ability to sort in the ascending direction.")
       .value("NoSortDescending", ImGuiTableColumnFlags_NoSortDescending,
              "Disable ability to sort in the descending direction.")
-      .value("NoHide", ImGuiTableColumnFlags_NoHide,
-             "Disable hiding this column.")
       .value("NoHeaderWidth", ImGuiTableColumnFlags_NoHeaderWidth,
              "Header width don't contribute to automatic column width.")
       .value("PreferSortAscending", ImGuiTableColumnFlags_PreferSortAscending,
@@ -538,10 +561,7 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("IndentDisable", ImGuiTableColumnFlags_IndentDisable,
              "Ignore current Indent value when entering cell (default for "
              "columns after the 1st one). Indentation changes _within_ the "
-             "cell will still be honored.")
-      .value("NoReorder", ImGuiTableColumnFlags_NoReorder,
-             "Disable reordering this column, this will also prevent other "
-             "columns from crossing over this column.");
+             "cell will still be honored.");
 
   py::enum_<ImGuiTableRowFlags_>(m, "TableRowFlags", py::arithmetic())
       .value("None_", ImGuiTableRowFlags_None)
@@ -677,15 +697,19 @@ void py_init_module_imgui_classes(py::module& m) {
       .def_readwrite("frame_border_size", &ImGuiStyle::FrameBorderSize)
       .def_readwrite("item_spacing", &ImGuiStyle::ItemSpacing)
       .def_readwrite("item_inner_spacing", &ImGuiStyle::ItemInnerSpacing)
-      .def_readwrite("touch_extra_spacing", &ImGuiStyle::TouchExtraPadding)
+      .def_readwrite("cell_padding", &ImGuiStyle::CellPadding)
+      .def_readwrite("touch_extra_padding", &ImGuiStyle::TouchExtraPadding)
       .def_readwrite("indent_spacing", &ImGuiStyle::IndentSpacing)
       .def_readwrite("columns_min_spacing", &ImGuiStyle::ColumnsMinSpacing)
       .def_readwrite("scroll_bar_size", &ImGuiStyle::ScrollbarSize)
       .def_readwrite("scroll_bar_rounding", &ImGuiStyle::ScrollbarRounding)
       .def_readwrite("grab_min_size", &ImGuiStyle::GrabMinSize)
       .def_readwrite("grab_rounding", &ImGuiStyle::GrabRounding)
+      .def_readwrite("log_slider_deadzone", &ImGuiStyle::LogSliderDeadzone)
       .def_readwrite("tab_rounding", &ImGuiStyle::TabRounding)
       .def_readwrite("tab_border_size", &ImGuiStyle::TabBorderSize)
+      .def_readwrite("tab_min_width_for_close_button",
+                     &ImGuiStyle::TabMinWidthForCloseButton)
       .def_readwrite("color_button_position", &ImGuiStyle::ColorButtonPosition)
       .def_readwrite("button_text_align", &ImGuiStyle::ButtonTextAlign)
       .def_readwrite("selectable_text_align", &ImGuiStyle::SelectableTextAlign)
@@ -695,9 +719,13 @@ void py_init_module_imgui_classes(py::module& m) {
                      &ImGuiStyle::DisplaySafeAreaPadding)
       .def_readwrite("mouse_cursor_scale", &ImGuiStyle::MouseCursorScale)
       .def_readwrite("anti_aliased_lines", &ImGuiStyle::AntiAliasedLines)
+      .def_readwrite("anti_aliased_lines_use_tex",
+                     &ImGuiStyle::AntiAliasedLinesUseTex)
       .def_readwrite("anti_aliased_fill", &ImGuiStyle::AntiAliasedFill)
       .def_readwrite("curve_tessellation_tol",
                      &ImGuiStyle::CurveTessellationTol)
+      .def_readwrite("circle_segment_max_error",
+                     &ImGuiStyle::CircleSegmentMaxError)
       .def("get_color",
            [](ImGuiStyle& self, ImGuiCol_ a) { return self.Colors[(int)a]; })
       .def("set_color", [](ImGuiStyle& self, ImGuiCol_ a, ImVec4 c) {
@@ -766,8 +794,8 @@ void py_init_module_imgui_classes(py::module& m) {
                      &ImGuiIO::ConfigWindowsResizeFromEdges)
       .def_readwrite("config_windows_move_from_title_bar_only",
                      &ImGuiIO::ConfigWindowsMoveFromTitleBarOnly)
-      .def_readwrite("config_windows_memory_compact_timer",
-                     &ImGuiIO::ConfigWindowsMemoryCompactTimer)
+      .def_readwrite("config_memory_compact_timer",
+                     &ImGuiIO::ConfigMemoryCompactTimer)
       // ======================================================================
       .def_readonly("backend_platform_name", &ImGuiIO::BackendPlatformName)
       .def_readonly("backend_renderer_name", &ImGuiIO::BackendRendererName)
@@ -937,9 +965,9 @@ void py_init_module_imgui_funcs(py::module& m) {
       "current ID-stack (so OpenPopup and BeginPopup needs to be at the same "
       "level).");
   m.def(
-      "open_popup_context_item",
+      "open_popup_on_item_click",
       [](const std::string& str_id = "", int mouse_button = 1) {
-        ImGui::OpenPopupContextItem(str_id.c_str(), mouse_button);
+        ImGui::OpenPopupOnItemClick(str_id.c_str(), mouse_button);
       },
       "helper to open popup when clicked on last item. return true when just  "
       "opened. (note: actually triggers on the mouse _released_ event to be "
@@ -1154,14 +1182,34 @@ void py_init_module_imgui_funcs(py::module& m) {
         py::arg("row_flags") = ImGuiTableRowFlags_(0),
         py::arg("min_row_height") = 0.0f,
         "append into the first cell of a new row.");
-  m.def("table_next_cell", &ImGui::TableNextCell,
-        "append into the next column (next column, or next row if currently in "
-        "last column). Return true if column is visible.");
-  m.def("table_set_column_index", &ImGui::TableSetColumnIndex,
-        py::arg("column_n"),
-        "append into the specified column. Return true if column is visible.");
+  m.def("table_next_cell", &ImGui::TableNextColumn,
+        "append into the next column (or first column of next row if currently "
+        "in last column). Return true when column is visible.");
+  m.def(
+      "table_set_column_index", &ImGui::TableSetColumnIndex,
+      py::arg("column_n"),
+      "append into the specified column. Return true when column is visible.");
   m.def("table_get_column_index", &ImGui::TableGetColumnIndex,
         "return current column index.");
+  m.def("table_get_row_index", &ImGui::TableGetRowIndex,
+        "return current row index.");
+  m.def("table_setup_column", &ImGui::TableSetupColumn, py::arg("label"),
+        py::arg("flags") = ImGuiTableColumnFlags_(0),
+        py::arg("init_width_or_weight") = -1.0f, py::arg("user_id") = 0,
+        "specify label, resizing policy, default width/weight, id, various "
+        "other flags etc.\n"
+        "Important: this will not display anything! The name passed to "
+        "TableSetupColumn() is used by TableHeadersRow() and context-menus.");
+  m.def("table_setup_scroll_freeze", &ImGui::TableSetupScrollFreeze,
+        py::arg("cols"), py::arg("rows"),
+        "lock columns/rows so they stay visible when scrolled.");
+  m.def("table_headers_row", &ImGui::TableHeadersRow,
+        "submit all headers cells based on data provided to TableSetupColumn() "
+        "+ submit context menu");
+  m.def("table_header", &ImGui::TableHeader, py::arg("label"),
+        "submit one header cell manually.");
+  m.def("table_get_column_count", &ImGui::TableGetColumnCount,
+        "return number of columns (value passed to BeginTable)");
   m.def(
       "table_get_column_name",
       [](int colummn_n) -> std::string_view {
@@ -1170,11 +1218,6 @@ void py_init_module_imgui_funcs(py::module& m) {
       py::arg("column_n") = -1,
       "return NULL if column didn't have a name declared by "
       "TableSetupColumn(). Pass -1 to use current column.");
-  m.def("table_get_column_is_visible", &ImGui::TableGetColumnIsVisible,
-        py::arg("column_n") = -1,
-        "return true if column is visible. Same value is also returned by "
-        "TableNextCell() and TableSetColumnIndex(). Pass -1 to use current "
-        "column.");
   m.def("table_get_column_is_sorted", &ImGui::TableGetColumnIsSorted,
         py::arg("column_n") = -1,
         "return true if column is included in the sort specs. Rarely used, can "
@@ -1185,32 +1228,13 @@ void py_init_module_imgui_funcs(py::module& m) {
         "return hovered column. return -1 when table is not hovered. return "
         "columns_count if the unused space at the right of visible columns is "
         "hovered.");
+  // FIXME: map ImGuiTableSortSpecs
+  // m.def("table_get_sort_specs", &ImGui::TableGetSortSpecs, "get latest sort
+  // specs for the table (NULL if not sorting).");
   m.def("table_set_bg_color", &ImGui::TableSetBgColor, py::arg("bg_target"),
         py::arg("color"), py::arg("column_n") = -1,
         "change the color of a cell, row, or column. See ImGuiTableBgTarget_ "
         "flags for details.");
-  m.def(
-      "table_setup_column", &ImGui::TableSetupColumn, py::arg("label"),
-      py::arg("flags") = ImGuiTableColumnFlags_(0),
-      py::arg("init_width_or_weight") = -1.0f, py::arg("user_id") = 0,
-      "Tables: Headers & Columns declaration\n"
-      "- Use TableSetupColumn() to specify label, resizing policy, default "
-      "width, id, various other flags etc.\n"
-      "- The name passed to TableSetupColumn() is used by TableAutoHeaders() "
-      "and by the context-menu\n"
-      "- Use TableAutoHeaders() to submit the whole header row, otherwise you "
-      "may treat the header row as a regular row, manually call TableHeader() "
-      "and other widgets.\n"
-      "- Headers are required to perform some interactions: reordering, "
-      "sorting, context menu (FIXME-TABLE: context menu should work without!)");
-  m.def("table_auto_headers", &ImGui::TableAutoHeaders,
-        "submit all headers cells based on data provided to TableSetupColumn() "
-        "+ submit context menu");
-  m.def("table_header", &ImGui::TableHeader, py::arg("label"),
-        "submit one header cell manually.");
-  // FIXME: map ImGuiTableSortSpecs
-  // m.def("table_get_sort_specs", &ImGui::TableGetSortSpecs, "get latest sort
-  // specs for the table (NULL if not sorting).");
 
   m.def("begin_tab_bar", &ImGui::BeginTabBar, py::arg("str_id"),
         py::arg("flags") = ImGuiTabBarFlags(0));

@@ -150,8 +150,11 @@ void py_init_module_implot(py::module& m) {
   py::enum_<ImPlotFlags_>(m, "Flags", py::arithmetic(), "Options for plots.")
       // None is a keyword in Python
       .value("None_", ImPlotFlags_None, "default")
+      .value("NoTitle", ImPlotFlags_NoTitle,
+             "the plot title will not be displayed (titles are also hidden if "
+             "preceeded by double hashes, e.g. \"##MyPlot\")")
       .value("NoLegend", ImPlotFlags_NoLegend,
-             "the top-left legend will not be displayed")
+             "the legend will not be displayed")
       .value("NoMenus", ImPlotFlags_NoMenus,
              "the user will not be able to open context menus with "
              "double-right click")
@@ -159,13 +162,16 @@ void py_init_module_implot(py::module& m) {
              "the user will not be able to box-select with right-mouse")
       .value("NoMousePos", ImPlotFlags_NoMousePos,
              "the mouse position, in plot coordinates, will not be displayed "
-             "in the bottom-right")
+             "inside of the plot")
       .value("NoHighlight", ImPlotFlags_NoHighlight,
              "plot items will not be highlighted when their legend entry is "
              "hovered")
       .value("NoChild", ImPlotFlags_NoChild,
              "a child window region will not be used to capture mouse scroll "
              "(can boost performance for single ImGui window applications)")
+      .value("Equal", ImPlotFlags_Equal,
+             "primary x and y axes will be constrained to have the same "
+             "units/pixel (does not apply to auxiliary y axes)")
       .value("YAxis2", ImPlotFlags_YAxis2,
              "enable a 2nd y-axis on the right side")
       .value("YAxis3", ImPlotFlags_YAxis3,
@@ -301,10 +307,17 @@ void py_init_module_implot(py::module& m) {
              "ImVec2, padding between axes labels, tick labels, and plot edge")
       .value("LegendPadding", ImPlotStyleVar_LegendPadding,
              "ImVec2, legend padding from top-left of plot")
-      .value("InfoPadding", ImPlotStyleVar_InfoPadding,
+      .value("LegendInnerPadding", ImPlotStyleVar_LegendInnerPadding,
+             "ImVec2, legend inner padding from legend edges")
+      .value("LegendSpacing", ImPlotStyleVar_LegendSpacing,
+             "ImVec2, spacing between legend entries")
+      .value("MousePosPadding", ImPlotStyleVar_MousePosPadding,
              "ImVec2, padding between plot edge and interior info text")
       .value("AnnotationPadding", ImPlotStyleVar_AnnotationPadding,
              "ImVec2, text padding around annotation labels")
+      .value(
+          "PlotDefaultSize", ImPlotStyleVar_PlotDefaultSize,
+          "ImVec2, default size used when ImVec2(0,0) is passed to BeginPlot")
       .value("PlotMinSize", ImPlotStyleVar_PlotMinSize,
              "ImVec2, minimum size plot frame can be when shrunk");
 
@@ -347,6 +360,30 @@ void py_init_module_implot(py::module& m) {
              "a.k.a. matplotlib/MATLAB \"pink\" (n=11)")
       .value("Jet", ImPlotColormap_Jet,
              "a.k.a. MATLAB \"jet\"             (n=11)");
+
+  py::enum_<ImPlotLocation_>(
+      m, "Location",
+      "Used to position items on a plot (e.g. legends, labels, etc.)")
+      .value("Center", ImPlotLocation_Center, "center-center")
+      .value("North", ImPlotLocation_North, "top-center")
+      .value("South", ImPlotLocation_South, "bottom-center")
+      .value("West", ImPlotLocation_West, "center-left")
+      .value("East", ImPlotLocation_East, "center-right")
+      .value("NorthWest", ImPlotLocation_NorthWest, "top-left")
+      .value("NorthEast", ImPlotLocation_NorthEast, "top-right")
+      .value("SouthWest", ImPlotLocation_SouthWest, "bottom-left")
+      .value("SouthEast", ImPlotLocation_SouthEast, "bottom-right");
+
+  py::enum_<ImPlotOrientation_>(
+      m, "Orientation",
+      "Used to orient items on a plot (e.g. legends, labels, etc.)")
+      .value("Horizontal", ImPlotOrientation_Horizontal, "left/right")
+      .value("Vertical", ImPlotOrientation_Vertical, "up/down");
+
+  py::enum_<ImPlotYAxis_>(m, "YAxis", "Enums for different y-axes.")
+      .value("y1", ImPlotYAxis_1, "left (default)")
+      .value("y2", ImPlotYAxis_2, "first on right side")
+      .value("y3", ImPlotYAxis_3, "second on right side");
 
   py::class_<ImPlotPoint>(m, "Point",
                           "Double precision version of ImVec2 used by ImPlot.")
@@ -421,15 +458,24 @@ void py_init_module_implot(py::module& m) {
       .def_readwrite("minor_grid_size", &ImPlotStyle::MinorGridSize,
                      "line thickness of minor grid lines")
       .def_readwrite("plot_padding", &ImPlotStyle::PlotPadding,
-                     "padding between widget frame and plot area and/or labels")
+                     "padding between widget frame and plot area, labels, or "
+                     "outside legends (i.e. main padding)")
       .def_readwrite("label_padding", &ImPlotStyle::LabelPadding,
                      "padding between axes labels, tick labels, and plot edge")
       .def_readwrite("legend_padding", &ImPlotStyle::LegendPadding,
-                     "legend padding from top-left of plot")
-      .def_readwrite("info_padding", &ImPlotStyle::InfoPadding,
-                     "padding between plot edge and interior info text")
+                     "legend padding from plot edges")
+      .def_readwrite("legend_inner_padding", &ImPlotStyle::LegendInnerPadding,
+                     "legend inner padding from legend edges")
+      .def_readwrite("legend_spacing", &ImPlotStyle::LegendSpacing,
+                     "spacing between legend entries")
+      .def_readwrite(
+          "mouse_pos_padding", &ImPlotStyle::MousePosPadding,
+          "padding between plot edge and interior mouse location text")
       .def_readwrite("annotation_padding", &ImPlotStyle::AnnotationPadding,
                      "text padding around annotation labels")
+      .def_readwrite(
+          "plot_default_size", &ImPlotStyle::PlotDefaultSize,
+          "default size used when ImVec2(0,0) is passed to BeginPlot")
       .def_readwrite("plot_min_size", &ImPlotStyle::PlotMinSize,
                      "minimum size plot frame can be when shrunk")
       // colors
@@ -454,8 +500,11 @@ void py_init_module_implot(py::module& m) {
       .def_readwrite("use_local_time", &ImPlotStyle::UseLocalTime,
                      "axis labels will be formatted for your timezone when "
                      "ImPlotAxisFlag_Time is enabled")
+      .def_readwrite("use_iso8601", &ImPlotStyle::UseISO8601,
+                     "dates will be formatted according to ISO 8601 where "
+                     "applicable (e.g. YYYY-MM-DD, YYYY-MM, --MM-DD, etc.)")
       .def_readwrite("use_24_hour_clock", &ImPlotStyle::Use24HourClock,
-                     "hours will be formatted for 24 hour clock");
+                     "times will be formatted using a 24 hour clock");
 
   // TODO ImPlotInputMap is not available for now.
 
@@ -522,6 +571,29 @@ void py_init_module_implot(py::module& m) {
       py::arg("label_id"), py::arg("xs"), py::arg("ys"),
       "Plots a standard 2D scatter plot. Default marker is "
       "ImPlotMarker_Circle.");
+
+  m.def(
+      "plot_stairs",
+      [](const char* label_id, py::buffer values) {
+        auto value_getter = ValueGetter(values);
+        py::gil_scoped_release release;
+        ImPlot::PlotStairsG(label_id, value_getter.get_getter_func(),
+                            &value_getter, value_getter.count());
+      },
+      py::arg("label_id"), py::arg("values"),
+      "Plots a a stairstep graph. The y value is continued constantly from "
+      "every x position, i.e. the interval [x[i], x[i+1]) has the value y[i].");
+  m.def(
+      "plot_stairs",
+      [](const char* label_id, py::buffer xs, py::buffer ys) {
+        auto value_getter = ValueGetter(xs, ys);
+        py::gil_scoped_release release;
+        ImPlot::PlotStairsG(label_id, value_getter.get_getter_func(),
+                            &value_getter, value_getter.count());
+      },
+      py::arg("label_id"), py::arg("xs"), py::arg("ys"),
+      "Plots a a stairstep graph. The y value is continued constantly from "
+      "every x position, i.e. the interval [x[i], x[i+1]) has the value y[i].");
 
   m.def(
       "plot_shaded",
@@ -657,6 +729,10 @@ void py_init_module_implot(py::module& m) {
         "Text color can be changed with "
         "ImPlot::PushStyleColor(ImPlotCol_InlayText, ...).");
 
+  m.def("plot_dummy", &ImPlot::PlotDummy, py::arg("label_id"),
+        "Plots an dummy item (i.e. adds a legend entry colored by "
+        "ImPlotCol_Line)");
+
   //-----------------------------------------------------------------------------
   // Plot Utils
   //-----------------------------------------------------------------------------
@@ -674,7 +750,7 @@ void py_init_module_implot(py::module& m) {
         "locked.");
   m.def("set_next_plot_limits_y", &ImPlot::SetNextPlotLimitsY, py::arg("y_min"),
         py::arg("y_max"), py::arg("cond") = ImGuiCond_Once,
-        py::arg("y_axis") = 0,
+        py::arg("y_axis") = ImPlotYAxis_(0),
         "Set the Y axis range limits of the next plot. Call right before "
         "BeginPlot(). If ImGuiCond_Always is used, the Y axis limits will be "
         "locked.");
@@ -688,38 +764,42 @@ void py_init_module_implot(py::module& m) {
 
   m.def("set_plot_y_axis", &ImPlot::SetPlotYAxis, py::arg("y_axis"),
         "Select which Y axis will be used for subsequent plot elements. The "
-        "default is '0', or the first (left) Y axis. Enable 2nd and 3rd axes "
-        "with ImPlotFlags_YAxisX.");
-  m.def(
-      "hide_next_item", &ImPlot::HideNextItem, py::arg("hidden") = true,
-      py::arg("cond") = ImGuiCond_Once,
-      "Hides or shows the next plot item (i.e. as if it were toggled from the "
-      "legend). Use ImGuiCond_Always if you need to change this every frame.");
+        "default is ImPlotYAxis_1, or the first (left) Y axis. Enable 2nd and "
+        "3rd axes with ImPlotFlags_YAxisX.");
+  m.def("hide_next_item", &ImPlot::HideNextItem, py::arg("hidden") = true,
+        py::arg("cond") = ImGuiCond_Once,
+        "Hides or shows the next plot item (i.e. as if it were toggled from "
+        "the legend). Use ImGuiCond_Always if you need to forcefully set this "
+        "every frame.");
 
   m.def(
       "pixels_to_plot",
       py::overload_cast<const ImVec2&, int>(&ImPlot::PixelsToPlot),
       py::arg("pix"), py::arg("y_axis") = IMPLOT_AUTO,
       "Convert pixels to a position in the current plot's coordinate system. A "
-      "negative y_axis uses the current value of SetPlotYAxis (0 initially).");
+      "negative y_axis uses the current value of SetPlotYAxis (ImPlotYAxis_1 "
+      "initially).");
   m.def(
       "pixels_to_plot",
       py::overload_cast<float, float, int>(&ImPlot::PixelsToPlot), py::arg("x"),
       py::arg("y"), py::arg("y_axis") = IMPLOT_AUTO,
       "Convert pixels to a position in the current plot's coordinate system. A "
-      "negative y_axis uses the current value of SetPlotYAxis (0 initially).");
+      "negative y_axis uses the current value of SetPlotYAxis (ImPlotYAxis_1 "
+      "initially).");
   m.def(
       "plot_to_pixels",
       py::overload_cast<const ImPlotPoint&, int>(&ImPlot::PlotToPixels),
       py::arg("plt"), py::arg("y_axis") = IMPLOT_AUTO,
       "Convert a position in the current plot's coordinate system to pixels. A "
-      "negative y_axis uses the current value of SetPlotYAxis (0 initially).");
+      "negative y_axis uses the current value of SetPlotYAxis (ImPlotYAxis_1 "
+      "initially).");
   m.def(
       "plot_to_pixels",
       py::overload_cast<double, double, int>(&ImPlot::PlotToPixels),
       py::arg("x"), py::arg("y"), py::arg("y_axis") = IMPLOT_AUTO,
       "Convert a position in the current plot's coordinate system to pixels. A "
-      "negative y_axis uses the current value of SetPlotYAxis (0 initially).");
+      "negative y_axis uses the current value of SetPlotYAxis (ImPlotYAxis_1 "
+      "initially).");
   m.def("get_plot_pos", &ImPlot::GetPlotPos,
         "Get the current Plot position (top-left) in pixels.");
   m.def("get_plot_size", &ImPlot::GetPlotSize,
@@ -730,17 +810,17 @@ void py_init_module_implot(py::module& m) {
         "Returns true if the XAxis plot area in the current plot is hovered.");
   m.def(
       "is_plot_y_axis_hovered", &ImPlot::IsPlotYAxisHovered,
-      py::arg("y_axis") = 0,
+      py::arg("y_axis") = ImPlotYAxis_(0),
       "Returns true if the YAxis[n] plot area in the current plot is hovered.");
-  m.def(
-      "get_plot_mouse_pos", &ImPlot::GetPlotMousePos,
-      py::arg("y_axis") = IMPLOT_AUTO,
-      "Returns the mouse position in x,y coordinates of the current plot. A "
-      "negative y_axis uses the current value of SetPlotYAxis (0 initially).");
+  m.def("get_plot_mouse_pos", &ImPlot::GetPlotMousePos,
+        py::arg("y_axis") = IMPLOT_AUTO,
+        "Returns the mouse position in x,y coordinates of the current plot. A "
+        "negative y_axis uses the current value of SetPlotYAxis (ImPlotYAxis_1 "
+        "initially).");
   m.def("get_plot_limits", &ImPlot::GetPlotLimits,
         py::arg("y_axis") = IMPLOT_AUTO,
         "Returns the current plot axis range. A negative y_axis uses the "
-        "current value of SetPlotYAxis (0 initially).");
+        "current value of SetPlotYAxis (ImPlotYAxis_1 initially).");
 
   m.def("is_plot_queried", &ImPlot::IsPlotQueried,
         "Returns true if the current plot is being queried. Query must be "
@@ -826,6 +906,22 @@ void py_init_module_implot(py::module& m) {
   // Legend Utils and Tools
   //----------------------------------------------------------------------------
 
+  // The following functions MUST be called between Begin/EndPlot!
+  m.def(
+      "set_legend_location",
+      [](ImPlotLocation_ location, ImPlotOrientation_ orientation,
+         bool outside) {
+        ImPlot::SetLegendLocation(location, orientation, outside);
+      },
+      py::arg("location"), py::arg("orientation") = ImPlotOrientation_Vertical,
+      py::arg("outside") = false,
+      "Set the location of the current plot's legend.");
+  m.def(
+      "set_mouse_pos_location",
+      [](ImPlotLocation_ location) { ImPlot::SetMousePosLocation(location); },
+      py::arg("location"),
+      "Set the location of the current plot's mouse position text (default = "
+      "South|East).");
   m.def("is_legend_entry_hovered", &ImPlot::IsLegendEntryHovered,
         py::arg("label_id"),
         "Returns true if a plot item legend entry is hovered.");
@@ -990,12 +1086,20 @@ void py_init_module_implot(py::module& m) {
 
   m.def("show_style_selector", &ImPlot::ShowStyleSelector, py::arg("label"),
         "Shows ImPlot style selector dropdown menu.");
+  m.def("show_colormap_selector", &ImPlot::ShowColormapSelector,
+        py::arg("label"), "Shows ImPlot colormap selector dropdown menu.");
   m.def("show_style_editor", &ImPlot::ShowStyleEditor,
         py::arg("style") = nullptr,
         "Shows ImPlot style editor block (not a window).");
   m.def("show_user_guide", &ImPlot::ShowUserGuide,
         "Add basic help/info block (not a window): how to manipulate ImPlot as "
         "an end-user.");
+  m.def(
+      "show_metrics_window",
+      [](Bool& popen) {
+        ImPlot::ShowMetricsWindow(popen.null ? nullptr : &popen.value);
+      },
+      py::arg("popen") = null);
 
   //---------------------------------------------------------------------------
   // Demo
