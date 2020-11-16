@@ -1881,7 +1881,7 @@ void py_init_module_imgui_funcs(py::module& m) {
       "accept_drag_drop_payload_string",
       [](ImGuiDragDropFlags flags) -> std::string {
         auto payload = ImGui::AcceptDragDropPayload("string", flags);
-        if (!payload->IsDataType("string") || !payload->Data)
+        if (!payload || !payload->IsDataType("string") || !payload->Data)
           return "";
         if (payload->IsDelivery())
           return std::string(static_cast<char*>(payload->Data),
