@@ -25,6 +25,7 @@ SOFTWARE.
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <mutex>
+#include <optional>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -1879,15 +1880,15 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def("begin_drag_drop_target", &ImGui::BeginDragDropTarget);
   m.def(
       "accept_drag_drop_payload_string",
-      [](ImGuiDragDropFlags flags) -> std::string {
+      [](ImGuiDragDropFlags flags) -> std::optional<std::string> {
         auto payload = ImGui::AcceptDragDropPayload("string", flags);
-        if (!payload->IsDataType("string") || !payload->Data)
-          return "";
+        if (!payload || !payload->IsDataType("string") || !payload->Data)
+          return std::nullopt;
         if (payload->IsDelivery())
           return std::string(static_cast<char*>(payload->Data),
                              payload->DataSize);
         else
-          return "";
+          return std::nullopt;
       },
       py::arg("flags") = ImGuiDragDropFlags_(0));
 
