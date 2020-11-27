@@ -1873,8 +1873,8 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def("begin_drag_drop_source", &ImGui::BeginDragDropSource);
   // todo:
   // m.def("set_drag_drop_payload", &ImGui::SetDragDropPayload);
-  m.def("set_drag_drop_payload_string", [](std::string data) {
-    ImGui::SetDragDropPayload("string", data.c_str(), data.size());
+  m.def("set_drag_drop_payload_string", [](const std::string_view str) {
+    ImGui::SetDragDropPayload("string", str.data(), str.size());
   });
   m.def("end_drag_drop_source", &ImGui::EndDragDropSource);
   m.def("begin_drag_drop_target", &ImGui::BeginDragDropTarget);
