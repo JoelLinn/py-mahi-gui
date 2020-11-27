@@ -929,7 +929,7 @@ void py_init_module_imgui_funcs(py::module& m) {
 
   m.def(
       "open_popup",
-      [](std::string str_id) { ImGui::OpenPopup(str_id.c_str()); },
+      [](const std::string& str_id) { ImGui::OpenPopup(str_id.c_str()); },
       "call to mark popup as open (don't call every frame!). popups are closed "
       "when user click outside, or if CloseCurrentPopup() is called within a "
       "BeginPopup()/EndPopup() block. By default, Selectable()/MenuItem() are "
@@ -938,7 +938,7 @@ void py_init_module_imgui_funcs(py::module& m) {
       "level).");
   m.def(
       "open_popup_context_item",
-      [](std::string str_id = "", int mouse_button = 1) {
+      [](const std::string& str_id = "", int mouse_button = 1) {
         ImGui::OpenPopupContextItem(str_id.c_str(), mouse_button);
       },
       "helper to open popup when clicked on last item. return true when just  "
@@ -946,13 +946,13 @@ void py_init_module_imgui_funcs(py::module& m) {
       "consistent with popup behaviors)");
   m.def(
       "begin_popup",
-      [](std::string str_id, ImGuiWindowFlags flags) -> bool {
+      [](const std::string& str_id, ImGuiWindowFlags flags) -> bool {
         return ImGui::BeginPopup(str_id.c_str(), flags);
       },
       "", py::arg("name"), py::arg("flags") = ImGuiWindowFlags_(0));
   m.def(
       "begin_popup_modal",
-      [](std::string name = "") -> bool {
+      [](const std::string& name = "") -> bool {
         return ImGui::BeginPopupModal(name.c_str());
       },
       "");
@@ -975,7 +975,7 @@ void py_init_module_imgui_funcs(py::module& m) {
   m.def("end_popup", &ImGui::EndPopup);
   m.def(
       "is_popup_open",
-      [](std::string str_id = "") -> bool {
+      [](const std::string& str_id = "") -> bool {
         return ImGui::IsPopupOpen(str_id.c_str());
       },
       "");
@@ -1793,7 +1793,7 @@ void py_init_module_imgui_funcs(py::module& m) {
 
   m.def(
       "selectable",
-      [](std::string label, bool selected, ImGuiSelectableFlags flags,
+      [](const std::string& label, bool selected, ImGuiSelectableFlags flags,
          const ImVec2& size_arg) -> bool {
         return ImGui::Selectable(label.c_str(), selected, flags, size_arg);
       },
@@ -1803,7 +1803,7 @@ void py_init_module_imgui_funcs(py::module& m) {
 
   m.def(
       "selectable",
-      [](std::string label, Bool& selected, ImGuiSelectableFlags flags,
+      [](const std::string& label, Bool& selected, ImGuiSelectableFlags flags,
          const ImVec2& size_arg) -> bool {
         return ImGui::Selectable(label.c_str(), &selected.value, flags,
                                  size_arg);
@@ -1908,7 +1908,7 @@ void py_init_module_imgui_funcs(py::module& m) {
 
   m.def(
       "add_font_from_file_ttf",
-      [](std::string filename, float size_pixels = 32.0f) {
+      [](const std::string& filename, float size_pixels = 32.0f) {
         return ImGui::GetIO().Fonts->AddFontFromFileTTF(filename.c_str(),
                                                         size_pixels);
       },
