@@ -53,12 +53,13 @@ namespace py = pybind11;
 // RAII Helper to pin buffers and template expand correct callback getter func.
 struct ValueGetter {
 public:
-  ValueGetter(const py::buffer& bufY) : hasX(false), infoY(bufY.request()) {
+  explicit ValueGetter(const py::buffer& bufY)
+      : hasX(false), infoY(bufY.request()) {
     if (this->infoY.ndim != 1) {
       throw std::runtime_error(error_dim);
     }
   }
-  ValueGetter(const py::buffer& bufX, const py::buffer& bufY)
+  explicit ValueGetter(const py::buffer& bufX, const py::buffer& bufY)
       : hasX(true), infoX(bufX.request()), infoY(bufY.request()) {
     if (this->infoX.ndim != 1 || this->infoY.ndim != 1 ||
         this->infoX.shape.at(0) != this->infoY.shape.at(0)) {
@@ -67,7 +68,7 @@ public:
   }
 
   typedef ImPlotPoint getter_func(void* data, int idx);
-  getter_func* get_getter_func() const {
+  [[nodiscard]] getter_func* get_getter_func() const {
 #define VG_EMIT_GET_GETTER_Y(__type__)                                         \
   if (PY_BUF_IS_TYPE(__type__, this->infoX)) {                                 \
     return get_getter_func_y<__type__>();                                      \
@@ -92,10 +93,10 @@ public:
 #undef VG_EMIT_GET_GETTER_Y
   }
 
-  int count() const {
+  [[nodiscard]] int count() const {
     auto count = this->infoY.shape.at(0);
     assert(count >= 0);
-    assert(count <= std::numeric_limits<int>::max);
+    assert(count <= std::numeric_limits<int>::max());
     return static_cast<int>(count);
   };
 
@@ -118,7 +119,8 @@ protected:
     return ImPlotPoint(x, y);
   }
 
-  template <typename X> inline getter_func* get_getter_func_y() const {
+  template <typename X>
+  [[nodiscard]] inline getter_func* get_getter_func_y() const {
 #define VG_EMIT_RET_GETTER(__type__)                                           \
   if (PY_BUF_IS_TYPE(__type__, this->infoY)) {                                 \
     return &getValue<X, __type__>;                                             \
@@ -531,7 +533,7 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_line",
-      [](const char* label_id, py::buffer values) {
+      [](const char* label_id, const py::buffer& values) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
         ImPlot::PlotLineG(label_id, value_getter.get_getter_func(),
@@ -540,7 +542,7 @@ void py_init_module_implot(py::module& m) {
       py::arg("label_id"), py::arg("values"), "Plots a standard 2D line plot.");
   m.def(
       "plot_line",
-      [](const char* label_id, py::buffer xs, py::buffer ys) {
+      [](const char* label_id, const py::buffer& xs, const py::buffer& ys) {
         auto value_getter = ValueGetter(xs, ys);
         py::gil_scoped_release release;
         ImPlot::PlotLineG(label_id, value_getter.get_getter_func(),
@@ -551,7 +553,7 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_scatter",
-      [](const char* label_id, py::buffer values) {
+      [](const char* label_id, const py::buffer& values) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
         ImPlot::PlotScatterG(label_id, value_getter.get_getter_func(),
@@ -562,7 +564,7 @@ void py_init_module_implot(py::module& m) {
       "ImPlotMarker_Circle.");
   m.def(
       "plot_scatter",
-      [](const char* label_id, py::buffer xs, py::buffer ys) {
+      [](const char* label_id, const py::buffer& xs, const py::buffer& ys) {
         auto value_getter = ValueGetter(xs, ys);
         py::gil_scoped_release release;
         ImPlot::PlotScatterG(label_id, value_getter.get_getter_func(),
@@ -574,7 +576,7 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_stairs",
-      [](const char* label_id, py::buffer values) {
+      [](const char* label_id, const py::buffer& values) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
         ImPlot::PlotStairsG(label_id, value_getter.get_getter_func(),
@@ -585,7 +587,7 @@ void py_init_module_implot(py::module& m) {
       "every x position, i.e. the interval [x[i], x[i+1]) has the value y[i].");
   m.def(
       "plot_stairs",
-      [](const char* label_id, py::buffer xs, py::buffer ys) {
+      [](const char* label_id, const py::buffer& xs, const py::buffer& ys) {
         auto value_getter = ValueGetter(xs, ys);
         py::gil_scoped_release release;
         ImPlot::PlotStairsG(label_id, value_getter.get_getter_func(),
@@ -597,7 +599,8 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_shaded",
-      [](const char* label_id, py::buffer xs, py::buffer ys1, py::buffer ys2) {
+      [](const char* label_id, const py::buffer& xs, const py::buffer& ys1,
+         const py::buffer& ys2) {
         // TODO
         throw std::runtime_error("not implemented");
       },
@@ -606,7 +609,8 @@ void py_init_module_implot(py::module& m) {
       "horizontal reference.");
   m.def(
       "plot_shaded",
-      [](const char* label_id, py::buffer xs, py::buffer ys, double y_ref) {
+      [](const char* label_id, const py::buffer& xs, const py::buffer& ys,
+         double y_ref) {
         // TODO
         throw std::runtime_error("not implemented");
       },
@@ -616,7 +620,7 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_bars",
-      [](const char* label_id, py::buffer values, double width) {
+      [](const char* label_id, const py::buffer& values, double width) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
         ImPlot::PlotBarsG(label_id, value_getter.get_getter_func(),
@@ -627,7 +631,7 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_bars_h",
-      [](const char* label_id, py::buffer values, double height) {
+      [](const char* label_id, const py::buffer& values, double height) {
         auto value_getter = ValueGetter(values);
         py::gil_scoped_release release;
         ImPlot::PlotBarsHG(label_id, value_getter.get_getter_func(),
@@ -638,8 +642,8 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_error_bars",
-      [](const char* label_id, py::buffer xs, py::buffer ys, py::buffer neg,
-         py::buffer pos) {
+      [](const char* label_id, const py::buffer& xs, const py::buffer& ys,
+         const py::buffer& neg, const py::buffer& pos) {
         // TODO implement ValueGetter for 4 components
         throw std::runtime_error("not implemented");
       },
@@ -649,8 +653,8 @@ void py_init_module_implot(py::module& m) {
       "label_id of the associated line or bar plot.");
   m.def(
       "plot_error_bars_h",
-      [](const char* label_id, py::buffer xs, py::buffer ys, py::buffer neg,
-         py::buffer pos) {
+      [](const char* label_id, const py::buffer& xs, const py::buffer& ys,
+         const py::buffer& neg, const py::buffer& pos) {
         // TODO implement ValueGetter for 4 components
         throw std::runtime_error("not implemented");
       },
@@ -661,14 +665,14 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_stems",
-      [](const char* label_id, py::buffer values) {
+      [](const char* label_id, const py::buffer& values) {
         // TODO no getter (G) version
         throw std::runtime_error("not implemented");
       },
       py::arg("label_id"), py::arg("values"), "Plots vertical stems.");
   m.def(
       "plot_stems",
-      [](const char* label_id, py::buffer xs, py::buffer ys) {
+      [](const char* label_id, const py::buffer& xs, const py::buffer& ys) {
         // TODO no getter (G) version
         throw std::runtime_error("not implemented");
       },
@@ -677,9 +681,9 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_pie_chart",
-      [](std::vector<const char*> label_ids, py::buffer values, double x,
-         double y, double radius, bool normalize, const char* label_fmt,
-         double angle0) {
+      [](const std::vector<const char*>& label_ids, const py::buffer& values,
+         double x, double y, double radius, bool normalize,
+         const char* label_fmt, double angle0) {
         // TODO ImPlot::PlotPieChart has no getter overload
         throw std::runtime_error("not implemented");
       },
@@ -701,7 +705,7 @@ void py_init_module_implot(py::module& m) {
 
   m.def(
       "plot_digital",
-      [](const char* label_id, py::buffer xs, py::buffer ys) {
+      [](const char* label_id, const py::buffer& xs, const py::buffer& ys) {
         auto value_getter = ValueGetter(xs, ys);
         py::gil_scoped_release release;
         ImPlot::PlotDigitalG(label_id, value_getter.get_getter_func(),

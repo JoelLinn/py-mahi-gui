@@ -1838,7 +1838,7 @@ void py_init_module_imgui_funcs(py::module& m) {
 
   m.def(
       "list_box_header",
-      [](std::string label, ImVec2 size) {
+      [](const std::string& label, ImVec2 size) {
         ImGui::ListBoxHeader(label.c_str(), size);
       },
       py::arg("label"), py::arg("size") = ImVec2(0, 0));
