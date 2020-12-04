@@ -8,6 +8,7 @@ environment:
     - PYTHON: 36
     - PYTHON: 37
     - PYTHON: 38
+    - PYTHON: 39
 install:
  - ps: |
       git submodule update -q --init --recursive
