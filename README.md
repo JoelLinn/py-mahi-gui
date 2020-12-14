@@ -1,6 +1,6 @@
 # mahi-gui Python bindings
 
-[![Build Status](https://travis-ci.com/JoelLinn/py-mahi-gui.svg?branch=master)](https://travis-ci.com/JoelLinn/py-mahi-gui) [![Build status](https://ci.appveyor.com/api/projects/status/blcthvmiryheaewo/branch/master?svg=true)](https://ci.appveyor.com/project/JoelLinn/py-mahi-gui/branch/master)
+[![Build Status](https://cloud.drone.io/api/badges/JoelLinn/py-mahi-gui/status.svg?ref=refs/heads/master)](https://cloud.drone.io/JoelLinn/py-mahi-gui) [![Build status](https://ci.appveyor.com/api/projects/status/blcthvmiryheaewo/branch/master?svg=true)](https://ci.appveyor.com/project/JoelLinn/py-mahi-gui/branch/master)
 
 This module enables you to create [mahi-gui](https://github.com/mahilab/mahi-gui) applications with [Dear ImGui](https://github.com/ocornut/imgui) and [ImPlot](https://github.com/epezent/implot) using Python. Note that there currently are no bindings for NanoVG.
 
