@@ -1,0 +1,55 @@
+---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: submodules
+  image: alpine/git
+  commands:
+  - git submodule update --init --recursive
+
+- name: tarball
+  image: python:alpine
+  commands:
+  - python setup.py sdist
+  depends_on:
+  - submodules
+
+- name: build-i686
+  image: quay.io/pypa/manylinux2010_i686
+  environment:
+    PYTHON_BLOCKLIST: "cp27 cp35"
+    PLAT: "manylinux2010_i686"
+  commands:
+  - linux32 ./build-wheels.sh
+  - ls -lah wheelhouse/
+  depends_on:
+  - submodules
+
+- name: build-x86_64
+  image: pypywheels/manylinux2010-pypy_x86_64
+  environment:
+    PYTHON_BLOCKLIST: "cp27 cp35 pp27"
+    PLAT: "manylinux2010_x86_64"
+  commands:
+  - ./build-wheels.sh
+  depends_on:
+  - submodules
+
+- name: push
+  image: curlimages/curl
+  environment:
+    ARTIFACT_URL_BASE:
+      from_secret: artifact_url_base
+    ARTIFACT_USER:
+      from_secret: artifact_user
+    ARTIFACT_PASS:
+      from_secret: artifact_pass
+  commands:
+  - ls -lah wheelhouse/
+  - ./push-wheels.sh
+  depends_on:
+  - tarball
+  - build-i686
+  - build-x86_64
