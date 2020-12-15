@@ -23,7 +23,6 @@ steps:
     PLAT: "manylinux2010_i686"
   commands:
   - linux32 ./build-wheels.sh
-  - ls -lah wheelhouse/
   depends_on:
   - submodules
 
@@ -32,6 +31,17 @@ steps:
   environment:
     PYTHON_BLOCKLIST: "cp27 cp35 pp27"
     PLAT: "manylinux2010_x86_64"
+  commands:
+  - ./build-wheels.sh
+  depends_on:
+  - submodules
+
+# Requires qemu-user-static on host
+- name: build-aarch64
+  image: quay.io/pypa/manylinux2014_aarch64
+  environment:
+    PYTHON_BLOCKLIST: "cp27 cp35"
+    PLAT: "manylinux2014_aarch64"
   commands:
   - ./build-wheels.sh
   depends_on:
@@ -53,3 +63,4 @@ steps:
   - tarball
   - build-i686
   - build-x86_64
+  - build-aarch64
