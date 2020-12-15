@@ -2,6 +2,9 @@
 kind: pipeline
 type: docker
 name: default
+platform:
+  os: linux
+  arch: amd64
 
 steps:
 - name: submodules
@@ -36,7 +39,37 @@ steps:
   depends_on:
   - submodules
 
-# Requires qemu-user-static on host
+- name: push
+  image: curlimages/curl
+  environment:
+    ARTIFACT_URL_BASE:
+      from_secret: artifact_url_base
+    ARTIFACT_USER:
+      from_secret: artifact_user
+    ARTIFACT_PASS:
+      from_secret: artifact_pass
+  commands:
+  - ls -lah wheelhouse/
+  - ./push-wheels.sh
+  depends_on:
+  - tarball
+  - build-i686
+  - build-x86_64
+
+---
+kind: pipeline
+type: docker
+name: default
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+- name: submodules
+  image: alpine/git
+  commands:
+  - git submodule update --init --recursive
+
 - name: build-aarch64
   image: quay.io/pypa/manylinux2014_aarch64
   environment:
@@ -60,7 +93,4 @@ steps:
   - ls -lah wheelhouse/
   - ./push-wheels.sh
   depends_on:
-  - tarball
-  - build-i686
-  - build-x86_64
   - build-aarch64
