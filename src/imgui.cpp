@@ -611,6 +611,7 @@ void py_init_module_imgui_enums(py::module& m) {
       .value("NoNavInputs", ImGuiWindowFlags_NoNavInputs)
       .value("NoNavFocus", ImGuiWindowFlags_NoNavFocus)
       .value("UnsavedDocument", ImGuiWindowFlags_UnsavedDocument)
+      .value("NoDocking", ImGuiWindowFlags_NoDocking)
       .value("NoNav ", ImGuiWindowFlags_NoNav)
       .value("NoDecoration", ImGuiWindowFlags_NoDecoration)
       .value("NoInputs", ImGuiWindowFlags_NoInputs);
