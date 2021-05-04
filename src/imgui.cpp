@@ -981,10 +981,13 @@ void py_init_module_imgui_funcs(py::module& m) {
       "", py::arg("name"), py::arg("flags") = ImGuiWindowFlags_(0));
   m.def(
       "begin_popup_modal",
-      [](const std::string& name = "") -> bool {
-        return ImGui::BeginPopupModal(name.c_str());
+      [](const std::string& name, Bool& opened,
+         ImGuiWindowFlags flags) -> bool {
+        return ImGui::BeginPopupModal(
+            name.c_str(), opened.null ? nullptr : &opened.value, flags);
       },
-      "");
+      py::arg("name"), py::arg("opened") = null,
+      py::arg("flags") = ImGuiWindowFlags_(0));
 
   // add more arguments later:
   m.def(
