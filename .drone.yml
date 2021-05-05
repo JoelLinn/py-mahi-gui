@@ -14,8 +14,8 @@ steps:
   commands:
   - |
     export DEBIAN_FRONTEND=noninteractive
-    apt-get update
-    apt-get install -y clang-format git
+    apt-get update > /dev/null
+    apt-get install -y clang-format git > /dev/null
     find src -regex '.*\.\(c\|h\|cpp\|cc\|cxx\|hpp\)' -exec clang-format -i -style=file {} \;
     echo
     status="$(git status --short)"
