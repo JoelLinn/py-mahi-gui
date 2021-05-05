@@ -9,6 +9,30 @@ steps:
   commands:
   - git submodule update --init --recursive
 
+- name: lint
+  image: ubuntu:focal
+  commands:
+  - |
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get install -y clang-format git
+    find src -regex '.*\.\(c\|h\|cpp\|cc\|cxx\|hpp\)' -exec clang-format -i -style=file {} \;
+    echo
+    status="$(git status --short)"
+    if [ -z "$status" ]; then
+      echo "Lint successful"
+    else
+      echo "Lint errors:"
+      echo
+      echo "$status"
+      echo
+      git diff
+      git restore .
+      exit 1
+    fi
+  depends_on:
+  - submodules
+
 - name: tarball
   image: python:alpine
   commands:
