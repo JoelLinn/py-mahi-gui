@@ -14,8 +14,8 @@ add_subdirectory(thirdparty/mahi-gui)
 add_subdirectory(thirdparty/pybind11)
 
 set(MAHI_GUI_HEADERS
-        src/imgui_helper.h
-        src/leaked_ptr.h
+        src/imgui_helper.hpp
+        src/leaked_ptr.hpp
         src/pybind_cast.hpp
         )
 

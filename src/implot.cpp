@@ -42,8 +42,8 @@ derivative works thereof, in binary and source code form.
 #include <implot.h>
 #include <pybind11/pybind11.h>
 
-#include "imgui_helper.h"
-#include "leaked_ptr.h"
+#include "imgui_helper.hpp"
+#include "leaked_ptr.hpp"
 
 namespace py = pybind11;
 

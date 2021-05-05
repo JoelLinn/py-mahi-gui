@@ -42,7 +42,7 @@ derivative works thereof, in binary and source code form.
 #include <Mahi/Gui/imgui_custom.hpp>
 #include <pybind11/pybind11.h>
 
-#include "imgui_helper.h"
+#include "imgui_helper.hpp"
 
 namespace py = pybind11;
 

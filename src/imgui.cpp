@@ -30,8 +30,8 @@ SOFTWARE.
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "imgui_helper.h"
-#include "leaked_ptr.h"
+#include "imgui_helper.hpp"
+#include "leaked_ptr.hpp"
 
 namespace py = pybind11;
 
