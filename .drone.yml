@@ -43,7 +43,7 @@ steps:
 - name: build-i686
   image: quay.io/pypa/manylinux2010_i686
   environment:
-    PYTHON_BLOCKLIST: "cp27 cp35"
+    PYTHON_BLOCKLIST: "cp27 cp35 cp310"
     PLAT: "manylinux2010_i686"
   commands:
   - linux32 ./build-wheels.sh
@@ -54,7 +54,7 @@ steps:
 - name: build-x86_64
   image: pypywheels/manylinux2010-pypy_x86_64
   environment:
-    PYTHON_BLOCKLIST: "cp27 cp35 pp27"
+    PYTHON_BLOCKLIST: "cp27 cp35 pp27 cp310"
     PLAT: "manylinux2010_x86_64"
   commands:
   - ./build-wheels.sh
