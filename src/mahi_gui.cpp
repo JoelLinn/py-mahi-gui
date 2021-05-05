@@ -188,7 +188,8 @@ void py_init_module_mahi_gui(py::module& m) {
       .def_readwrite("msaa", &mahi::gui::Application::Config::msaa)
       .def_readwrite("nvg_aa", &mahi::gui::Application::Config::nvg_aa)
       .def_readwrite("vsync", &mahi::gui::Application::Config::vsync)
-      .def_readwrite("gl_forward_compat", &mahi::gui::Application::Config::gl_forward_compat)
+      .def_readwrite("gl_forward_compat",
+                     &mahi::gui::Application::Config::gl_forward_compat)
       .def_property(
           "background",
           [](const mahi::gui::Application::Config& self) -> py::tuple {
