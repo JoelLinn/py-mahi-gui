@@ -4,6 +4,8 @@
 
 This module enables you to create [mahi-gui](https://github.com/mahilab/mahi-gui) applications with [Dear ImGui](https://github.com/ocornut/imgui) and [ImPlot](https://github.com/epezent/implot) using Python. Note that there currently are no bindings for NanoVG.
 
+![Example using ratcave](examples/ratcave_scene.png)
+
 Usage is similar to mahi-gui, inherit your Application class from `mahi_gui.Application` and overwrite the methods `_update()`, `_draw_opengl()` (named `draw()` in C++ interface). To get you started have a look into the `examples` folder.
 
 Almost all ImGui and ImPlot functions are available, please consult their documentations. You can even call OpenGL functions inside `_draw_opengl()` to draw custom stuff. If a functionality you require is not mapped feel free to request it or create a pull request.
