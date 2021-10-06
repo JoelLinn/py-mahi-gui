@@ -88,7 +88,7 @@ done
 # Install packages and test
 for PYBIN in "${PYTHONS[@]}"; do
     "${PYBIN}/pip" install mahi-gui --no-index -f "${WHEELS_TESTED}"
-    "${PYBIN}/nosetests" -w "${REPOPATH}/tests"
+    "${PYBIN}/pytest" -q
 done
 
 # Publish wheels only if no errors occured:
